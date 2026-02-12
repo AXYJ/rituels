@@ -52,6 +52,57 @@ io.on("connection", (socket) => {
 
     // Implémenter fonctionnalités du jeu
 
+    socket.on("create_game", (idPlayer) => {
+        const roomCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+        rooms[roomCode] = {
+            players: [{ id: idPlayer, name: "Host", isHost: true }]
+        };
+        socket.join(roomCode);
+        const rules = generateRules();
+        rooms[roomCode].rules = rules; // Store rules in the room
+        const playerNumber = rooms[roomCode].players.length;
+
+        // Extract names for frontend
+        const playerNames = rooms[roomCode].players.map(p => p.name);
+        socket.emit("room_created", roomCode, rules, playerNames, playerNumber);
+    });
+
+    socket.on("join_game", (roomCode) => {
+        if (rooms[roomCode]) {
+            if (rooms[roomCode].players.length < 4) {
+                rooms[roomCode].players.push({ id: socket.id, name: "Player", isHost: false });
+                socket.join(roomCode);
+
+                const playerNames = rooms[roomCode].players.map(p => p.name);
+
+                // Notify everyone in the room (including the joiner) about the updated player list
+                io.to(roomCode).emit("room_updated", { players: playerNames });
+
+                // Send specific success event to the joiner with game state
+                const playerNumber = rooms[roomCode].players.length;
+                socket.emit("join_game_success", roomCode, rooms[roomCode].rules, playerNames, playerNumber);
+            } else {
+                socket.emit("room_full");
+            }
+        } else {
+            socket.emit("room_not_found");
+        }
+    });
+
+    socket.on("change_name", (name) => {
+        // Find the room this player is in
+        for (const code in rooms) {
+            const room = rooms[code];
+            const player = room.players.find(p => p.id === socket.id);
+            if (player) {
+                player.name = name;
+                const playerNames = room.players.map(p => p.name);
+                io.to(code).emit("room_updated", { players: playerNames });
+                break;
+            }
+        }
+    });
+
     socket.on("disconnect", (reason) => {
         console.log(`[${new Date().toISOString()}] User disconnected: ${socket.id} (Reason: ${reason})`);
     });

@@ -1,14 +1,36 @@
 "use client";
 
-import useSocket from "../hooks/useSocket";
+// Components
+import { GameProvider, useGame } from "../context/GameContext";
+import Header from "../components/header/Header";
+import Home from "../components/pages/home";
+import Lobby from "../components/pages/Lobby";
+import Game from "../components/pages/Game";
 
-export default function Home() {
-  // Connexion au serveur
-  useSocket("http://localhost:4000");
+function GameContent() {
+  const { view, setView } = useGame();
 
+  // Rendu des vues
+  // Rendu conditionnel plutôt que routing Next.js pour éviter de perdre la connexion WebSocket
+  switch (view) {
+    case "home":
+      return <Home />;
+    case "lobby":
+      return <Lobby />;
+    case "game":
+      return <Game />;
+    default:
+      return <Home />;
+  }
+}
+
+export default function App() {
   return (
-    <main>
-      <h1>Bienvenue sur le projet Rituels</h1>
+    <main className="min-h-screen max-w-7xl mx-auto">
+      <GameProvider>
+        <Header />
+        <GameContent />
+      </GameProvider>
     </main>
   );
 }
