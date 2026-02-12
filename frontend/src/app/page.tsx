@@ -26,7 +26,7 @@ function GameContent() {
 
 export default function App() {
   return (
-    <main className="min-h-screen max-w-7xl mx-auto">
+    <main className="mx-auto min-h-screen max-w-7xl">
       <GameProvider>
         <Header />
         <GameContent />

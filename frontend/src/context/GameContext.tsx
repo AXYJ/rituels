@@ -1,6 +1,14 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, ReactNode, useCallback, useMemo } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+  useCallback,
+  useMemo,
+} from "react";
 import { io, Socket } from "socket.io-client";
 
 // Définition des vues
@@ -8,10 +16,13 @@ type View = "home" | "lobby" | "game" | "results";
 
 // Toutes les variables globales du jeu
 interface GameContextType {
+  // Connexion
   socket: Socket | null;
+  isConnected: boolean;
+  // Vue actuelle
   view: View;
   setView: (view: View) => void;
-  isConnected: boolean;
+  // Partie
   roomCode: string;
   setRoomCode: (code: string) => void;
   playerNames: string[];
@@ -26,6 +37,12 @@ interface GameContextType {
   // Joueur
   playerNumber: number;
   setPlayerNumber: (number: number) => void;
+}
+
+// Types pour les règles issues du serveur
+export interface GameRules {
+  symbolRules: Record<string, number>;
+  colorRules: Record<string, string>;
 }
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
@@ -47,30 +64,30 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
 
     setSocket(newSocket);
 
-    // Écouteurs de base
+    // ----------------
+    // Écouteurs de base (réponse du serveur)
+    // ----------------
+
+    // Connexion
     newSocket.on("connect", () => {
       setIsConnected(true);
       console.log("Connecté au serveur ! ID:", newSocket.id);
     });
 
+    // Erreurs de connexion
     newSocket.on("connect_error", (err) => {
       console.error("Erreur de connexion socket:", err);
     });
 
+    // Déconnexion
     newSocket.on("disconnect", (reason) => {
       setIsConnected(false);
       console.log("Socket déconnecté:", reason);
     });
 
     // ----------------
-    // Écouteurs de jeu
+    // Écouteurs de jeu (réponse du serveur)
     // ----------------
-
-    // Lancement d'une partie
-    newSocket.on("game_started", (data) => {
-      // data contiendra tes règles et l'ordre des joueurs
-      setView("game");
-    });
 
     // Création d'un lobby
     newSocket.on("room_created", (code, rules, players, playerNumber) => {
@@ -78,10 +95,6 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       setRules(rules);
       setPlayerNames(players);
       setPlayerNumber(playerNumber);
-      console.log("Room created with code:", code);
-      console.log("Rules:", rules);
-      console.log("Players:", players);
-      console.log("Player number:", playerNumber);
       setView("lobby");
     });
 
@@ -98,7 +111,6 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     newSocket.on("room_full", () => {
       alert("La partie est pleine !");
     });
-
     newSocket.on("room_not_found", () => {
       alert("Partie introuvable !");
     });
@@ -108,15 +120,16 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       setPlayerNames(room.players);
     });
 
-
-
     // Nettoyage automatique
     return () => {
       newSocket.disconnect();
     };
   }, []);
 
-  // Actions de jeu
+  // ----------------
+  // Actions de jeu (envoi au serveur)
+  // ----------------
+
   // Création d'une partie
   const createGame = useCallback(() => {
     if (socket) {
@@ -125,54 +138,69 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   }, [socket]);
 
   // Rejoindre une partie
-  const joinGame = useCallback((code: string) => {
-    if (socket) {
-      setRoomCode(code);
-      socket.emit("join_game", code);
-    }
-  }, [socket]);
+  const joinGame = useCallback(
+    (code: string) => {
+      if (socket) {
+        setRoomCode(code);
+        socket.emit("join_game", code);
+      }
+    },
+    [socket]
+  );
 
   // Changer le nom
-  const changeName = useCallback((name: string) => {
-    if (socket) {
-      socket.emit("change_name", name);
-    }
-  }, [socket]);
-
-  const value = useMemo(() => ({
-    socket,
-    view,
-    setView,
-    isConnected,
-    roomCode,
-    setRoomCode,
-    playerNames,
-    setPlayerNames,
-    createGame,
-    joinGame,
-    changeName,
-    rules,
-    setRules,
-    playerNumber,
-    setPlayerNumber
-  }), [socket, view, isConnected, roomCode, playerNames, createGame, joinGame, changeName, rules, playerNumber]);
-
-  return (
-    <GameContext.Provider value={value}>
-      {children}
-    </GameContext.Provider>
+  const changeName = useCallback(
+    (name: string) => {
+      if (socket) {
+        socket.emit("change_name", name);
+      }
+    },
+    [socket]
   );
-};
 
-// Types pour les règles issues du serveur
-export interface GameRules {
-  symbolRules: Record<string, number>;
-  colorRules: Record<string, string>;
-}
+  // ----------------
+  // Valeurs du contexte
+  // ----------------
+
+  const value = useMemo(
+    () => ({
+      socket,
+      view,
+      setView,
+      isConnected,
+      roomCode,
+      setRoomCode,
+      playerNames,
+      setPlayerNames,
+      createGame,
+      joinGame,
+      changeName,
+      rules,
+      setRules,
+      playerNumber,
+      setPlayerNumber,
+    }),
+    [
+      socket,
+      view,
+      isConnected,
+      roomCode,
+      playerNames,
+      createGame,
+      joinGame,
+      changeName,
+      rules,
+      playerNumber,
+    ]
+  );
+
+  return <GameContext.Provider value={value}>{children}</GameContext.Provider>;
+};
 
 // Hook personnalisé
 export const useGame = () => {
   const context = useContext(GameContext);
-  if (!context) throw new Error("useGame doit être utilisé dans un GameProvider");
+  if (!context)
+    throw new Error("useGame doit être utilisé dans un GameProvider");
   return context;
 };

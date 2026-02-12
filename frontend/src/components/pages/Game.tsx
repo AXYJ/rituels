@@ -1,15 +1,15 @@
-'use client'
+"use client";
 
 export default function Game() {
-    return (
-        <div className="flex flex-col items-center justify-center min-h-[80vh]">
-            <h1 className="text-4xl font-bold mb-8">Partie en cours</h1>
-            <button
-                onClick={() => { }}
-                className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-6 rounded-full"
-            >
-                Quitter la partie
-            </button>
-        </div>
-    );
+  return (
+    <div className="flex min-h-[80vh] flex-col items-center justify-center">
+      <h1 className="mb-8 text-4xl font-bold">Partie en cours</h1>
+      <button
+        onClick={() => {}}
+        className="rounded-full bg-red-500 px-6 py-2 font-bold text-white hover:bg-red-600"
+      >
+        Quitter la partie
+      </button>
+    </div>
+  );
 }

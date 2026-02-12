@@ -7,11 +7,9 @@
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "concurrently \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\""
   },
-  "dependencies": {
-    "concurrently": "^9.2.1",
-    "framer-motion": "^12.20.20"
+  "devDependencies": {
+    "concurrently": "^9.2.1"
   }
 }

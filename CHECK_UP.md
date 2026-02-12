@@ -1,3 +1,7 @@
+# CHECKUP
+
+<!-- IA-1-CODE: texte généré par IA -->
+
 # MISSION : Audit Technique et Consolidation "Rituels"
 
 Tu agis en tant qu'Architecte Senior Fullstack. Ton objectif est de vérifier la cohérence globale de mon projet (Next.js + Socket.io) sans ajouter de nouvelles fonctionnalités.
