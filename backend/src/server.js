@@ -75,26 +75,27 @@ io.on("connection", (socket) => {
         // Algorithme généré par IA
         const roomCode = Math.random().toString(36).substring(2, 8).toUpperCase();
         rooms[roomCode] = {
-            players: [{ id: idPlayer, name: "Host", isHost: true }]
+            players: [{ id: idPlayer, name: "Host", isHost: true, isReady: false }]
         };
         socket.join(roomCode);
         const rules = generateRules();
         rooms[roomCode].rules = rules;
         const playerNumber = rooms[roomCode].players.length;
-        const playerNames = rooms[roomCode].players.map(p => p.name);
-        socket.emit("room_created", roomCode, rules, playerNames, playerNumber);
+        const players = rooms[roomCode].players;
+        const isHost = rooms[roomCode].players[0].isHost;
+        socket.emit("room_created", roomCode, rules, players, playerNumber, isHost);
     });
 
     // Rejoindre une partie
     socket.on("join_game", (roomCode) => {
         if (rooms[roomCode]) {
             if (rooms[roomCode].players.length < 4) {
-                rooms[roomCode].players.push({ id: socket.id, name: "Player", isHost: false });
+                rooms[roomCode].players.push({ id: socket.id, name: "Player", isHost: false, isReady: false });
                 socket.join(roomCode);
-                const playerNames = rooms[roomCode].players.map(p => p.name);
-                io.to(roomCode).emit("room_updated", { players: playerNames });
+                const players = rooms[roomCode].players;
+                io.to(roomCode).emit("room_updated", { players: players });
                 const playerNumber = rooms[roomCode].players.length;
-                socket.emit("join_game_success", roomCode, rooms[roomCode].rules, playerNames, playerNumber);
+                socket.emit("join_game_success", roomCode, rooms[roomCode].rules, players, playerNumber);
             } else {
                 socket.emit("room_full");
             }
@@ -110,8 +111,36 @@ io.on("connection", (socket) => {
             const player = room.players.find(p => p.id === socket.id);
             if (player) {
                 player.name = name;
-                const playerNames = room.players.map(p => p.name);
-                io.to(code).emit("room_updated", { players: playerNames });
+                const players = room.players;
+                io.to(code).emit("room_updated", { players: players });
+                break;
+            }
+        }
+    });
+
+    // Prêt
+    socket.on("ready", (isReady, idPlayer) => {
+        for (const code in rooms) {
+            const room = rooms[code];
+            const player = room.players.find(p => p.id === idPlayer);
+            if (player) {
+                player.isReady = isReady;
+                const players = room.players;
+                io.to(code).emit("room_updated", { players: players });
+                break;
+            }
+        }
+    });
+
+    // Quitter le lobby
+    socket.on("quit_lobby", (idPlayer) => {
+        for (const code in rooms) {
+            const room = rooms[code];
+            const player = room.players.find(p => p.id === idPlayer);
+            if (player) {
+                room.players = room.players.filter(p => p.id !== idPlayer);
+                const players = room.players;
+                io.to(code).emit("room_updated", { players: players });
                 break;
             }
         }

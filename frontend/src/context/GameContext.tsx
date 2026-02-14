@@ -25,24 +25,40 @@ interface GameContextType {
   // Partie
   roomCode: string;
   setRoomCode: (code: string) => void;
-  playerNames: string[];
-  setPlayerNames: (names: string[]) => void;
+  players: Player[];
+  setPlayers: (players: Player[]) => void;
   // Actions
   createGame: () => void;
   joinGame: (code: string) => void;
   changeName: (name: string) => void;
+  beReady: () => void;
+  quitLobby: () => void;
   // Règles
   rules: GameRules | null;
   setRules: (rules: GameRules | null) => void;
   // Joueur
   playerNumber: number;
   setPlayerNumber: (number: number) => void;
+  // Hôte
+  isHost: boolean;
+  setIsHost: (isHost: boolean) => void;
+  // Prêt
+  isReady: boolean;
+  setIsReady: (isReady: boolean) => void;
 }
 
 // Types pour les règles issues du serveur
 export interface GameRules {
   symbolRules: Record<string, number>;
   colorRules: Record<string, string>;
+}
+
+// Types pour les joueurs
+export interface Player {
+  id: string;
+  name: string;
+  isHost: boolean;
+  isReady: boolean;
 }
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
@@ -52,9 +68,11 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   const [isConnected, setIsConnected] = useState(false);
   const [view, setView] = useState<View>("home");
   const [roomCode, setRoomCode] = useState("");
-  const [playerNames, setPlayerNames] = useState<string[]>([]);
+  const [players, setPlayers] = useState<Player[]>([]);
   const [rules, setRules] = useState<GameRules | null>(null);
   const [playerNumber, setPlayerNumber] = useState(0);
+  const [isHost, setIsHost] = useState(false);
+  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
     // Initialisation de la connexion
@@ -85,16 +103,19 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       console.log("Socket déconnecté:", reason);
     });
 
+
     // ----------------
     // Écouteurs de jeu (réponse du serveur)
     // ----------------
 
     // Création d'un lobby
-    newSocket.on("room_created", (code, rules, players, playerNumber) => {
+    newSocket.on("room_created", (code, rules, players, playerNumber, isHost) => {
       setRoomCode(code);
       setRules(rules);
-      setPlayerNames(players);
+      setPlayers(players);
+      console.log("Players:", players);
       setPlayerNumber(playerNumber);
+      setIsHost(isHost);
       setView("lobby");
     });
 
@@ -102,7 +123,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     newSocket.on("join_game_success", (code, rules, players, playerNumber) => {
       setRoomCode(code);
       setRules(rules);
-      setPlayerNames(players);
+      setPlayers(players);
       setPlayerNumber(playerNumber);
       setView("lobby");
     });
@@ -117,7 +138,12 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
 
     // Mise à jour du lobby
     newSocket.on("room_updated", (room) => {
-      setPlayerNames(room.players);
+      setPlayers(room.players);
+      // Update local isReady based on the new players list
+      if (newSocket.id) {
+        const me = room.players.find((p: Player) => p.id === newSocket.id);
+        if (me) setIsReady(me.isReady);
+      }
     });
 
     // Nettoyage automatique
@@ -125,6 +151,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       newSocket.disconnect();
     };
   }, []);
+
 
   // ----------------
   // Actions de jeu (envoi au serveur)
@@ -158,6 +185,23 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     [socket]
   );
 
+  // Prêt
+  const beReady = useCallback(() => {
+    if (socket) {
+      // Toggle readiness
+      socket.emit("ready", !isReady, socket.id);
+    }
+  }, [socket, isReady]);
+
+  // Quitter le lobby
+  const quitLobby = useCallback(() => {
+    if (socket) {
+      socket.emit("quit_lobby", socket.id);
+    }
+    setView("home");
+  }, [socket]);
+
+  
   // ----------------
   // Valeurs du contexte
   // ----------------
@@ -170,8 +214,8 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       isConnected,
       roomCode,
       setRoomCode,
-      playerNames,
-      setPlayerNames,
+      players,
+      setPlayers,
       createGame,
       joinGame,
       changeName,
@@ -179,18 +223,29 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       setRules,
       playerNumber,
       setPlayerNumber,
+      isHost,
+      setIsHost,
+      isReady,
+      beReady,
+      quitLobby,
+      setIsReady,
     }),
     [
       socket,
       view,
       isConnected,
       roomCode,
-      playerNames,
+      players,
       createGame,
       joinGame,
       changeName,
       rules,
       playerNumber,
+      isHost,
+      isReady,
+      beReady,
+      quitLobby,
+      setIsReady,
     ]
   );
 

@@ -13,6 +13,7 @@ export default function Home() {
   const [inputCode, setInputCode] = useState("");
   const [btnDisabled, setBtnDisabled] = useState(false);
 
+  
   // ----------------
   // Gestion des événements
   // ----------------

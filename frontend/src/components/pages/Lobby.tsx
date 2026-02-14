@@ -10,7 +10,7 @@ import PlayerNameInput from "../lobby/PlayerNameInput";
 
 export default function Lobby() {
   // Appel du contexte
-  const { setView, playerNames, roomCode } = useGame();
+  const { setView, players, roomCode, isHost, isReady, beReady, quitLobby } = useGame();
 
   const [copySuccess, setCopySuccess] = useState(false);
 
@@ -20,8 +20,16 @@ export default function Lobby() {
     setTimeout(() => setCopySuccess(false), 2000);
   };
 
+  const handleReady = () => {
+    beReady();
+  };
+
+  const handleQuit = () => {
+    quitLobby();
+  };
+
   return (
-    <div className="flex min-h-[80vh] flex-col items-center justify-center">
+    <section className="flex min-h-[80vh] flex-col items-center justify-center">
       <h1 className="mb-8 flex items-center gap-4 text-2xl">
         Code de la partie : {roomCode}{" "}
         <button
@@ -32,15 +40,16 @@ export default function Lobby() {
         </button>
       </h1>
 
-      {playerNames.length > 0 && (
-        <div className="mb-4 h-[20vh] w-[40vw] overflow-y-auto text-center">
-          <ul>
-            {playerNames.map((player, index) => (
+      {players.length > 0 && (
+        <div className="mb-4 w-[40vw] overflow-y-auto text-center">
+          <ul className="flex flex-col gap-4">
+            {players.map((player, index) => (
               <li
-                className="h-10 w-full rounded-full bg-amber-100 py-2"
+                className={`h-10 w-full rounded-full py-2 ${player.isReady ? "bg-green-200" : "bg-amber-100"
+                  }`}
                 key={index}
               >
-                {player}
+                {player.name} {player.isReady ? "(Prêt)" : ""}
               </li>
             ))}
           </ul>
@@ -50,16 +59,26 @@ export default function Lobby() {
       <p className="mb-4">En attente de joueurs...</p>
       <PlayerNameInput />
 
+
       <div className="flex gap-4">
-        <button
+        {isHost && (<button
           // onClick={onGameStart}
-          className="rounded-full bg-green-500 px-6 py-2 font-bold text-white hover:bg-green-600"
+          className={`rounded-full bg-green-500 px-6 py-2 font-bold text-white hover:bg-green-600 transition-colors duration-200 ease-in-out ${players.filter((p) => p.isReady).length + 1 === players.length ? "" : "cursor-not-allowed opacity-50"} ${players.length === 1 ? "cursor-not-allowed opacity-50" : ""}`}
         >
-          Start Game (Debug)
+          Start Game ({players.filter((p) => p.isReady).length + 1}/{players.length})
         </button>
+        )}
+        {!isHost && (
+          <button
+            onClick={handleReady}
+            className="rounded-full bg-red-500 px-6 py-2 font-bold text-white hover:bg-red-600"
+          >
+            {isReady ? "Annuler" : "Prêt"}
+          </button>
+        )}
         <button
-          onClick={() => setView("home")}
-          className="rounded-full bg-red-500 px-6 py-2 font-bold text-white hover:bg-red-600"
+          onClick={handleQuit}
+          className="rounded-full bg-red-500 px-6 py-2 font-bold text-white hover:bg-red-600 transition-colors duration-200 ease-in-out"
         >
           Retour
         </button>
@@ -79,6 +98,6 @@ export default function Lobby() {
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </section>
   );
 }
