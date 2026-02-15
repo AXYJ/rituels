@@ -10,7 +10,7 @@ import PlayerNameInput from "../lobby/PlayerNameInput";
 
 export default function Lobby() {
   // Appel du contexte
-  const { setView, players, roomCode, isHost, isReady, beReady, quitLobby } = useGame();
+  const { players, roomCode, isHost, isReady, beReady, quitLobby, startGame } = useGame();
 
   const [copySuccess, setCopySuccess] = useState(false);
 
@@ -26,6 +26,10 @@ export default function Lobby() {
 
   const handleQuit = () => {
     quitLobby();
+  };
+
+  const onGameStart = () => {
+    startGame();
   };
 
   return (
@@ -62,7 +66,7 @@ export default function Lobby() {
 
       <div className="flex gap-4">
         {isHost && (<button
-          // onClick={onGameStart}
+          onClick={onGameStart}
           className={`rounded-full bg-green-500 px-6 py-2 font-bold text-white hover:bg-green-600 transition-colors duration-200 ease-in-out ${players.filter((p) => p.isReady).length + 1 === players.length ? "" : "cursor-not-allowed opacity-50"} ${players.length === 1 ? "cursor-not-allowed opacity-50" : ""}`}
         >
           Start Game ({players.filter((p) => p.isReady).length + 1}/{players.length})

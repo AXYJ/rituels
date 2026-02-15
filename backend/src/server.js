@@ -67,7 +67,6 @@ function generateRules() {
 // ----------------
 
 io.on("connection", (socket) => {
-    console.log(`[${new Date().toISOString()}] User connected: ${socket.id}`);
 
     // Création d'une partie
     socket.on("create_game", (idPlayer) => {
@@ -140,7 +139,44 @@ io.on("connection", (socket) => {
             if (player) {
                 room.players = room.players.filter(p => p.id !== idPlayer);
                 const players = room.players;
+                if (room.players.length === 0) {
+                    delete rooms[code];
+                }
                 io.to(code).emit("room_updated", { players: players });
+                break;
+            }
+
+        }
+    });
+
+    // Hôte quitte le lobby
+    socket.on("host_quit_lobby", (idPlayer, view) => {
+        for (const code in rooms) {
+            const room = rooms[code];
+            const host = room.players.find(p => p.id === idPlayer && p.isHost);
+
+            if (host) {
+                if (view === "lobby") {
+                    io.to(code).emit("host_quit_lobby");
+                }
+
+                setTimeout(() => {
+                    delete rooms[code];
+                }, 500);
+
+                break;
+            }
+        }
+    });
+
+    // Démarrer la partie
+    socket.on("start_game", (idPlayer) => {
+        for (const code in rooms) {
+            const room = rooms[code];
+            const host = room.players.find(p => p.id === idPlayer && p.isHost);
+
+            if (host) {
+                io.to(code).emit("game_started", room.rules, room.players);
                 break;
             }
         }

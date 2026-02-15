@@ -33,6 +33,7 @@ interface GameContextType {
   changeName: (name: string) => void;
   beReady: () => void;
   quitLobby: () => void;
+  startGame: () => void;
   // Règles
   rules: GameRules | null;
   setRules: (rules: GameRules | null) => void;
@@ -113,7 +114,6 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       setRoomCode(code);
       setRules(rules);
       setPlayers(players);
-      console.log("Players:", players);
       setPlayerNumber(playerNumber);
       setIsHost(isHost);
       setView("lobby");
@@ -144,6 +144,22 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
         const me = room.players.find((p: Player) => p.id === newSocket.id);
         if (me) setIsReady(me.isReady);
       }
+    });
+
+    // Hôte quitte le lobby
+    newSocket.on("host_quit_lobby", () => {
+      setView("home");
+      setRoomCode("");
+      setPlayers([]);
+      setRules(null);
+      setPlayerNumber(0);
+      setIsHost(false);
+      setIsReady(false);
+    });
+
+    // Démarrage de la partie
+    newSocket.on("game_started", () => {
+      setView("game");
     });
 
     // Nettoyage automatique
@@ -196,12 +212,28 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   // Quitter le lobby
   const quitLobby = useCallback(() => {
     if (socket) {
-      socket.emit("quit_lobby", socket.id);
+      if (isHost) {
+        socket.emit("host_quit_lobby", socket.id, view);
+      } else {
+        socket.emit("quit_lobby", socket.id);
+      }
     }
     setView("home");
+    setRoomCode("");
+    setPlayers([]);
+    setRules(null);
+    setPlayerNumber(0);
+    setIsHost(false);
+    setIsReady(false);
+  }, [socket, isHost, view]);
+
+  // Démarrer la partie
+  const startGame = useCallback(() => {
+    if (socket) {
+      socket.emit("start_game", socket.id);
+    }
   }, [socket]);
 
-  
   // ----------------
   // Valeurs du contexte
   // ----------------
@@ -229,6 +261,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       beReady,
       quitLobby,
       setIsReady,
+      startGame,
     }),
     [
       socket,
@@ -246,6 +279,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       beReady,
       quitLobby,
       setIsReady,
+      startGame,
     ]
   );
 
