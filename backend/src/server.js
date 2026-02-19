@@ -30,8 +30,8 @@ const rooms = {};
 // ----------------
 
 function generateRules() {
-    const symbols = ["Symbol1", "Symbol2", "Symbol3", "Symbol4", "Symbol5"];
-    const colors = ["Color1", "Color2", "Color3", "Color4", "Color5"];
+    const symbols = ["circle", "cross", "square", "triangle", "wave"];
+    const colors = ["red", "blue", "green", "yellow", "pink"];
 
     // Algorithme de Fisher-Yates pour un mélange parfait
     // Algorithme permettant de mélanger un tableau de manière aléatoire avec probabilité égale pour chaque élément
@@ -61,12 +61,25 @@ function generateRules() {
     return { symbolRules, colorRules };
 }
 
+function whoStart(roomCode) {
+    const room = rooms[roomCode];
+    const players = room.players;
+    const index = Math.floor(Math.random() * players.length);
+    const player = players[index];
+    const playerName = player.name;
+    return playerName;
+}
+
 
 // ----------------
 // Gestion des connexions
 // ----------------
 
 io.on("connection", (socket) => {
+
+    // ------- 
+    // Home
+    // ------- 
 
     // Création d'une partie
     socket.on("create_game", (idPlayer) => {
@@ -102,6 +115,11 @@ io.on("connection", (socket) => {
             socket.emit("room_not_found");
         }
     });
+
+
+    // ------- 
+    // Lobby
+    // ------- 
 
     // Changement du nom
     socket.on("change_name", (name) => {
@@ -170,13 +188,34 @@ io.on("connection", (socket) => {
     });
 
     // Démarrer la partie
-    socket.on("start_game", (idPlayer) => {
+    socket.on("start_game", (roomCode) => {
         for (const code in rooms) {
+            if (code !== roomCode) continue;
             const room = rooms[code];
-            const host = room.players.find(p => p.id === idPlayer && p.isHost);
+            const host = room.players.find(p => p.id === socket.id && p.isHost);
 
             if (host) {
-                io.to(code).emit("game_started", room.rules, room.players);
+                const playerTurn = whoStart(code);
+                console.log(`[Game Started] Room: ${code}, First Player: ${playerTurn}`);
+                io.to(code).emit("game_started", playerTurn);
+                break;
+            }
+        }
+    });
+
+
+    // -------
+    // Game
+    // -------
+
+    // Tour
+    socket.on("player_turn", (idPlayer) => {
+        for (const code in rooms) {
+            const room = rooms[code];
+            const player = room.players.find(p => p.id === idPlayer);
+            if (player) {
+                console.log(`[Player Turn] Room: ${code}, Next Player: ${player.name}`);
+                io.to(code).emit("player_turn", player.name);
                 break;
             }
         }

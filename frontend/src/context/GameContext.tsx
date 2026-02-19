@@ -46,6 +46,14 @@ interface GameContextType {
   // Prêt
   isReady: boolean;
   setIsReady: (isReady: boolean) => void;
+  // Carte
+  card: { symbol: string, color: string } | null;
+  setCard: (card: { symbol: string, color: string } | null) => void;
+  deck: { cards: { symbol: string, color: string }[] | null };
+  setDeck: (deck: { cards: { symbol: string, color: string }[] | null }) => void;
+  // Jeu
+  playerTurn: string;
+  setPlayerTurn: (playerTurn: string) => void;
 }
 
 // Types pour les règles issues du serveur
@@ -60,6 +68,7 @@ export interface Player {
   name: string;
   isHost: boolean;
   isReady: boolean;
+  deck: { cards: { symbol: string, color: string }[] | null };
 }
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
@@ -74,6 +83,11 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   const [playerNumber, setPlayerNumber] = useState(0);
   const [isHost, setIsHost] = useState(false);
   const [isReady, setIsReady] = useState(false);
+  const [card, setCard] = useState<{ symbol: string, color: string } | null>(null);
+  const [deck, setDeck] = useState<{ cards: { symbol: string, color: string }[] | null }>({
+    cards: null
+  });
+  const [playerTurn, setPlayerTurn] = useState("");
 
   useEffect(() => {
     // Initialisation de la connexion
@@ -138,10 +152,11 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
 
     // Mise à jour du lobby
     newSocket.on("room_updated", (room) => {
+      if (!room || !room.players) return;
       setPlayers(room.players);
       // Update local isReady based on the new players list
       if (newSocket.id) {
-        const me = room.players.find((p: Player) => p.id === newSocket.id);
+        const me = room.players.find((p: Player) => p && p.id === newSocket.id);
         if (me) setIsReady(me.isReady);
       }
     });
@@ -158,12 +173,21 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     });
 
     // Démarrage de la partie
-    newSocket.on("game_started", () => {
+    newSocket.on("game_started", (playerStart) => {
+      console.log("Game started! First player turn:", playerStart);
       setView("game");
+      setPlayerTurn(playerStart);
+    });
+
+    // Changement de tour
+    newSocket.on("player_turn", (player) => {
+      console.log("Tour changed to:", player);
+      setPlayerTurn(player);
     });
 
     // Nettoyage automatique
     return () => {
+      newSocket.removeAllListeners();
       newSocket.disconnect();
     };
   }, []);
@@ -230,9 +254,10 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   // Démarrer la partie
   const startGame = useCallback(() => {
     if (socket) {
-      socket.emit("start_game", socket.id);
+      socket.emit("start_game", roomCode);
     }
-  }, [socket]);
+  }, [socket, roomCode]);
+
 
   // ----------------
   // Valeurs du contexte
@@ -262,6 +287,12 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       quitLobby,
       setIsReady,
       startGame,
+      card,
+      setCard,
+      deck,
+      setDeck,
+      playerTurn,
+      setPlayerTurn,
     }),
     [
       socket,
@@ -280,6 +311,12 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       quitLobby,
       setIsReady,
       startGame,
+      card,
+      setCard,
+      deck,
+      setDeck,
+      playerTurn,
+      setPlayerTurn,
     ]
   );
 

@@ -27,54 +27,26 @@ export default function RulesModal({ onClose }: { onClose: () => void }) {
         </div>
 
         <div className="space-y-4">
-          <p>
-            <strong>Rituels</strong> est un jeu de cartes pour 2 à 4 joueurs. Le
-            but du jeu est d'être le premier à atteindre le nombre de points
-            requis (20 points par défaut).
-          </p>
-          <p>
-            Au début de chaque tour, les joueurs auront 3 cartes en main. Chacun
-            leur tour, les joueurs devront jouer une carte et en recevront une
-            nouvelle.
-          </p>
-          <p>
-            Les cartes ont deux caractéristiques : un symbole et une couleur. A
-            chaque symbole est associé une valeur entre -2 et 2 et à chaque
-            couleur est associé un effet.
-          </p>
-          <p>Les effets sont : Double, Inversion, Blocage, Saut, Neutre.</p>
-          <div>{/* // Mettre les symboles ici */}</div>
-          <div className="space-y-2">
-            <p>
-              <strong>Double</strong> : la valeur de la carte est multipliée par
-              2.
-            </p>
-            <p>
-              <strong>Inversion</strong> : la valeur de la carte est multipliée
-              par -1.
-            </p>
-            <p>
-              <strong>Blocage</strong> : le prochain joueur ne gagne aucun
-              point.
-            </p>
-            <p>
-              <strong>Saut</strong> : le prochain joueur ne joue pas son tour.
-            </p>
-            <p>
-              <strong>Neutre</strong> : aucun effet
-            </p>
-          </div>
-          <div className="rounded-md bg-gray-100 p-4">
-            <p className="font-bold">Attention :</p>
-            <p>
-              À chaque partie, les valeurs des symboles et les effets des
-              couleurs sont mélangés aléatoirement.
-            </p>
-            <p>
-              Il faut donc observer les cartes pour connaître leur effet et leur
-              valeur.
-            </p>
-          </div>
+          <h2 className="text-2xl font-bold">Procédure du protocole</h2>
+
+          <p>Bienvenue dans votre session de test. Votre objectif est simple : soyez le premier sujet à accumuler le nombre de graines convenu au début du protocole (20 par défaut) pour valider l'expérience.</p>
+
+          <h3 className="text-xl font-bold">Déroulement de la session</h3>
+
+          <p>Chaque session regroupe 2 à 4 sujets. Vous commencez avec une dotation de 3 cartes en main. À son tour, le sujet doit choisir et soumettre une seule de ses cartes. Une fois la carte jouée, une nouvelle est immédiatement ajoutée à sa main afin qu’il en ait toujours trois à disposition.</p>
+
+          <p>Chaque carte est composée de deux variables : </p>
+
+          <ul>
+            <li><strong>Le symbole</strong> détermine le gain ou la perte immédiate de graines (une valeur fixe allant de -2 à +2).</li>
+            <li><strong>La couleur</strong> déclenche un effet spécial qui peut modifier le cours du test (doubler les points, passer un tour, etc.).</li>
+          </ul>
+
+          <h3 className="text-xl font-bold">Fin de la session</h3>
+
+          <p>La session de test s’arrête dès qu’un sujet atteint le nombre de graines requis.</p>
+
+          <p><strong>Note importante</strong> : Au début de chaque session, les points et les effets liés aux symboles et aux couleurs sont <strong>re-distribués aléatoirement</strong>. Ce qui était vrai lors de la session précédente ne l'est plus. C'est à vous d'observer les résultats de chaque carte pour déduire les règles de la partie en cours.</p>
         </div>
       </div>
     </motion.div>
