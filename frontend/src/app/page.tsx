@@ -8,7 +8,7 @@ import Lobby from "../components/pages/Lobby";
 import Game from "../components/pages/Game";
 
 function GameContent() {
-  const { view, setView } = useGame();
+  const { view } = useGame();
 
   // Rendu des vues
   // Rendu conditionnel plutôt que routing Next.js pour éviter de perdre la connexion WebSocket
@@ -26,9 +26,9 @@ function GameContent() {
 
 export default function App() {
   return (
-    <main className="mx-auto min-h-screen max-w-7xl">
+    <main className="">
       <GameProvider>
-        <Header />
+        {/* <Header /> */}
         <GameContent />
       </GameProvider>
     </main>

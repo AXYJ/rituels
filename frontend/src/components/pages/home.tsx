@@ -13,7 +13,6 @@ export default function Home() {
   const [inputCode, setInputCode] = useState("");
   const [btnDisabled, setBtnDisabled] = useState(false);
 
-  
   // ----------------
   // Gestion des événements
   // ----------------
@@ -35,7 +34,7 @@ export default function Home() {
     // Animation au chargement
     <div className="flex min-h-[80vh] flex-col items-center justify-center gap-8">
       <div>
-        <h1 className="mb-4 bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-6xl font-bold text-transparent">
+        <h1 className="mb-4 text-blue-400 text-6xl font-bold">
           Rituels
         </h1>
         <p className="text-xl text-gray-400">Le jeu de cartes mystique</p>

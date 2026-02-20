@@ -29,24 +29,51 @@ export default function RulesModal({ onClose }: { onClose: () => void }) {
         <div className="space-y-4">
           <h2 className="text-2xl font-bold">Procédure du protocole</h2>
 
-          <p>Bienvenue dans votre session de test. Votre objectif est simple : soyez le premier sujet à accumuler le nombre de graines convenu au début du protocole (20 par défaut) pour valider l'expérience.</p>
+          <p>
+            Bienvenue dans votre session de test. Votre objectif est simple :
+            soyez le premier sujet à accumuler le nombre de graines convenu au
+            début du protocole (30 par défaut) pour valider l'expérience.
+          </p>
 
           <h3 className="text-xl font-bold">Déroulement de la session</h3>
 
-          <p>Chaque session regroupe 2 à 4 sujets. Vous commencez avec une dotation de 3 cartes en main. À son tour, le sujet doit choisir et soumettre une seule de ses cartes. Une fois la carte jouée, une nouvelle est immédiatement ajoutée à sa main afin qu’il en ait toujours trois à disposition.</p>
+          <p>
+            Chaque session regroupe 2 à 4 sujets. Vous commencez avec une
+            dotation de 3 cartes en main. À son tour, le sujet doit choisir et
+            soumettre une seule de ses cartes. Une fois la carte jouée, une
+            nouvelle est immédiatement ajoutée à sa main afin qu’il en ait
+            toujours trois à disposition.
+          </p>
 
           <p>Chaque carte est composée de deux variables : </p>
 
           <ul>
-            <li><strong>Le symbole</strong> détermine le gain ou la perte immédiate de graines (une valeur fixe allant de -2 à +2).</li>
-            <li><strong>La couleur</strong> déclenche un effet spécial qui peut modifier le cours du test (doubler les points, passer un tour, etc.).</li>
+            <li>
+              <strong>Le symbole</strong> détermine le gain ou la perte
+              immédiate de graines (une valeur fixe allant de -2 à +2).
+            </li>
+            <li>
+              <strong>La couleur</strong> déclenche un effet spécial qui peut
+              modifier le cours du test (doubler les points, passer un tour,
+              etc.).
+            </li>
           </ul>
 
           <h3 className="text-xl font-bold">Fin de la session</h3>
 
-          <p>La session de test s’arrête dès qu’un sujet atteint le nombre de graines requis.</p>
+          <p>
+            La session de test s’arrête dès qu’un sujet atteint le nombre de
+            graines requis.
+          </p>
 
-          <p><strong>Note importante</strong> : Au début de chaque session, les points et les effets liés aux symboles et aux couleurs sont <strong>re-distribués aléatoirement</strong>. Ce qui était vrai lors de la session précédente ne l'est plus. C'est à vous d'observer les résultats de chaque carte pour déduire les règles de la partie en cours.</p>
+          <p>
+            <strong>Note importante</strong> : Au début de chaque session, les
+            points et les effets liés aux symboles et aux couleurs sont{" "}
+            <strong>re-distribués aléatoirement</strong>. Ce qui était vrai lors
+            de la session précédente ne l'est plus. C'est à vous d'observer les
+            résultats de chaque carte pour déduire les règles de la partie en
+            cours.
+          </p>
         </div>
       </div>
     </motion.div>

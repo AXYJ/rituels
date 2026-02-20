@@ -10,7 +10,12 @@ import PlayerNameInput from "../lobby/PlayerNameInput";
 
 export default function Lobby() {
   // Appel du contexte
-  const { players, roomCode, isHost, isReady, beReady, quitLobby, startGame } = useGame();
+  const { players, roomCode, beReady, quitLobby, startGame, socket } =
+    useGame();
+
+  const me = players.find((p) => p.id === socket?.id);
+  const isHost = me?.isHost || false;
+  const isReady = me?.isReady || false;
 
   const [copySuccess, setCopySuccess] = useState(false);
 
@@ -63,14 +68,15 @@ export default function Lobby() {
       <p className="mb-4">En attente de joueurs...</p>
       <PlayerNameInput />
 
-
       <div className="flex gap-4">
-        {isHost && (<button
-          onClick={onGameStart}
-          className={`rounded-full bg-green-500 px-6 py-2 font-bold text-white hover:bg-green-600 transition-colors duration-200 ease-in-out ${players.filter((p) => p.isReady).length + 1 === players.length ? "" : "cursor-not-allowed opacity-50"} ${players.length === 1 ? "cursor-not-allowed opacity-50" : ""}`}
-        >
-          Start Game ({players.filter((p) => p.isReady).length + 1}/{players.length})
-        </button>
+        {isHost && (
+          <button
+            onClick={onGameStart}
+            disabled={players.filter((p) => p.isHost || p.isReady).length !== players.length || players.length === 1}
+            className={`rounded-full bg-green-500 px-6 py-2 font-bold text-white transition-colors duration-200 ease-in-out hover:bg-green-600 ${players.filter((p) => p.isHost || p.isReady).length === players.length ? "" : "cursor-not-allowed opacity-50"} ${players.length === 1 ? "cursor-not-allowed opacity-50" : ""}`}
+          >
+            Start Game ({players.filter((p) => p.isHost || p.isReady).length}/{players.length})
+          </button>
         )}
         {!isHost && (
           <button
@@ -82,7 +88,7 @@ export default function Lobby() {
         )}
         <button
           onClick={handleQuit}
-          className="rounded-full bg-red-500 px-6 py-2 font-bold text-white hover:bg-red-600 transition-colors duration-200 ease-in-out"
+          className="rounded-full bg-red-500 px-6 py-2 font-bold text-white transition-colors duration-200 ease-in-out hover:bg-red-600"
         >
           Retour
         </button>

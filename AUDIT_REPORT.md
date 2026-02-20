@@ -1,38 +1,39 @@
-# RAPPORT D'AUDIT TECHNIQUE - PROJET RITUELS
+# Rapport d'Audit Technique "Rituels"
 
-## 1. Bilan de Santé
+## 1. Bilan de santé
+La base de code (Next.js + Socket.io) souffrait de plusieurs anomalies structurelles critiques, principalement autour de la transmission d'informations entre le client et le serveur :
+*   **Incohérence des échanges Socket.io:** Plusieurs événements `emit` et `on` ne respectaient pas le même ordre d'arguments (ex. `card_played`), ce qui conduisait à des valeurs `undefined` ou à des injections de `string` dans les scores.
+*   **Logique de jeu erronée côté serveur:** Le serveur tentait de renvoyer des tuples de style Python de façon incorrecte `return (playerOrder, roomCode)`, ce qui renvoyait seulement `roomCode`. La gestion du tableau du tour de rôle (`playerOrder`) était cassée car le tableau était complètement perdu entre les requêtes. 
+*   **Variables non utilisées:** L'application comportait des variables non utilisées dans `page.tsx` et `GameContext.tsx` qui complexifiaient inutilement la lecture.
 
-L'architecture globale du projet (Next.js pour le frontend, Express + Socket.io pour le backend) est saine et bien structurée. La séparation des responsabilités est respectée : le serveur gère l'état global des salles (rooms) et le frontend réagit aux événements.
+Malgré tout, l'utilisation de `GameContext` pour centraliser le state global de l'app est robuste et propre, ce qui offre de bonnes bases pour le refactoring.
 
-Cependant, plusieurs incohérences critiques ont été détectées et corrigées, notamment au niveau du typage TypeScript et de la cohérence des données échangées via les sockets.
+## 2. Corrections effectuées
+Les fichiers suivants ont été modifiés afin de rétablir une parfaite communication bilatérale et gérer correctement le cycle et le flow de jeu.
 
-**Points forts :**
-- Structure modulaire du frontend (Context, Components, Pages).
-- Logique serveur simple et efficace.
+*   **`backend/src/server.js`** :
+    *   Correction de la signature `whoStart`. Transformation de la logique pour qu'elle renvoie un Array d'ID pour simplifier la manipulation tout long de la partie et sauvegarde de l'ordre de passage `playerOrder` à l'intérieur de l'objet `room`. 
+    *   Correction de la signature `nextPlayer` qui devait récupérer `room.playerOrder` sauvegardée ci-dessus.
+    *   Correction de l'événement `card_played`: désormais il reçoit les "points" calculés côté client (afin que la logique reste côté client) plutôt que "effect". L'événement `emit` appelé a été aligné sur ce que le client lisait (`card, idPlayer, newOrder, player.score`). 
+    *   Nettoyage : Suppression de l'événement mort `player_turn` non écouté côté client.
+    *   Initialisation systématique du champ `score: 0` dès la création ou lors du `join_game`.
 
-**Points corrigés :**
-- Incompatibilité de type sur les règles du jeu (`rules`).
-- Incohérence de nommage (`playersnames` vs `playerNames`).
-- Absence de gestion d'erreurs lors de la connexion à une partie (room full/not found).
-- Manque d'information (`playerNumber`) pour les joueurs rejoignant une partie.
+*   **`frontend/src/context/GameContext.tsx`** :
+    *   L'événement `cardPlayed` envoie désormais correctement `points` (calculés en amont) et la `card` au lieu de `effect`, ce qui libère le serveur de toute forme de calcul métier. 
+    *   Nettoyage : Suppression du tableau `effects` codé en dur qui était défini mais inutilisé, polluant le haut du fichier.
 
-## 2. Corrections Effectuées
+*   **`frontend/src/app/page.tsx`** :
+    *   Suppression de `setView` récupéré depuis le Context qui n'était jamais utilisé (Règle d'absence de variables mortes).
 
-### Backend (`server.js`)
-- **Ajout de `playerNumber` dans `join_game_success` :** Le serveur renvoie désormais le numéro du joueur (index dans la liste) lorsqu'il rejoint une partie, assurant une cohérence avec l'événement `room_created`.
+*   **`frontend/src/components/pages/Game.tsx`** :
+    *   Adaptation de `isMyTurn`: le serveur distribuant désormais des ID au lieu des Noms, le client compare `playerTurn === me.id` au lieu de `.name` ce qui corrige les failles si deux joueurs portaient le même nom (`playerTurn` stocke un ID). 
+    *   La vue récupère le nom depuis le Context pour un affichage propre : `players.find(p => p.id === playerTurn)?.name`.
 
-### Frontend (`GameContext.tsx`)
-- **Correction du type `Rules` :** Définition d'une interface `GameRules` correspondant à la structure envoyée par le serveur (`{ symbolRules: ..., colorRules: ... }`) au lieu de `string[]` qui était erroné.
-- **Renommage de `playersnames` en `playerNames` :** Harmonisation avec le backend et les conventions de nommage (camelCase).
-- **Gestion des erreurs Socket :** Ajout d'écouteurs pour `room_full` et `room_not_found` avec des alertes pour informer l'utilisateur.
-- **Logique de connexion :** Mise à jour de `join_game_success` pour exploiter le `playerNumber` reçu.
+## 3. Refactorisation
+*   **Création de `frontend/src/types/game.ts`** :
+    *   Conformément aux instructions visant à réduire la complexité, toutes les interfaces liées au state local ou global TypeScript (`Player`, `GameRules`, `View`, `GameContextType`) ont été exportées dans leur propre fichier de définitions (`types/game.ts`).
+    *   `frontend/src/context/GameContext.tsx` importe désormais simplement ces types. Ce découpage allège le ficher de ~70 lignes de typage statique, rendant la logique du provider directement lisible.
 
-### Composants Frontend (`Lobby.tsx`, `PlayerNameShow.tsx`)
-- Mise à jour pour utiliser la nouvelle variable `playerNames`.
-
-## 3. Optimisations et Code Clean-up
-
-- **Types TypeScript renforces :** L'utilisation de `GameRules` évite des erreurs potentielles lors de l'utilisation future des règles de jeu.
-- **Consistance des données :** Le client et le serveur partagent maintenant exactement les mêmes structures de données et noms de variables pour les événements critiques (`room_created`, `join_game_success`, `room_updated`).
-
-Le projet est maintenant sur des bases solides pour l'implémentation de la logique de jeu (Gameplay) sans dette technique immédiate sur la couche de communication.
+## 4. Optimisations
+*   **Principe DRY sur le flow du code:** `whoStart` assigne directement `playerOrder` dans la `room` pour que `nextPlayer` puisse facilement prendre la main au prochain tour sans avoir besoin de manipuler des arrays et des boucles de destructuring complexes.
+*   **Socket.io LifeCycle Context:** Le `useCallback` est correctement appliqué et combiné au `socket.emit`, ce qui garantit qu'aucune recréation n'est possible, fiabilisant ainsi la méthode d'émission.

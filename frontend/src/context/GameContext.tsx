@@ -11,65 +11,7 @@ import {
 } from "react";
 import { io, Socket } from "socket.io-client";
 
-// Définition des vues
-type View = "home" | "lobby" | "game" | "results";
-
-// Toutes les variables globales du jeu
-interface GameContextType {
-  // Connexion
-  socket: Socket | null;
-  isConnected: boolean;
-  // Vue actuelle
-  view: View;
-  setView: (view: View) => void;
-  // Partie
-  roomCode: string;
-  setRoomCode: (code: string) => void;
-  players: Player[];
-  setPlayers: (players: Player[]) => void;
-  // Actions
-  createGame: () => void;
-  joinGame: (code: string) => void;
-  changeName: (name: string) => void;
-  beReady: () => void;
-  quitLobby: () => void;
-  startGame: () => void;
-  // Règles
-  rules: GameRules | null;
-  setRules: (rules: GameRules | null) => void;
-  // Joueur
-  playerNumber: number;
-  setPlayerNumber: (number: number) => void;
-  // Hôte
-  isHost: boolean;
-  setIsHost: (isHost: boolean) => void;
-  // Prêt
-  isReady: boolean;
-  setIsReady: (isReady: boolean) => void;
-  // Carte
-  card: { symbol: string, color: string } | null;
-  setCard: (card: { symbol: string, color: string } | null) => void;
-  deck: { cards: { symbol: string, color: string }[] | null };
-  setDeck: (deck: { cards: { symbol: string, color: string }[] | null }) => void;
-  // Jeu
-  playerTurn: string;
-  setPlayerTurn: (playerTurn: string) => void;
-}
-
-// Types pour les règles issues du serveur
-export interface GameRules {
-  symbolRules: Record<string, number>;
-  colorRules: Record<string, string>;
-}
-
-// Types pour les joueurs
-export interface Player {
-  id: string;
-  name: string;
-  isHost: boolean;
-  isReady: boolean;
-  deck: { cards: { symbol: string, color: string }[] | null };
-}
+import { View, GameContextType, GameRules, Player } from "../types/game";
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
 
@@ -81,13 +23,23 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   const [players, setPlayers] = useState<Player[]>([]);
   const [rules, setRules] = useState<GameRules | null>(null);
   const [playerNumber, setPlayerNumber] = useState(0);
-  const [isHost, setIsHost] = useState(false);
-  const [isReady, setIsReady] = useState(false);
-  const [card, setCard] = useState<{ symbol: string, color: string } | null>(null);
-  const [deck, setDeck] = useState<{ cards: { symbol: string, color: string }[] | null }>({
-    cards: null
-  });
+  const [card, setCard] = useState<{ symbol: string; color: string } | null>(
+    null
+  );
   const [playerTurn, setPlayerTurn] = useState("");
+  const [playerOrder, setPlayerOrder] = useState<string[]>([]);
+  const [history, setHistory] = useState<
+    {
+      type: "card" | "message";
+      card?: { symbol: string; color: string };
+      player: string;
+      score?: number;
+      points?: number;
+      message?: string;
+    }[]
+  >([]);
+  const [lastEffect, setLastEffect] = useState<string | null>(null);
+  const [winner, setWinner] = useState<string | null>(null);
 
   useEffect(() => {
     // Initialisation de la connexion
@@ -118,18 +70,22 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       console.log("Socket déconnecté:", reason);
     });
 
-
     // ----------------
     // Écouteurs de jeu (réponse du serveur)
     // ----------------
 
     // Création d'un lobby
-    newSocket.on("room_created", (code, rules, players, playerNumber, isHost) => {
+    newSocket.on("room_created", (code, rules, serverPlayers, playerNumber) => {
       setRoomCode(code);
       setRules(rules);
-      setPlayers(players);
+      setPlayers(
+        serverPlayers.map((p: Player) => ({
+          ...p,
+          deck: { cards: null },
+          score: 0,
+        }))
+      );
       setPlayerNumber(playerNumber);
-      setIsHost(isHost);
       setView("lobby");
     });
 
@@ -153,12 +109,16 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     // Mise à jour du lobby
     newSocket.on("room_updated", (room) => {
       if (!room || !room.players) return;
-      setPlayers(room.players);
-      // Update local isReady based on the new players list
-      if (newSocket.id) {
-        const me = room.players.find((p: Player) => p && p.id === newSocket.id);
-        if (me) setIsReady(me.isReady);
-      }
+      setPlayers((prevPlayers) => {
+        return room.players.map((serverPlayer: Player) => {
+          const localPlayer = prevPlayers.find((p) => p.id === serverPlayer.id);
+          return {
+            ...serverPlayer,
+            deck: localPlayer?.deck || { cards: null },
+            score: serverPlayer.score ?? localPlayer?.score ?? 0,
+          };
+        });
+      });
     });
 
     // Hôte quitte le lobby
@@ -168,21 +128,61 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       setPlayers([]);
       setRules(null);
       setPlayerNumber(0);
-      setIsHost(false);
-      setIsReady(false);
+      setHistory([]);
+      setLastEffect(null);
     });
 
     // Démarrage de la partie
-    newSocket.on("game_started", (playerStart) => {
-      console.log("Game started! First player turn:", playerStart);
+    newSocket.on("game_started", (playerStart, playerOrder) => {
       setView("game");
       setPlayerTurn(playerStart);
+      setPlayerOrder(playerOrder);
     });
 
-    // Changement de tour
-    newSocket.on("player_turn", (player) => {
-      console.log("Tour changed to:", player);
-      setPlayerTurn(player);
+    // Carte jouée
+    newSocket.on(
+      "card_played",
+      (card, idPlayer, newOrder, newScore, pointsGained, effectiveEffect) => {
+        setHistory((prev) => [
+          ...prev,
+          {
+            type: "card",
+            card,
+            player: idPlayer,
+            score: newScore,
+            points: pointsGained,
+          },
+        ]);
+        setLastEffect(effectiveEffect);
+        setPlayerTurn(newOrder[0]);
+        setPlayerOrder(newOrder);
+        setPlayers((prev) =>
+          prev.map((p) => (p.id === idPlayer ? { ...p, score: newScore } : p))
+        );
+      }
+    );
+
+    // Message reçu
+    newSocket.on("message_received", (idPlayer, message) => {
+      setHistory((prev) => [
+        ...prev,
+        { type: "message", player: idPlayer, message },
+      ]);
+    });
+
+    // Partie gagnée
+    newSocket.on("game_won", (idPlayer) => {
+      setWinner(idPlayer);
+    });
+
+    // Partie réinitialisée (Rejouer)
+    newSocket.on("game_reset", (rules, players) => {
+      setRules(rules);
+      setPlayers(players);
+      setHistory([]);
+      setWinner(null);
+      setLastEffect(null);
+      setView("lobby");
     });
 
     // Nettoyage automatique
@@ -191,7 +191,6 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       newSocket.disconnect();
     };
   }, []);
-
 
   // ----------------
   // Actions de jeu (envoi au serveur)
@@ -228,14 +227,17 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   // Prêt
   const beReady = useCallback(() => {
     if (socket) {
-      // Toggle readiness
-      socket.emit("ready", !isReady, socket.id);
+      const me = players.find((p) => p.id === socket.id);
+      if (me) {
+        socket.emit("ready", !me.isReady, socket.id);
+      }
     }
-  }, [socket, isReady]);
+  }, [socket, players]);
 
   // Quitter le lobby
   const quitLobby = useCallback(() => {
     if (socket) {
+      const isHost = players.find((p) => p.id === socket.id)?.isHost;
       if (isHost) {
         socket.emit("host_quit_lobby", socket.id, view);
       } else {
@@ -247,9 +249,9 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     setPlayers([]);
     setRules(null);
     setPlayerNumber(0);
-    setIsHost(false);
-    setIsReady(false);
-  }, [socket, isHost, view]);
+    setHistory([]);
+    setLastEffect(null);
+  }, [socket, players, view]);
 
   // Démarrer la partie
   const startGame = useCallback(() => {
@@ -258,6 +260,70 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [socket, roomCode]);
 
+  // Jouer une carte
+  const cardPlayed = useCallback(
+    (card: { symbol: string; color: string }) => {
+      if (socket) {
+        let points = 0;
+        let effect = "";
+        let effectiveEffect = "";
+
+        if (rules) {
+          points = rules.symbolRules[card.symbol] || 0;
+          effect = rules.colorRules[card.color];
+          effectiveEffect =
+            effect === "Répétition" ? lastEffect || "Neutre" : effect;
+
+          // Effets rémanents (qui s'appliquent au tour actuel à cause du joueur précédent)
+          if (lastEffect === "Gel") {
+            points = 0;
+          }
+
+          // Effets immédiats (qui modifient les points de la carte que je pose)
+          switch (effectiveEffect) {
+            case "Inversion":
+              points *= -1;
+              break;
+            case "Gel":
+              // N'altère pas mes points actuels, mais `effectiveEffect` sera enregistré pour le gel du prochain !
+              break;
+            case "Neutre":
+            default:
+              break;
+          }
+        }
+
+        socket.emit("card_played", socket.id, points, card, effectiveEffect);
+      }
+    },
+    [socket, rules, lastEffect]
+  );
+
+  // Envoyer un message
+  const sendMessage = useCallback(
+    (message: string) => {
+      if (socket && message.trim() !== "") {
+        socket.emit("send_message", message.trim());
+      }
+    },
+    [socket]
+  );
+
+  // Reset le jeu (demande au serveur)
+  const resetGame = useCallback(() => {
+    if (socket) {
+      socket.emit("reset_game");
+    }
+  }, [socket]);
+
+  const setLocalPlayerDeck = useCallback(
+    (cards: { symbol: string; color: string }[]) => {
+      setPlayers((prev) =>
+        prev.map((p) => (p.id === socket?.id ? { ...p, deck: { cards } } : p))
+      );
+    },
+    [socket]
+  );
 
   // ----------------
   // Valeurs du contexte
@@ -280,19 +346,25 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       setRules,
       playerNumber,
       setPlayerNumber,
-      isHost,
-      setIsHost,
-      isReady,
       beReady,
       quitLobby,
-      setIsReady,
       startGame,
       card,
       setCard,
-      deck,
-      setDeck,
       playerTurn,
       setPlayerTurn,
+      cardPlayed,
+      playerOrder,
+      setPlayerOrder,
+      setLocalPlayerDeck,
+      history,
+      setHistory,
+      lastEffect,
+      setLastEffect,
+      sendMessage,
+      winner,
+      setWinner,
+      resetGame,
     }),
     [
       socket,
@@ -305,18 +377,24 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       changeName,
       rules,
       playerNumber,
-      isHost,
-      isReady,
       beReady,
       quitLobby,
-      setIsReady,
       startGame,
       card,
       setCard,
-      deck,
-      setDeck,
       playerTurn,
       setPlayerTurn,
+      playerOrder,
+      setPlayerOrder,
+      setLocalPlayerDeck,
+      history,
+      setHistory,
+      lastEffect,
+      setLastEffect,
+      sendMessage,
+      winner,
+      setWinner,
+      resetGame,
     ]
   );
 
