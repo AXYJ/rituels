@@ -72,7 +72,7 @@ export default function Lobby() {
         {isHost && (
           <button
             onClick={onGameStart}
-            disabled={players.filter((p) => p.isHost || p.isReady).length !== players.length || players.length === 1}
+            disabled={players.filter((p) => p.isHost || p.isReady).length !== players.length || players.length === 2}
             className={`rounded-full bg-green-500 px-6 py-2 font-bold text-white transition-colors duration-200 ease-in-out hover:bg-green-600 ${players.filter((p) => p.isHost || p.isReady).length === players.length ? "" : "cursor-not-allowed opacity-50"} ${players.length === 1 ? "cursor-not-allowed opacity-50" : ""}`}
           >
             Start Game ({players.filter((p) => p.isHost || p.isReady).length}/{players.length})

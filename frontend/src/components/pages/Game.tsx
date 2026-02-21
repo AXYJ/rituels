@@ -7,6 +7,7 @@ import { useGame } from "../../context/GameContext";
 
 import { createCard } from "../../hooks/createCard";
 import WinnerScreen from "../game/WinnerScreen";
+import Helper from "../game/Helper";
 
 export default function Game() {
   const [message, setMessage] = useState("");
@@ -158,15 +159,18 @@ export default function Game() {
       {/* Score */}
 
       {me && (
-        <div className="col-start-3 col-end-4 row-start-3 row-end-4 flex items-center gap-2">
-          <Image
-            src={`/cards/seed.png`}
-            alt="card"
-            width={1000}
-            height={1000}
-            className="h-16 w-16 object-contain"
-          />
-          <p className="text-xl font-bold">x {me.score}</p>
+        <div className="col-start-3 col-end-4 row-start-2 row-end-4 flex flex-col items-center gap-8 justify-end">
+          <div className="flex items-center gap-2">
+            <Image
+              src={`/cards/seed.png`}
+              alt="card"
+              width={1000}
+              height={1000}
+              className="h-16 w-16 object-contain"
+            />
+            <p className="text-xl font-bold">x {me.score}</p>
+          </div>
+          <Helper/>
         </div>
       )}
 

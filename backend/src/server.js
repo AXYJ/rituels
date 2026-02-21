@@ -80,7 +80,7 @@ function nextPlayer(roomCode) {
 
 function win(player, points) {
     player.score += points;
-    if (player.score >= 5) {
+    if (player.score >= 20) {
         return true;
     }
     return false;
@@ -232,7 +232,6 @@ io.on("connection", (socket) => {
             if (player) {
                 const isWin = win(player, points);
                 const newOrder = nextPlayer(code);
-                console.log(idPlayer, "a joué", card, "et a maintenant", player.score, "points");
                 io.to(code).emit("card_played", card, idPlayer, newOrder, player.score, points, effectiveEffect);
 
                 if (isWin) {

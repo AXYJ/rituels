@@ -18,12 +18,11 @@ Chaque carte est composée de deux attributs :x²
 
 ### Système de Variabilité
 Au lancement de chaque salon, le serveur génère un **Dictionnaire de Règles** unique :
-1.  Chaque symbole reçoit une valeur comprise entre `-2` et `2`.
+1.  Chaque symbole reçoit une valeur comprise entre `-1` et `3`.
 2.  Chaque couleur reçoit un effet parmi la liste suivante :
-    * **Double :** Multiplie les points du tour par 2.
     * **Inversion :** Inverse la polarité des points (positif devient négatif et inversement).
-    * **Blocage :** Empêche le prochain joueur de gagner des points au prochain tour.
-    * **Saut :** Passe le tour du joueur suivant.
+    * **Gel :** Empêche le prochain joueur de gagner des points au prochain tour.
+    * **Echo :** Copie l'effet de la dernière carte jouée.
     * **Neutre :** Aucun effet supplémentaire.
 
 ---
@@ -44,7 +43,6 @@ Au lancement de chaque salon, le serveur génère un **Dictionnaire de Règles**
 2.  **Action Joueur :** Le joueur sélectionne et joue une carte.
 3.  **Transmission :** Le client calcule l'impact localement et envoie au serveur :
     * `playerId` : Identifiant unique du joueur.
-    * `cardVisual` : Symbole et Couleur (pour l'affichage chez les adversaires).
     * `pointsDelta` : Points nets gagnés ou perdus.
     * `effectApplied` : L'effet déclenché.
 4.  **Arbitrage :** Le serveur met à jour le score global, vérifie si le palier de 20 points est atteint.
