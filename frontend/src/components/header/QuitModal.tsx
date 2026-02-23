@@ -1,13 +1,12 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-
+import { useGame } from "../../context/GameContext";
 export default function QuitModal({
   setQuitGame,
 }: {
   setQuitGame: (quitGame: boolean) => void;
 }) {
-  const router = useRouter();
+  const { quitLobby } = useGame();
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
       <div className="rounded bg-white p-4">
@@ -16,7 +15,10 @@ export default function QuitModal({
         <div className="flex gap-4">
           <button
             className="rounded bg-red-500 px-4 py-2 text-white"
-            onClick={() => {}}
+            onClick={() => {
+              quitLobby();
+              setQuitGame(false);
+            }}
           >
             Quitter
           </button>

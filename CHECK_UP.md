@@ -26,3 +26,12 @@ Ne modifie pas directement les fichiers sans explication. Produis un rapport dan
 
 ## 4. Priorité : Cohérence Socket.io
 Vérifie particulièrement que les événements `emit` envoyés par le client correspondent exactement aux `on` écoutés par le serveur dans `server.js` (noms des événements et structure des données JSON).
+Vérifier la gestion explicite des erreurs Socket côté client et serveur (events d’erreur, logs, fallback d’état).
+Vérifier que chaque socket.on est correctement nettoyé (off) lors du démontage du composant ou du changement de dépendances
+
+## 5. Définition de Done
+Le check-up est considéré comme terminé lorsque :
+- Aucun warning TypeScript n’est présent.
+- Aucun listener Socket dupliqué n’est détecté.
+- Tous les événements Socket sont documentés et symétriques client/serveur.
+- Le rapport `AUDIT_REPORT.md` est complet et argumenté.

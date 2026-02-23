@@ -2,7 +2,6 @@
 
 // Modules
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 
 // Components
 import Button from "./Button";
@@ -13,7 +12,6 @@ export default function Header() {
   // State
   const [showRules, setShowRules] = useState(false);
   const [quitGame, setQuitGame] = useState(false);
-  const router = useRouter();
 
   // Functions
   const handleClick = () => {

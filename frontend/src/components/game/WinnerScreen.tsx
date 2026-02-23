@@ -1,6 +1,5 @@
 "use client";
 
-import { div } from "framer-motion/client";
 import { useGame } from "../../context/GameContext";
 
 export default function WinnerScreen() {
@@ -28,7 +27,7 @@ export default function WinnerScreen() {
             )
           )}
         </ul>
-        <button onClick={() => {resetGame()}}>Rejouer</button>
+        <button onClick={() => { resetGame() }}>Rejouer</button>
       </div>
     </div>
   );

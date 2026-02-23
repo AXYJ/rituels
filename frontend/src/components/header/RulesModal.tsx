@@ -32,7 +32,7 @@ export default function RulesModal({ onClose }: { onClose: () => void }) {
           <p>
             Bienvenue dans votre session de test. Votre objectif est simple :
             soyez le premier sujet à accumuler le nombre de graines convenu au
-            début du protocole (30 par défaut) pour valider l'expérience.
+            début du protocole (20 par défaut) pour valider l&apos;expérience.
           </p>
 
           <h3 className="text-xl font-bold">Déroulement de la session</h3>
@@ -41,7 +41,7 @@ export default function RulesModal({ onClose }: { onClose: () => void }) {
             Chaque session regroupe 2 à 4 sujets. Vous commencez avec une
             dotation de 3 cartes en main. À son tour, le sujet doit choisir et
             soumettre une seule de ses cartes. Une fois la carte jouée, une
-            nouvelle est immédiatement ajoutée à sa main afin qu’il en ait
+            nouvelle est immédiatement ajoutée à sa main afin qu&apos;il en ait
             toujours trois à disposition.
           </p>
 
@@ -49,8 +49,7 @@ export default function RulesModal({ onClose }: { onClose: () => void }) {
 
           <ul>
             <li>
-              <strong>Le symbole</strong> détermine le gain ou la perte
-              immédiate de graines (une valeur fixe allant de -2 à +2).
+              <strong>Le symbole</strong> détermine la valeur en points d&apos;une carte lorsqu&apos;elle est posée. Ces valeurs peuvent être positives, négatives ou même nulles, selon les règles générées pour la partie. C&apos;est en cumulant ces points que vous pourrez atteindre l&apos;objectif de victoire.
             </li>
             <li>
               <strong>La couleur</strong> déclenche un effet spécial qui peut
@@ -58,6 +57,14 @@ export default function RulesModal({ onClose }: { onClose: () => void }) {
               etc.).
             </li>
           </ul>
+
+          <p className="mt-2 text-justify">
+            <strong>Rituels</strong> est un jeu de cartes rapide où l&apos;objectif
+            est d&apos;accumuler un certain nombre de points, fixé en début de
+            partie. Pour gagner, il vous faudra faire preuve de stratégie,
+            utiliser les effets uniques de chaque carte à votre avantage et,
+            surtout, déjouer les plans de vos adversaires.
+          </p>
 
           <h3 className="text-xl font-bold">Fin de la session</h3>
 

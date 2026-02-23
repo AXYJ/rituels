@@ -1,13 +1,16 @@
 import { Socket } from "socket.io-client";
 
 // Définition des vues
-export type View = "home" | "lobby" | "game" | "results";
+export type View = "home" | "lobby" | "game";
 
 // Toutes les variables globales du jeu
+// Utilisation de variables globales pour éviter de passer des props à chaque composant
 export interface GameContextType {
   // Connexion
   socket: Socket | null;
   isConnected: boolean;
+  error: string | null;
+  setError: (error: string | null) => void;
   // Vue actuelle
   view: View;
   setView: (view: View) => void;
@@ -23,7 +26,8 @@ export interface GameContextType {
   beReady: () => void;
   quitLobby: () => void;
   startGame: () => void;
-  cardPlayed: (card: { symbol: string; color: string }) => void;
+  updateDeck: (deck: { cards: { id?: number; symbol: string; color: string }[] | null }) => void;
+  cardPlayed: (card: { id?: number; symbol: string; color: string }) => void;
   sendMessage: (message: string) => void;
   resetGame: () => void;
   // Règles
@@ -33,10 +37,10 @@ export interface GameContextType {
   playerNumber: number;
   setPlayerNumber: (number: number) => void;
   // Carte
-  card: { symbol: string; color: string } | null;
-  setCard: (card: { symbol: string; color: string } | null) => void;
+  card: { id?: number; symbol: string; color: string } | null;
+  setCard: (card: { id?: number; symbol: string; color: string } | null) => void;
   // Modifier localement le deck du joueur
-  setLocalPlayerDeck: (cards: { symbol: string; color: string }[]) => void;
+  setLocalPlayerDeck: (cards: { id?: number; symbol: string; color: string }[]) => void;
   // Jeu
   playerTurn: string;
   setPlayerTurn: (playerTurn: string) => void;
@@ -44,7 +48,7 @@ export interface GameContextType {
   setPlayerOrder: (playerOrder: string[]) => void;
   history: {
     type: "card" | "message";
-    card?: { symbol: string; color: string };
+    card?: { id?: number; symbol: string; color: string };
     player: string;
     score?: number;
     points?: number;
@@ -53,7 +57,7 @@ export interface GameContextType {
   setHistory: (
     history: {
       type: "card" | "message";
-      card?: { symbol: string; color: string };
+      card?: { id?: number; symbol: string; color: string };
       player: string;
       score?: number;
       points?: number;
@@ -78,6 +82,6 @@ export interface Player {
   name: string;
   isHost: boolean;
   isReady: boolean;
-  deck: { cards: { symbol: string; color: string }[] | null };
+  deck: { cards: { id?: number; symbol: string; color: string }[] | null };
   score: number;
 }

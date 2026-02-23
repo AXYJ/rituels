@@ -93,9 +93,9 @@ function win(player, points) {
 
 io.on("connection", (socket) => {
 
-    // ------- 
-    // Home
-    // ------- 
+    // ----------------
+    // ----- HOME -----
+    // ----------------
 
     // Création d'une partie
     socket.on("create_game", (idPlayer) => {
@@ -103,22 +103,21 @@ io.on("connection", (socket) => {
         // Algorithme généré par IA
         const roomCode = Math.random().toString(36).substring(2, 8).toUpperCase();
         rooms[roomCode] = {
-            players: [{ id: idPlayer, name: "Host", isHost: true, isReady: false, score: 0 }]
+            players: [{ id: idPlayer, name: "Host", isHost: true, isReady: false, score: 0, deck: { cards: null } }]
         };
         socket.join(roomCode);
         const rules = generateRules();
         rooms[roomCode].rules = rules;
         const playerNumber = rooms[roomCode].players.length;
         const players = rooms[roomCode].players;
-        const isHost = rooms[roomCode].players[0].isHost;
-        socket.emit("room_created", roomCode, rules, players, playerNumber, isHost);
+        socket.emit("room_created", roomCode, rules, players, playerNumber);
     });
 
     // Rejoindre une partie
     socket.on("join_game", (roomCode) => {
         if (rooms[roomCode]) {
-            if (rooms[roomCode].players.length < 4) {
-                rooms[roomCode].players.push({ id: socket.id, name: "Player", isHost: false, isReady: false, score: 0 });
+            if (rooms[roomCode].players.length <= 4) {
+                rooms[roomCode].players.push({ id: socket.id, name: "Player", isHost: false, isReady: false, score: 0, deck: { cards: null } });
                 socket.join(roomCode);
                 const players = rooms[roomCode].players;
                 io.to(roomCode).emit("room_updated", { players: players });
@@ -133,9 +132,9 @@ io.on("connection", (socket) => {
     });
 
 
-    // ------- 
-    // Lobby
-    // ------- 
+    // -----------------
+    // ----- LOBBY -----
+    // -----------------
 
     // Changement du nom
     socket.on("change_name", (name) => {
@@ -171,33 +170,19 @@ io.on("connection", (socket) => {
             const room = rooms[code];
             const player = room.players.find(p => p.id === idPlayer);
             if (player) {
+                // On retire le joueur de la salle
+                socket.leave(code);
                 room.players = room.players.filter(p => p.id !== idPlayer);
-                const players = room.players;
+
                 if (room.players.length === 0) {
                     delete rooms[code];
+                } else {
+                    // Si l'hôte part, on donne le rôle d'hôte au premier joueur restant
+                    if (player.isHost) {
+                        room.players[0].isHost = true;
+                    }
+                    io.to(code).emit("room_updated", { players: room.players });
                 }
-                io.to(code).emit("room_updated", { players: players });
-                break;
-            }
-
-        }
-    });
-
-    // Hôte quitte le lobby
-    socket.on("host_quit_lobby", (idPlayer, view) => {
-        for (const code in rooms) {
-            const room = rooms[code];
-            const host = room.players.find(p => p.id === idPlayer && p.isHost);
-
-            if (host) {
-                if (view === "lobby") {
-                    io.to(code).emit("host_quit_lobby");
-                }
-
-                setTimeout(() => {
-                    delete rooms[code];
-                }, 500);
-
                 break;
             }
         }
@@ -208,7 +193,7 @@ io.on("connection", (socket) => {
         for (const code in rooms) {
             if (code !== roomCode) continue;
             const room = rooms[code];
-            const host = room.players.find(p => p.id === socket.id && p.isHost);
+            const host = room.players.find(p => p.id === socket.id);
 
             if (host) {
                 const playerOrder = whoStart(roomCode);
@@ -220,9 +205,22 @@ io.on("connection", (socket) => {
         }
     });
 
-    // -------
-    // Game
-    // -------
+    // ----------------
+    // ----- GAME -----
+    // ----------------
+
+    // Création de carte
+    socket.on("update_deck", (idPlayer, deck) => {
+        for (const code in rooms) {
+            const room = rooms[code];
+            const player = room.players.find(p => p.id === idPlayer);
+            if (player) {
+                player.deck = deck;
+                io.to(code).emit("deck_updated", idPlayer, player.deck);
+                break;
+            }
+        }
+    });
 
     // Carte jouée
     socket.on("card_played", (idPlayer, points, card, effectiveEffect) => {
@@ -259,13 +257,13 @@ io.on("connection", (socket) => {
             const room = rooms[code];
             const player = room.players.find(p => p.id === socket.id);
             if (player) {
-                // Générer de nouvelles règles (ou garder les mêmes, mais relancer est drôle avec des nouvelles !)
+                // Générer de nouvelles règles
                 room.rules = generateRules();
 
                 // Remise à zéro des joueurs
                 room.players.forEach(p => {
                     p.score = 0;
-                    if(p.isHost){
+                    if (p.isHost) {
                         p.isReady = true;
                     } else {
                         p.isReady = false;
@@ -286,16 +284,18 @@ io.on("connection", (socket) => {
             const room = rooms[code];
             const player = room.players.find(p => p.id === socket.id);
             if (player) {
-                if (player.isHost) {
-                    io.to(code).emit("host_quit_lobby");
+                // On retire le joueur de la salle 
+                // On ne garde que les joueurs dont le socket est toujours connecté
+                room.players = room.players.filter(p => p.id !== socket.id);
+
+                if (room.players.length === 0) {
                     delete rooms[code];
                 } else {
-                    room.players = room.players.filter(p => p.id !== socket.id);
-                    if (room.players.length === 0) {
-                        delete rooms[code];
-                    } else {
-                        io.to(code).emit("room_updated", { players: room.players });
+                    // Si l'hôte part, on donne le rôle d'hôte au premier joueur restant
+                    if (player.isHost) {
+                        room.players[0].isHost = true;
                     }
+                    io.to(code).emit("room_updated", { players: room.players });
                 }
                 break;
             }
