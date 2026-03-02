@@ -49,7 +49,11 @@ export default function RulesModal({ onClose }: { onClose: () => void }) {
 
           <ul>
             <li>
-              <strong>Le symbole</strong> détermine la valeur en points d&apos;une carte lorsqu&apos;elle est posée. Ces valeurs peuvent être positives, négatives ou même nulles, selon les règles générées pour la partie. C&apos;est en cumulant ces points que vous pourrez atteindre l&apos;objectif de victoire.
+              <strong>Le symbole</strong> détermine la valeur en points
+              d&apos;une carte lorsqu&apos;elle est posée. Ces valeurs peuvent
+              être positives, négatives ou même nulles, selon les règles
+              générées pour la partie. C&apos;est en cumulant ces points que
+              vous pourrez atteindre l&apos;objectif de victoire.
             </li>
             <li>
               <strong>La couleur</strong> déclenche un effet spécial qui peut
@@ -59,11 +63,11 @@ export default function RulesModal({ onClose }: { onClose: () => void }) {
           </ul>
 
           <p className="mt-2 text-justify">
-            <strong>Rituels</strong> est un jeu de cartes rapide où l&apos;objectif
-            est d&apos;accumuler un certain nombre de points, fixé en début de
-            partie. Pour gagner, il vous faudra faire preuve de stratégie,
-            utiliser les effets uniques de chaque carte à votre avantage et,
-            surtout, déjouer les plans de vos adversaires.
+            <strong>Rituels</strong> est un jeu de cartes rapide où
+            l&apos;objectif est d&apos;accumuler un certain nombre de points,
+            fixé en début de partie. Pour gagner, il vous faudra faire preuve de
+            stratégie, utiliser les effets uniques de chaque carte à votre
+            avantage et, surtout, déjouer les plans de vos adversaires.
           </p>
 
           <h3 className="text-xl font-bold">Fin de la session</h3>
@@ -77,7 +81,7 @@ export default function RulesModal({ onClose }: { onClose: () => void }) {
             <strong>Note importante</strong> : Au début de chaque session, les
             points et les effets liés aux symboles et aux couleurs sont{" "}
             <strong>re-distribués aléatoirement</strong>. Ce qui était vrai lors
-            de la session précédente ne l'est plus. C'est à vous d'observer les
+            de la session précédente ne l&apos;est plus. C&apos;est à vous d&apos;observer les
             résultats de chaque carte pour déduire les règles de la partie en
             cours.
           </p>

@@ -3,6 +3,23 @@ import { Socket } from "socket.io-client";
 // Définition des vues
 export type View = "home" | "lobby" | "game";
 
+// Type pour une carte
+export interface Card {
+  id?: number;
+  symbol: string;
+  color: string;
+}
+
+// Type pour un élément d'historique
+export interface HistoryItem {
+  type: "card" | "message";
+  card?: Card;
+  player: string;
+  score?: number;
+  points?: number;
+  message?: string;
+}
+
 // Toutes les variables globales du jeu
 // Utilisation de variables globales pour éviter de passer des props à chaque composant
 export interface GameContextType {
@@ -26,8 +43,8 @@ export interface GameContextType {
   beReady: () => void;
   quitLobby: () => void;
   startGame: () => void;
-  updateDeck: (deck: { cards: { id?: number; symbol: string; color: string }[] | null }) => void;
-  cardPlayed: (card: { id?: number; symbol: string; color: string }) => void;
+  updateDeck: (deck: { cards: Card[] | null }) => void;
+  cardPlayed: (card: Card) => void;
   sendMessage: (message: string) => void;
   resetGame: () => void;
   // Règles
@@ -37,33 +54,17 @@ export interface GameContextType {
   playerNumber: number;
   setPlayerNumber: (number: number) => void;
   // Carte
-  card: { id?: number; symbol: string; color: string } | null;
-  setCard: (card: { id?: number; symbol: string; color: string } | null) => void;
+  card: Card | null;
+  setCard: (card: Card | null) => void;
   // Modifier localement le deck du joueur
-  setLocalPlayerDeck: (cards: { id?: number; symbol: string; color: string }[]) => void;
+  setLocalPlayerDeck: (cards: Card[]) => void;
   // Jeu
   playerTurn: string;
   setPlayerTurn: (playerTurn: string) => void;
   playerOrder: string[];
   setPlayerOrder: (playerOrder: string[]) => void;
-  history: {
-    type: "card" | "message";
-    card?: { id?: number; symbol: string; color: string };
-    player: string;
-    score?: number;
-    points?: number;
-    message?: string;
-  }[];
-  setHistory: (
-    history: {
-      type: "card" | "message";
-      card?: { id?: number; symbol: string; color: string };
-      player: string;
-      score?: number;
-      points?: number;
-      message?: string;
-    }[]
-  ) => void;
+  history: HistoryItem[];
+  setHistory: (history: HistoryItem[]) => void;
   lastEffect: string | null;
   setLastEffect: (lastEffect: string | null) => void;
   winner: string | null;
@@ -82,6 +83,6 @@ export interface Player {
   name: string;
   isHost: boolean;
   isReady: boolean;
-  deck: { cards: { id?: number; symbol: string; color: string }[] | null };
+  deck: { cards: Card[] | null };
   score: number;
 }

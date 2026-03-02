@@ -13,7 +13,7 @@ import {
 import { io, Socket } from "socket.io-client";
 
 // Import des types
-import { View, GameContextType, GameRules, Player } from "../types/game";
+import { View, GameContextType, GameRules, Player, Card, HistoryItem } from "../types/game";
 
 // Création du contexte
 const GameContext = createContext<GameContextType | undefined>(undefined);
@@ -28,19 +28,10 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   const [players, setPlayers] = useState<Player[]>([]);
   const [rules, setRules] = useState<GameRules | null>(null);
   const [playerNumber, setPlayerNumber] = useState(0);
-  const [card, setCard] = useState<{ id?: number; symbol: string; color: string } | null>(null);
+  const [card, setCard] = useState<Card | null>(null);
   const [playerTurn, setPlayerTurn] = useState("");
   const [playerOrder, setPlayerOrder] = useState<string[]>([]);
-  const [history, setHistory] = useState<
-    {
-      type: "card" | "message";
-      card?: { id?: number; symbol: string; color: string };
-      player: string;
-      score?: number;
-      points?: number;
-      message?: string;
-    }[]
-  >([]);
+  const [history, setHistory] = useState<HistoryItem[]>([]);
   const [lastEffect, setLastEffect] = useState<string | null>(null);
   const [winner, setWinner] = useState<string | null>(null);
 
@@ -50,8 +41,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       transports: ["websocket", "polling"],
     });
 
-    setSocket(newSocket);
-
+    queueMicrotask(() => setSocket(newSocket));
 
     // ----------------
     // Écouteurs de base (réponse du serveur)
@@ -265,7 +255,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
 
   // Mis à jour du deck
   const updateDeck = useCallback(
-    (deck: { cards: { id?: number; symbol: string; color: string }[] | null }) => {
+    (deck: { cards: Card[] | null }) => {
       if (socket) {
         socket.emit("update_deck", socket.id, deck);
       }
@@ -275,7 +265,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
 
   // Jouer une carte
   const cardPlayed = useCallback(
-    (card: { id?: number; symbol: string; color: string }) => {
+    (card: Card) => {
       if (socket) {
         let points = 0;
         let effect = "";
@@ -331,7 +321,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
 
   // Met à jour le deck du joueur local
   const setLocalPlayerDeck = useCallback(
-    (cards: { id?: number; symbol: string; color: string }[]) => {
+    (cards: Card[]) => {
       setPlayers((prev) =>
         prev.map((p) => (p.id === socket?.id ? { ...p, deck: { cards } } : p))
       );

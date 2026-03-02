@@ -5,9 +5,9 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-// Importations des composants  
 import { useGame } from "../../context/GameContext";
 import { createCard } from "../../hooks/createCard";
+import { Card } from "../../types/game";
 import WinnerScreen from "../game/WinnerScreen";
 import Helper from "../game/Helper";
 
@@ -32,12 +32,12 @@ export default function Game() {
   const isMyTurn = me ? playerTurn === me.id : false;
   const deck = me?.deck;
 
-  const [pendingCard, setPendingCard] = useState<{ id?: number; symbol: string; color: string } | null>(null);
+  const [pendingCard, setPendingCard] = useState<Card | null>(null);
 
   const historyContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    setPendingCard(null);
+    queueMicrotask(() => setPendingCard(null));
   }, [history]);
 
   useEffect(() => {
@@ -45,12 +45,12 @@ export default function Game() {
     if (historyContainerRef.current) {
       historyContainerRef.current.scrollTo({
         top: historyContainerRef.current.scrollHeight,
-        behavior: "smooth"
+        behavior: "smooth",
       });
     }
   }, [history]);
 
-  const handleCardClick = (card: { id?: number; symbol: string; color: string }) => {
+  const handleCardClick = (card: Card) => {
     // Si une carte est déjà en train d'être jouée, on ignore le clic (anti-spam)
     if (pendingCard) return;
 
@@ -136,7 +136,8 @@ export default function Game() {
                 <span className="italic">
                   {h.card?.color} {h.card?.symbol}
                 </span>{" "}
-                et a gagné <span className="font-semibold">{h.points}</span>{"  "}
+                et a gagné <span className="font-semibold">{h.points}</span>
+                {"  "}
                 points
               </div>
             );
@@ -174,7 +175,10 @@ export default function Game() {
 
             // On ajoute pendingCard uniquement s'il est différent de la dernière carte enregistrée par le serveur
             if (pendingCard) {
-              const lastPlayedCard = playedCards.length > 0 ? playedCards[playedCards.length - 1] : null;
+              const lastPlayedCard =
+                playedCards.length > 0
+                  ? playedCards[playedCards.length - 1]
+                  : null;
               if (!lastPlayedCard || lastPlayedCard.id !== pendingCard.id) {
                 playedCards.push(pendingCard);
               }
@@ -188,17 +192,22 @@ export default function Game() {
                 // car layoutId gère l'animation, la "key" React sert juste à l'arbre.
                 key={`played-${played.id}-${i}`}
                 initial={{ opacity: 0, scale: 0.5, y: -50 }}
-                animate={{ opacity: 1, scale: 1, y: 0, rotate: (i % 5) * 6 - 12 }}
+                animate={{
+                  opacity: 1,
+                  scale: 1,
+                  y: 0,
+                  rotate: (i % 5) * 6 - 12,
+                }}
                 exit={{ opacity: 0, scale: 0.5 }}
                 transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                className="absolute h-48 w-32 md:h-64 md:w-48 drop-shadow-sm"
+                className="absolute h-48 w-32 drop-shadow-sm md:h-64 md:w-48"
               >
                 <Image
                   src={`/cards/${played.symbol}-${played.color}.png`}
                   alt="played card"
                   width={400}
                   height={600}
-                  className="h-full w-full object-contain pointer-events-none"
+                  className="pointer-events-none h-full w-full object-contain"
                 />
               </motion.div>
             ));
@@ -236,36 +245,35 @@ export default function Game() {
         </AnimatePresence>
       </div>
 
-
       {/* Deck adverse (haut) */}
 
       {playerNumber == 2 && (
-        <div className="col-start-2 col-end-3 row-start-1 row-end-2 flex items-center justify-center gap-4 -translate-y-20">
-          {players.find((p) => p.id !== me?.id)?.deck?.cards?.map((card, index) => (
-            <motion.div
-              layout
-              layoutId={`card-back-${card.id || index}`}
-              key={card.id || index}
-              className="flex items-center justify-center"
-            >
-              <Image
-                src={`/cards/card-back.png`}
-                alt="card back"
-                width={400}
-                height={600}
-                className="h-32 w-24 object-contain "
-              />
-            </motion.div>
-          ))}
+        <div className="col-start-2 col-end-3 row-start-1 row-end-2 flex -translate-y-20 items-center justify-center gap-4">
+          {players
+            .find((p) => p.id !== me?.id)
+            ?.deck?.cards?.map((card, index) => (
+              <motion.div
+                layout
+                layoutId={`card-back-${card.id || index}`}
+                key={card.id || index}
+                className="flex items-center justify-center"
+              >
+                <Image
+                  src={`/cards/card-back.png`}
+                  alt="card back"
+                  width={400}
+                  height={600}
+                  className="h-32 w-24 object-contain"
+                />
+              </motion.div>
+            ))}
         </div>
       )}
-
-
 
       {/* Score */}
 
       {me && (
-        <div className="col-start-3 col-end-4 row-start-2 row-end-4 flex flex-col items-center gap-8 justify-end">
+        <div className="col-start-3 col-end-4 row-start-2 row-end-4 flex flex-col items-center justify-end gap-8">
           <div className="flex items-center gap-2">
             <Image
               src={`/cards/seed.png`}

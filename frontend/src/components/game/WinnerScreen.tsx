@@ -27,7 +27,13 @@ export default function WinnerScreen() {
             )
           )}
         </ul>
-        <button onClick={() => { resetGame() }}>Rejouer</button>
+        <button
+          onClick={() => {
+            resetGame();
+          }}
+        >
+          Rejouer
+        </button>
       </div>
     </div>
   );

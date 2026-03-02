@@ -2,7 +2,6 @@
 
 // Components
 import { GameProvider, useGame } from "../context/GameContext";
-import Header from "../components/header/Header";
 import Home from "../components/pages/home";
 import Lobby from "../components/pages/Lobby";
 import Game from "../components/pages/Game";
@@ -28,7 +27,6 @@ export default function App() {
   return (
     <main className="">
       <GameProvider>
-        {/* <Header /> */}
         <GameContent />
       </GameProvider>
     </main>
