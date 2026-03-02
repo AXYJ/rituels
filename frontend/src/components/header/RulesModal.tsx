@@ -81,9 +81,9 @@ export default function RulesModal({ onClose }: { onClose: () => void }) {
             <strong>Note importante</strong> : Au début de chaque session, les
             points et les effets liés aux symboles et aux couleurs sont{" "}
             <strong>re-distribués aléatoirement</strong>. Ce qui était vrai lors
-            de la session précédente ne l&apos;est plus. C&apos;est à vous d&apos;observer les
-            résultats de chaque carte pour déduire les règles de la partie en
-            cours.
+            de la session précédente ne l&apos;est plus. C&apos;est à vous
+            d&apos;observer les résultats de chaque carte pour déduire les
+            règles de la partie en cours.
           </p>
         </div>
       </div>

@@ -30,26 +30,24 @@ export default function Home() {
     }
   };
 
-
   return (
     // Animation au chargement
     <div className="flex min-h-[80vh] flex-col items-center justify-center gap-8">
       <AnimatePresence>
         <motion.div
           initial={{
-            opacity: 0
+            opacity: 0,
           }}
           animate={{
-            opacity: 1
+            opacity: 1,
           }}
           exit={{
-            opacity: 0
+            opacity: 0,
           }}
           transition={{
-            duration: .5,
+            duration: 0.5,
             ease: "backInOut",
-          }
-          }
+          }}
         >
           <h1 className="mb-4 text-6xl font-bold text-blue-400">Rituels</h1>
           <p className="text-xl text-gray-400">Le jeu de cartes mystique</p>
@@ -59,21 +57,22 @@ export default function Home() {
           className="launch-btn flex flex-col gap-6 sm:flex-row"
           initial={{
             y: 200,
-            opacity: 0
+            opacity: 0,
           }}
           animate={{
             y: 0,
-            opacity: 1
+            opacity: 1,
           }}
           exit={{
             y: 200,
-            opacity: 0
+            opacity: 0,
           }}
           transition={{
             duration: 1,
             ease: "backInOut",
-            staggerChildren: 0.2
-          }}>
+            staggerChildren: 0.2,
+          }}
+        >
           <button
             onClick={startGame}
             disabled={btnDisabled}
@@ -98,7 +97,6 @@ export default function Home() {
           </div>
         </motion.div>
       </AnimatePresence>
-
     </div>
   );
 }

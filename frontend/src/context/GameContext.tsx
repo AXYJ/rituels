@@ -13,7 +13,14 @@ import {
 import { io, Socket } from "socket.io-client";
 
 // Import des types
-import { View, GameContextType, GameRules, Player, Card, HistoryItem } from "../types/game";
+import {
+  View,
+  GameContextType,
+  GameRules,
+  Player,
+  Card,
+  HistoryItem,
+} from "../types/game";
 
 // Création du contexte
 const GameContext = createContext<GameContextType | undefined>(undefined);
