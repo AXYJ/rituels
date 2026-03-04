@@ -9,7 +9,7 @@ export default function Helper() {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="flex h-1/2 w-full flex-col items-end justify-end gap-4">
+    <div className="flex w-full flex-col items-end justify-end gap-4">
       <div
         className=""
         onClick={() => {
@@ -27,18 +27,20 @@ export default function Helper() {
         className={`grid w-full transition-all duration-300 ease-in-out ${open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}
       >
         <div className="overflow-hidden">
-          <div className="grid w-full grid-cols-2 gap-4">
+          <div className="grid w-full grid-cols-2 gap-24">
             <div className="flex flex-col gap-2">
               {Object.keys(rules?.symbolRules || {}).map((symbol, index) => (
                 <div
                   key={index}
-                  className="grid grid-cols-2 items-center gap-2"
+                  className="flex items-center justify-between gap-2"
                 >
-                  <label htmlFor={symbol}>{symbol}</label>
+                  <label className="w-24" htmlFor={symbol}>
+                    {symbol}
+                  </label>
                   <select
                     name={symbol}
                     id={symbol}
-                    className="w-full rounded-md border border-gray-300 p-2"
+                    className="col-span-2 w-full rounded-md border border-gray-300 p-2"
                   >
                     <option value="">--</option>
                     {[3, 2, 1, 0, -1].map((value) => (
@@ -54,13 +56,15 @@ export default function Helper() {
               {Object.keys(rules?.colorRules || {}).map((color, index) => (
                 <div
                   key={index}
-                  className="grid grid-cols-2 items-center gap-2"
+                  className="flex items-center justify-between gap-2"
                 >
-                  <label htmlFor={color}>{color}</label>
+                  <label className="w-24" htmlFor={color}>
+                    {color}
+                  </label>
                   <select
                     name={color}
                     id={color}
-                    className="w-full rounded-md border border-gray-300 p-2"
+                    className="col-span-2 w-full rounded-md border border-gray-300 p-2"
                   >
                     <option value="">--</option>
                     {["Inversion", "Gel", "Répétition", "Neutre"].map(

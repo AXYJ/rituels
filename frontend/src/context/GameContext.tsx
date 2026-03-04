@@ -41,6 +41,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [lastEffect, setLastEffect] = useState<string | null>(null);
   const [winner, setWinner] = useState<string | null>(null);
+  const [displayOrder, setDisplayOrder] = useState<string[] | null>(null);
 
   useEffect(() => {
     // Initialisation de la connexion
@@ -132,6 +133,19 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       setView("game");
       setPlayerTurn(playerStart);
       setPlayerOrder(playerOrder);
+      const myOrder = playerOrder.findIndex((p: string) => p === newSocket.id);
+
+      let newDisplayOrder: string[] = [];
+      if (myOrder !== -1) {
+        newDisplayOrder = [
+          ...playerOrder.slice(myOrder),
+          ...playerOrder.slice(0, myOrder),
+        ];
+      } else {
+        newDisplayOrder = [...playerOrder];
+      }
+
+      setDisplayOrder(newDisplayOrder);
     });
 
     // Carte jouée
@@ -178,6 +192,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       setHistory([]);
       setWinner(null);
       setLastEffect(null);
+      setDisplayOrder(null);
       setView("lobby");
     });
 
@@ -251,6 +266,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     setPlayerNumber(0);
     setHistory([]);
     setLastEffect(null);
+    setDisplayOrder(null);
   }, [socket]);
 
   // Démarrer la partie
@@ -378,6 +394,8 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       sendMessage,
       winner,
       setWinner,
+      displayOrder,
+      setDisplayOrder,
       resetGame,
       updateDeck,
     }),
@@ -411,6 +429,8 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       sendMessage,
       winner,
       setWinner,
+      displayOrder,
+      setDisplayOrder,
       resetGame,
       updateDeck,
     ]

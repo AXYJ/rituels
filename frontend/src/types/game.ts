@@ -69,6 +69,8 @@ export interface GameContextType {
   setLastEffect: (lastEffect: string | null) => void;
   winner: string | null;
   setWinner: (winner: string | null) => void;
+  displayOrder: string[] | null;
+  setDisplayOrder: (displayOrder: string[] | null) => void;
 }
 
 // Types pour les règles issues du serveur

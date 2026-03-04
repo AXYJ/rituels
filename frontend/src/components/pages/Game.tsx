@@ -10,9 +10,11 @@ import { createCard } from "../../hooks/createCard";
 import { Card } from "../../types/game";
 import WinnerScreen from "../game/WinnerScreen";
 import Helper from "../game/Helper";
+import RulesModal from "../header/RulesModal";
 
 export default function Game() {
   const [message, setMessage] = useState("");
+  const [showRules, setShowRules] = useState(false);
   const {
     quitLobby,
     rules,
@@ -26,11 +28,42 @@ export default function Game() {
     winner,
     updateDeck,
     playerNumber,
+    displayOrder,
   } = useGame();
 
   const me = players.find((p) => p.id === socket?.id);
   const isMyTurn = me ? playerTurn === me.id : false;
   const deck = me?.deck;
+
+  // Déterminer les decks adverses en fonction de displayOrder
+  const opponents = displayOrder
+    ? displayOrder
+        .slice(1)
+        .map((id) => players.find((p) => p.id === id))
+        .filter((p) => p !== undefined)
+    : [];
+
+  const getOpponentPlacementClass = (index: number, total: number) => {
+    // Note: Tailwindcss n'accepte pas les strings dynamiques ex: `col-start-${x}`
+    // On doit écrire en entier la classe pour qu'elle soit compilée !
+    if (total === 1)
+      return "col-start-2 col-end-3 row-start-1 row-end-2 flex -translate-y-1/2 items-center justify-center gap-4";
+    if (total === 2) {
+      if (index === 0)
+        return "col-start-1 col-end-2 row-start-2 row-end-3 flex items-end justify-center gap-4 rotate-90 -translate-x-1/2 h-fit";
+      if (index === 1)
+        return "col-start-3 col-end-4 row-start-2 row-end-3 flex items-end justify-center gap-4 -rotate-90 translate-x-1/2 h-fit";
+    }
+    if (total === 3) {
+      if (index === 0)
+        return "col-start-1 col-end-2 row-start-2 row-end-3 flex items-center justify-center gap-4 rotate-90 -translate-x-1/2";
+      if (index === 1)
+        return "col-start-2 col-end-3 row-start-1 row-end-2 flex -translate-y-1/2 items-center justify-center gap-4";
+      if (index === 2)
+        return "col-start-3 col-end-4 row-start-2 row-end-3 flex items-center justify-center gap-4 -rotate-90 translate-x-1/2";
+    }
+    return "hidden";
+  };
 
   const [pendingCard, setPendingCard] = useState<Card | null>(null);
 
@@ -103,10 +136,14 @@ export default function Game() {
         Quitter la partie
       </button>
 
-      <h2>
-        Au tour de :{" "}
-        {players.find((p) => p.id === playerTurn)?.name || playerTurn}
-      </h2>
+      <button
+        onClick={() => {
+          setShowRules(true);
+        }}
+        className="col-start-3 col-end-4 h-fit w-fit justify-self-end rounded-full bg-blue-500 px-6 py-2 font-bold text-white hover:bg-blue-600"
+      >
+        Règles
+      </button>
 
       {/* Historique des actions */}
 
@@ -167,6 +204,10 @@ export default function Game() {
       {/* Zone de jeu */}
 
       <div className="relative col-start-2 col-end-3 row-start-2 row-end-3 flex items-center justify-center p-8">
+        <h2 className="absolute -top-16 text-center">
+          Au tour de :{" "}
+          {players.find((p) => p.id === playerTurn)?.name || playerTurn}
+        </h2>
         <AnimatePresence>
           {(() => {
             const playedCards = history
@@ -200,7 +241,7 @@ export default function Game() {
                 }}
                 exit={{ opacity: 0, scale: 0.5 }}
                 transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                className="absolute h-48 w-32 drop-shadow-sm md:h-64 md:w-48"
+                className="absolute h-32 w-24 drop-shadow-sm md:h-48 md:w-32 lg:h-64 lg:w-48"
               >
                 <Image
                   src={`/cards/${played.symbol}-${played.color}.png`}
@@ -245,30 +286,31 @@ export default function Game() {
         </AnimatePresence>
       </div>
 
-      {/* Deck adverse (haut) */}
+      {/* Decks adverses (haut et côtés) */}
 
-      {playerNumber == 2 && (
-        <div className="col-start-2 col-end-3 row-start-1 row-end-2 flex -translate-y-20 items-center justify-center gap-4">
-          {players
-            .find((p) => p.id !== me?.id)
-            ?.deck?.cards?.map((card, index) => (
-              <motion.div
-                layout
-                layoutId={`card-back-${card.id || index}`}
-                key={card.id || index}
-                className="flex items-center justify-center"
-              >
-                <Image
-                  src={`/cards/card-back.png`}
-                  alt="card back"
-                  width={400}
-                  height={600}
-                  className="h-32 w-24 object-contain"
-                />
-              </motion.div>
-            ))}
+      {opponents.map((opponent, index) => (
+        <div
+          key={opponent?.id || index}
+          className={getOpponentPlacementClass(index, opponents.length)}
+        >
+          {opponent?.deck?.cards?.map((card, cardIndex) => (
+            <motion.div
+              layout
+              layoutId={`card-back-${opponent.id}-${card.id || cardIndex}`}
+              key={card.id || cardIndex}
+              className="flex items-center justify-center"
+            >
+              <Image
+                src={`/cards/card-back.png`}
+                alt="card back"
+                width={400}
+                height={600}
+                className="h-32 w-24 object-contain"
+              />
+            </motion.div>
+          ))}
         </div>
-      )}
+      ))}
 
       {/* Score */}
 
@@ -291,6 +333,11 @@ export default function Game() {
       {/* Winner */}
 
       {winner && <WinnerScreen />}
+
+      {/* Rules Modal */}
+      <AnimatePresence>
+        {showRules && <RulesModal onClose={() => setShowRules(false)} />}
+      </AnimatePresence>
     </div>
   );
 }

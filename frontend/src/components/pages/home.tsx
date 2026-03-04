@@ -35,6 +35,7 @@ export default function Home() {
     <div className="flex min-h-[80vh] flex-col items-center justify-center gap-8">
       <AnimatePresence>
         <motion.div
+          key="title"
           initial={{
             opacity: 0,
           }}
@@ -50,13 +51,13 @@ export default function Home() {
           }}
         >
           <h1 className="mb-4 text-6xl font-bold text-blue-400">Rituels</h1>
-          <p className="text-xl text-gray-400">Le jeu de cartes mystique</p>
         </motion.div>
 
         <motion.div
+          key="actions"
           className="launch-btn flex flex-col gap-6 sm:flex-row"
           initial={{
-            y: 200,
+            y: 20,
             opacity: 0,
           }}
           animate={{
