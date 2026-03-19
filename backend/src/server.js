@@ -164,8 +164,8 @@ io.on("connection", (socket) => {
         }
     });
 
-    // Quitter le lobby
-    socket.on("quit_lobby", (idPlayer) => {
+    // Fonction utilitaire pour gérer le départ d'un joueur
+    const handlePlayerLeave = (idPlayer) => {
         for (const code in rooms) {
             const room = rooms[code];
             const player = room.players.find(p => p.id === idPlayer);
@@ -186,6 +186,11 @@ io.on("connection", (socket) => {
                 break;
             }
         }
+    };
+
+    // Quitter le lobby
+    socket.on("quit_lobby", (idPlayer) => {
+        handlePlayerLeave(idPlayer);
     });
 
     // Démarrer la partie
@@ -280,26 +285,7 @@ io.on("connection", (socket) => {
 
     // Déconnexion
     socket.on("disconnect", (reason) => {
-        for (const code in rooms) {
-            const room = rooms[code];
-            const player = room.players.find(p => p.id === socket.id);
-            if (player) {
-                // On retire le joueur de la salle 
-                // On ne garde que les joueurs dont le socket est toujours connecté
-                room.players = room.players.filter(p => p.id !== socket.id);
-
-                if (room.players.length === 0) {
-                    delete rooms[code];
-                } else {
-                    // Si l'hôte part, on donne le rôle d'hôte au premier joueur restant
-                    if (player.isHost) {
-                        room.players[0].isHost = true;
-                    }
-                    io.to(code).emit("room_updated", { players: room.players });
-                }
-                break;
-            }
-        }
+        handlePlayerLeave(socket.id);
         console.log(`[${new Date().toISOString()}] User disconnected: ${socket.id} (Reason: ${reason})`);
     });
 });

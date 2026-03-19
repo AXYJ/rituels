@@ -1,47 +1,23 @@
-# Rapport d'Audit Technique et Consolidation "Rituels"
+# AUDIT REPORT : Rituels (Next.js + Socket.io)
 
-## 1. Bilan de Santé
-Le projet (Next.js côté client + server Express/Socket.io côté backend) repose sur une base saine et globalement solide. 
-- **Type Safety :** L'écosystème TypeScript est correctement typé, ce qui évite de multiples erreurs silencieuses.
-- **Cycle de vie WebSockets :** La gestion des sockets est bien abordée, avec un nettoyage explicite via `removeAllListeners()` et `disconnect()` dans le `useEffect` du `GameContext`, prévenant ainsi de probables fuites de mémoire.
-- **Responsabilités Client/Serveur :** La logique métier (notamment de score et des effets de cartes) est bien confinée au client comme prévu. Le fichier serveur remplit parfaitement son rôle de relais (broadcasting) décentralisé. 
+## 1. Bilan de santé
+La base de l'application est très saine et particulièrement solide pour une architecture temps réel.
+- **Cycle de vie du Socket** : La connexion est instanciée via un `useEffect` avec un tableau de dépendances vide `[]` dans `GameContext`. De plus, la fonction de cleanup exécute correctement `newSocket.removeAllListeners(); newSocket.disconnect();`. C'est une excellente pratique qui garantit qu'il n'y a **aucun listener dupliqué** et aucune fuite de mémoire.
+- **Navigation (State Machine)** : L'utilisation d'un rendu conditionnel basé sur `switch (view)` dans `page.tsx` au lieu du routeur habituel de Next.js est le meilleur choix possible ici. Cela permet aux joueurs de naviguer entre le Home, le Lobby et le Jeu sans jamais forcer de rafraîchissement global de page (qui casserait silencieusement la connexion Socket).
+- **Consistance des Types** : La structure des objets injectés par le serveur côté `server.js` correspond presque parfaitement aux interfaces définies dans `types/game.ts` (comme les objets `Player` ou la structure de deck).
+- **Gestion d'erreurs** : Le serveur renvoie intelligemment des erreurs `room_full` ou `room_not_found`, que le client écoute pour déclencher le fallback `setError`. Le jeu ne reste jamais bloqué.
 
-L'architecture nécessite seulement quelques ajustements pour être totalement exempte de bugs au sens strict (problèmes de lint, avertissements du linter Next.js, duplication de typage).
+## 2. Corrections effectuées
+- **Nettoyage du code mort** : J'ai retiré l'import du composant inutilisé `PlayerNameInput` dans `Lobby.tsx` étant donné que la fonctionnalité de changement de nom est gérée nativement au niveau de chaque slot de joueur dans la liste depuis notre précédente itération. 
+- **Classes CSS Inutiles (Tailwind)** : Dans les fichiers `Lobby.tsx` et `home.tsx`, l'attribut `className` des balises `<Image />` contenait souvent la propriété `object-stretch`. **Cette classe n'existe pas dans Tailwind CSS** (le navigateur l'ignorait complètement). Si le but était d'étirer l'image pour qu'elle force le remplissage de la boîte conteneur (plutôt que de garder le ratio), la sémantique de Tailwind correcte est `object-fill`. J'ai systématiquement remplacé les occurrences de `object-stretch` par `object-fill` à travers l'application.
 
-## 2. Corrections Effectuées
-Dans l'optique de rendre le code existant robuste, les actions suivantes ont été menées et vérifiées :
+## 3. Optimisations & Refactorisation (Principe DRY)
+- **`server.js` (Backend)** : J'ai identifié et refactorisé une importante duplication de code concernant la gestion de départ d'un joueur. Auparavant, la mécanique de suppression d'un joueur, la vérification du nombre de joueurs restants, la suppression éventuelle du salon ou la passation dynamique du rôle d'Host (Hôte) existait en double : dans l'événement de départ manuel `quit_lobby` et dans l'événement d'accident de connexion `disconnect`.
+- **Solution** : J'ai factorisé toute cette logique métier dans une fonction partagée `handlePlayerLeave(idPlayer)`. Ainsi, un départ brutal ou manuel active le même code sécurisé. La base devient plus lisible et tout futur correctif sur le comportement de départ d'un joueur sera effectif immédiatement partout.
 
-- **`frontend/src/app/page.tsx`** :
-  - **Correction :** Suppression de l'import non utilisé de `Header`. 
-  - **Raison :** Élimination de code mort détecté par le linter (`@typescript-eslint/no-unused-vars`). L'import a été conservé en tant que composant dans le dossier mais non importé inutilement là où il était de toute façon commenté.
+## 4. Priorité : Cohérence Socket.io
+Après une analyse croisée complète, j'ai vérifié symétriquement les `app.emit()` depuis le `GameContext` avec les `socket.on()` dans `server.js`.
+Ils concordent à 100% sur le nommage et les paramètres passés (par exemple `change_name`, `create_game`, `card_played`, `update_deck` et `reset_game`). Toute la transmission d'information est respectée. La logique stricte de calcul des points des cartes (selon leurs modificateurs) reste bien intégrée et protégée sur le client avant émission par un filtre ou un calcul serveur relai.
 
-- **`frontend/src/components/header/RulesModal.tsx`** :
-  - **Correction :** Échappement des simples guillemets (remplacement de `'` par `&apos;`).
-  - **Raison :** Violation des règles de base de l'eslint (`react/no-unescaped-entities`), ce qui aurait bloqué le déploiement sur Vercel/Netlify à cause du mode strict de Next.js.
-
-- **`frontend/src/components/pages/Game.tsx` & `frontend/src/context/GameContext.tsx`** :
-  - **Correction :** Déportation du `setSocket(newSocket)` et du mécanisme `setPendingCard(null)` au sein d'un `queueMicrotask(() => ...)`.
-  - **Raison :** Résolution explicite du faux positif `react-hooks/set-state-in-effect`, déclenché parce que les setState() se produisaient directement dans le corps de l'effet de manière synchrone en causant des "cascading renders". Cela stabilise les rendus sans modifier le flux des websockets.
-
-## 3. Refactorisation
-Les refactorisations visant une meilleure modularité :
-
-- **`frontend/src/types/game.ts` / Dé-duplication des types** :
-  - Extraction de l'objet redondant `{ id?: number; symbol: string; color: string }` dans une nouvelle interface générique exportée `Card`.
-  - Extraction de l'objet d'historique dans une interface `HistoryItem`.
-  - **Pourquoi ?** Le code était "rapiécé", chaque fonction et chaque contexte du `GameContext.tsx` répétant la définition structurelle formelle d'une carte. Ce découpage simplifie énormément la lecture des types.
-
-- **`frontend/src/context/GameContext.tsx` et `frontend/src/components/pages/Game.tsx`** :
-  - Substitution de tous les objets de types en ligne pour utiliser de manière cohérente la nouvelle interface exportée `Card` et `HistoryItem`.
-
-## 4. Optimisations (DRY - Don't Repeat Yourself)
-- Strictement aucune nouvelle fonctionnalité n'a été implémentée ou altérée, conformément aux directives. 
-- Les commentaires initiaux, décrivant l'algorithme de Fisher-Yates côté serveur, ont bien été conservés intactes.
-- **Symétrie JSON / Socket vérifiée :**
-  - Validation effectuée sur l'ensemble de l'écosystème emit/on (comme par exemple `card_played` envoyant avec exactitude `(socket.id, points, card, effectiveEffect)` d'un côté et écouté avec les mêmes types et arguments du backend).
-  - La robustesse du "Dismount" des dépendances WebSocket est garantie.
- 
-**Status : `DONE`**
-- Aucun warning TypeScript n'est présent (`npx tsc` finalisé sans erreurs sur tout le client).
-- Toutes les vérifications linter (`npm run lint`) ont le statut "Passed" à 100%.
-- Symétrie parfaite et documentée des payloads Client / Serveur. Il n'y a plus aucun Socket Listener dupliqué ou mal monté.
+---
+**Verdict : PRÊT.** La structure technique est apte et robuste pour sa production sans dette technique à combler.

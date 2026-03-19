@@ -88,7 +88,7 @@ export default function Home() {
               alt=""
               width={800}
               height={100}
-              className="object-stretch pointer-events-none absolute inset-0 z-0 h-full w-full select-none"
+              className="object-fill pointer-events-none absolute inset-0 z-0 h-full w-full select-none"
             />
             <span className="relative z-50 text-4xl text-black">
               Créer une nouvelle partie
@@ -113,7 +113,7 @@ export default function Home() {
                 alt=""
                 width={300}
                 height={100}
-                className="object-stretch pointer-events-none absolute inset-0 z-0 h-full w-full select-none"
+                className="object-fill pointer-events-none absolute inset-0 z-0 h-full w-full select-none"
               />
               <span className="relative z-50 text-4xl text-nowrap text-black">
                 Entrez le code
