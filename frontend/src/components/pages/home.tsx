@@ -4,6 +4,10 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useGame } from "../../context/GameContext";
+import Image from "next/image";
+
+// Importations des composants
+import Logo from "../logo";
 
 export default function Home() {
   // Appel du contexte
@@ -32,7 +36,7 @@ export default function Home() {
 
   return (
     // Animation au chargement
-    <div className="flex min-h-[80vh] flex-col items-center justify-center gap-8">
+    <div className="flex min-h-screen flex-col items-center justify-center gap-8">
       <AnimatePresence>
         <motion.div
           key="title"
@@ -50,12 +54,12 @@ export default function Home() {
             ease: "backInOut",
           }}
         >
-          <h1 className="mb-4 text-6xl font-bold text-blue-400">Rituels</h1>
+          <Logo />
         </motion.div>
 
         <motion.div
           key="actions"
-          className="launch-btn flex flex-col gap-6 sm:flex-row"
+          className="launch-btn flex w-8/10 max-w-[1024px] flex-col items-center gap-12"
           initial={{
             y: 20,
             opacity: 0,
@@ -77,23 +81,43 @@ export default function Home() {
           <button
             onClick={startGame}
             disabled={btnDisabled}
-            className={`rounded-full bg-blue-600 px-10 py-4 text-lg font-bold text-white shadow-lg transition-colors hover:bg-blue-700 ${btnDisabled ? "cursor-not-allowed opacity-50" : ""}`}
+            className={`relative w-1/2 cursor-pointer px-12 py-4 transition-all duration-300 ease-in-out hover:-translate-y-2 hover:shadow-lg hover:shadow-black`}
           >
-            Créer une partie
-          </button>
-          <div className="flex flex-col items-center gap-2 rounded-xl border-2 border-purple-500 bg-transparent px-10 py-4 text-lg font-bold text-white shadow-lg transition-colors hover:bg-purple-500/20">
-            <input
-              type="text"
-              placeholder="Code de la partie"
-              value={inputCode}
-              onChange={(e) => setInputCode(e.target.value.toUpperCase())}
-              className="w-full rounded p-2 text-center text-black"
+            <Image
+              src="/assets/button-long.png"
+              alt=""
+              width={800}
+              height={100}
+              className="object-stretch pointer-events-none absolute inset-0 z-0 h-full w-full select-none"
             />
+            <span className="relative z-50 text-4xl text-black">
+              Créer une nouvelle partie
+            </span>
+          </button>
+          <div className="items-between flex w-1/2 gap-4 text-white">
+            <div className="need-border relative w-full">
+              <input
+                type="text"
+                placeholder="Code de la partie"
+                value={inputCode}
+                onChange={(e) => setInputCode(e.target.value.toUpperCase())}
+                className="relative z-20 w-full bg-transparent p-2 px-6 py-4 text-4xl text-white outline-none"
+              />
+            </div>
             <button
               onClick={handleJoinGame}
-              className="w-full rounded bg-purple-600 px-4 py-2 text-white hover:bg-purple-700"
+              className="relative w-fit cursor-pointer px-6 py-4 transition-all duration-300 ease-in-out hover:-translate-y-2 hover:shadow-lg hover:shadow-black"
             >
-              Rejoindre
+              <Image
+                src="/assets/button-short.png"
+                alt=""
+                width={300}
+                height={100}
+                className="object-stretch pointer-events-none absolute inset-0 z-0 h-full w-full select-none"
+              />
+              <span className="relative z-50 text-4xl text-nowrap text-black">
+                Entrez le code
+              </span>
             </button>
           </div>
         </motion.div>

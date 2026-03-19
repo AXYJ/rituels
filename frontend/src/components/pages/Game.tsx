@@ -259,7 +259,7 @@ export default function Game() {
       {/* Deck Joueur principal*/}
 
       <div
-        className={`col-start-2 col-end-3 row-start-3 row-end-4 grid grid-cols-3 gap-4 ${isMyTurn ? "" : "pointer-events-none grayscale-80"}`}
+        className={`col-start-2 col-end-3 row-start-3 row-end-4 grid grid-cols-3 items-start gap-4 ${isMyTurn ? "" : "pointer-events-none grayscale-80"}`}
       >
         <AnimatePresence>
           {deck?.cards?.map((card, index) => (

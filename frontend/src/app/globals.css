@@ -1,18 +1,32 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@font-face {
+  font-family: "Sweet and Salty";
+  src: url("../fonts/sweet_and_salty.woff2") format("woff2");
 }
 
 @theme {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --font-family-sweet-and-salty: "Sweet and Salty";
+
+  --color-red: #bc2e24;
+  --color-green: #62c74d;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+body {
+  font-family: var(--font-family-sweet-and-salty);
+  color: white;
+}
+
+.need-border::before {
+  content: "";
+  background-image: url("/assets/border.png");
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  pointer-events: none;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 10%;
+  z-index: 10;
 }
