@@ -11,6 +11,7 @@ import { Card } from "../../types/game";
 import WinnerScreen from "../game/WinnerScreen";
 import Helper from "../game/Helper";
 import RulesModal from "../header/RulesModal";
+import Logo from "../logo";
 
 export default function Game() {
   const [message, setMessage] = useState("");
@@ -29,6 +30,7 @@ export default function Game() {
     updateDeck,
     playerNumber,
     displayOrder,
+    setView,
   } = useGame();
 
   const me = players.find((p) => p.id === socket?.id);
@@ -38,9 +40,9 @@ export default function Game() {
   // Déterminer les decks adverses en fonction de displayOrder
   const opponents = displayOrder
     ? displayOrder
-        .slice(1)
-        .map((id) => players.find((p) => p.id === id))
-        .filter((p) => p !== undefined)
+      .slice(1)
+      .map((id) => players.find((p) => p.id === id))
+      .filter((p) => p !== undefined)
     : [];
 
   const getOpponentPlacementClass = (index: number, total: number) => {
@@ -127,14 +129,7 @@ export default function Game() {
 
   return (
     <div className="grid h-screen w-full grid-cols-3 grid-rows-3 gap-8 overflow-hidden p-4">
-      <button
-        onClick={() => {
-          quitLobby();
-        }}
-        className="h-fit w-fit rounded-full bg-red-500 px-6 py-2 font-bold text-white hover:bg-red-600"
-      >
-        Quitter la partie
-      </button>
+      <Logo className="absolute top-4 left-4 w-40" setView={quitLobby} />
 
       <button
         onClick={() => {
@@ -147,19 +142,17 @@ export default function Game() {
 
       {/* Historique des actions */}
 
-      <div className="relative col-start-1 col-end-2 row-start-3 row-end-4 flex h-full flex-col justify-between rounded-lg border bg-gray-50/10">
-        <h3 className="w-full bg-gray-900/50 p-2 font-bold text-white">
-          Historique des actions:
-        </h3>
-        <div ref={historyContainerRef} className="h-full overflow-y-auto p-2">
+      <div className="relative col-start-1 col-end-2 row-start-3 row-end-4 flex h-full flex-col justify-between">
+        <Image src="/assets/historique.png" alt="" width={800} height={100} className="object-fill pointer-events-none absolute inset-0 z-0 h-full w-full select-none" />
+        <div ref={historyContainerRef} className="h-full overflow-y-auto py-6 pl-6 pr-2 mr-4 my-2 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-400 [&::-webkit-scrollbar-thumb]:rounded-full">
           {history.map((h, index) => {
             const playerName =
               players.find((p) => p.id === h.player)?.name || h.player;
 
             if (h.type === "message") {
               return (
-                <div key={index} className="text-sm">
-                  <span className="font-semibold text-blue-400">
+                <div key={index} className="text-xl">
+                  <span className="font-semibold text-green">
                     {playerName}
                   </span>{" "}
                   : <span>{h.message}</span>
@@ -168,10 +161,10 @@ export default function Game() {
             }
 
             return (
-              <div key={index} className="text-sm">
-                <span className="font-semibold">{playerName}</span> a joué{" "}
+              <div key={index} className="text-xl">
+                <span className="font-semibold">{playerName}</span> a joué {" "}
                 <span className="italic">
-                  {h.card?.color} {h.card?.symbol}
+                  {h.card?.symbol} {h.card?.color}
                 </span>{" "}
                 et a gagné <span className="font-semibold">{h.points}</span>
                 {"  "}
@@ -182,19 +175,19 @@ export default function Game() {
         </div>
 
         <form
-          className="border-gray flex w-full overflow-hidden rounded-lg border bg-gray-900"
+          className="flex overflow-hidden rounded-lg bg-white mx-4 mb-4 z-10"
           onSubmit={handleSendMessage}
         >
           <input
             type="text"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            className="w-full bg-transparent px-2 py-2 text-white outline-none"
-            placeholder="Tchat..."
+            className="w-full bg-transparent px-4 py-4 text-black outline-none text-xl"
+            placeholder="Envoyer un message..."
           />
           <button
             type="submit"
-            className="bg-gray-800 px-8 font-bold hover:bg-gray-700"
+            className="px-8 text-xl bg-black transition-colors duration-300 ease-in-out hover:bg-gray-700 text-white"
           >
             Envoyer
           </button>
@@ -203,8 +196,8 @@ export default function Game() {
 
       {/* Zone de jeu */}
 
-      <div className="relative col-start-2 col-end-3 row-start-2 row-end-3 flex items-center justify-center p-8">
-        <h2 className="absolute -top-16 text-center">
+      <div className="relative col-start-2 col-end-3 row-start-2 row-end-3 flex items-end justify-center p-8">
+        <h2 className="absolute -top-16 text-center text-4xl">
           Au tour de :{" "}
           {players.find((p) => p.id === playerTurn)?.name || playerTurn}
         </h2>
@@ -241,7 +234,7 @@ export default function Game() {
                 }}
                 exit={{ opacity: 0, scale: 0.5 }}
                 transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                className="absolute h-32 w-24 drop-shadow-sm md:h-48 md:w-32 lg:h-64 lg:w-48"
+                className="absolute h-32 w-24 drop-shadow-sm md:h-48 md:w-32 lg:h-48 lg:w-32"
               >
                 <Image
                   src={`/cards/${played.symbol}-${played.color}.png`}
@@ -259,8 +252,11 @@ export default function Game() {
       {/* Deck Joueur principal*/}
 
       <div
-        className={`col-start-2 col-end-3 row-start-3 row-end-4 grid grid-cols-3 items-start gap-4 ${isMyTurn ? "" : "pointer-events-none grayscale-80"}`}
+        className={`col-start-2 col-end-3 row-start-3 row-end-4 grid grid-cols-3 items-start gap-4 relative ${isMyTurn ? "" : "pointer-events-none grayscale-80"}`}
       >
+        <h2 className="text-4xl absolute left-1/2 -translate-x-1/2 -top-1/4">
+          {me?.name}
+        </h2>
         <AnimatePresence>
           {deck?.cards?.map((card, index) => (
             <motion.div

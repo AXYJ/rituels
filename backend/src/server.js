@@ -43,8 +43,8 @@ function shuffle(array) {
 }
 
 function generateRules() {
-    const symbols = ["circle", "cross", "square", "triangle", "wave"];
-    const colors = ["red", "blue", "green", "yellow", "pink"];
+    const symbols = ["cercle", "croix", "carre", "triangle", "vague"];
+    const colors = ["rouge", "bleu", "vert", "jaune", "rose"];
 
     const values = shuffle([3, 2, 1, 0, -1]);
     const symbolRules = {};

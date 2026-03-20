@@ -157,7 +157,7 @@ export default function Lobby() {
           <button
             onClick={onGameStart}
             disabled={
-              players.filter((p) => p.isHost || p.isReady).length !== players.length || players.length === 1
+              players.filter((p) => p.isHost || p.isReady).length !== players.length || players.length === 5
             }
             className={`relative rounded-full px-6 py-2 font-bold text-white w-full transition-all duration-300 ease-in-out ${players.filter((p) => p.isHost || p.isReady).length === players.length ? "hover:-translate-y-2 hover:shadow-lg hover:shadow-black" : "cursor-not-allowed opacity-50"}`}
           >

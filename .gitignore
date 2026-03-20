@@ -42,3 +42,10 @@ next-env.d.ts
 # IDEs
 .vscode/
 .idea/
+
+# Autres pages
+Ambiance_Jeu.md
+AUDIT_REPORT.md
+DEPLOIEMENT.md
+CHECK_UP.md
+RituelsRegles.md

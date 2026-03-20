@@ -40,7 +40,7 @@ export default function Helper() {
                   <select
                     name={symbol}
                     id={symbol}
-                    className="col-span-2 w-full rounded-md border border-gray-300 p-2"
+                    className="col-span-2 w-full rounded-md border border-gray-300 p-2 bg-white text-black"
                   >
                     <option value="">--</option>
                     {[3, 2, 1, 0, -1].map((value) => (
@@ -64,7 +64,7 @@ export default function Helper() {
                   <select
                     name={color}
                     id={color}
-                    className="col-span-2 w-full rounded-md border border-gray-300 p-2"
+                    className="col-span-2 w-full rounded-md border border-gray-300 p-2 bg-white text-black"
                   >
                     <option value="">--</option>
                     {["Inversion", "Gel", "Répétition", "Neutre"].map(

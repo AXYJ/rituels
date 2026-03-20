@@ -45,7 +45,8 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     // Initialisation de la connexion
-    const newSocket = io("http://localhost:4000", {
+    const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:4000";
+    const newSocket = io(socketUrl, {
       transports: ["websocket", "polling"],
     });
 
