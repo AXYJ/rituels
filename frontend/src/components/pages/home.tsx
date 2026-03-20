@@ -11,7 +11,7 @@ import Logo from "../logo";
 
 export default function Home() {
   // Appel du contexte
-  const { createGame, joinGame } = useGame();
+  const { createGame, joinGame, error, setError } = useGame();
 
   // Gestion des états
   const [inputCode, setInputCode] = useState("");
@@ -23,6 +23,7 @@ export default function Home() {
 
   // Création d'une partie
   const startGame = () => {
+    setError(null);
     setBtnDisabled(true);
     createGame();
   };
@@ -30,6 +31,7 @@ export default function Home() {
   // Rejoindre une partie
   const handleJoinGame = () => {
     if (inputCode.trim()) {
+      setError(null);
       joinGame(inputCode);
     }
   };
@@ -56,6 +58,23 @@ export default function Home() {
         >
           <Logo />
         </motion.div>
+
+        {error && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="absolute top-10 flex items-center gap-4 rounded-md bg-red px-8 py-4 text-2xl font-bold text-white shadow-lg z-50"
+          >
+            <span>{error}</span>
+            <button
+              onClick={() => setError(null)}
+              className="text-white hover:text-gray-200"
+            >
+              ✕
+            </button>
+          </motion.div>
+        )}
 
         <motion.div
           key="actions"

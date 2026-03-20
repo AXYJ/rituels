@@ -9,8 +9,9 @@ export default function PlayerNameInput() {
   const { changeName } = useGame();
 
   const handleValidate = (name: string) => {
-    if (name.trim()) {
-      changeName(name);
+    const cleanName = name.trim().slice(0, 15);
+    if (cleanName) {
+      changeName(cleanName);
       setName("");
     }
   };
@@ -23,6 +24,7 @@ export default function PlayerNameInput() {
         className="rounded border p-2 text-black"
         value={name}
         onChange={(e) => setName(e.target.value)}
+        maxLength={15}
       />
       <button
         onClick={() => handleValidate(name)}

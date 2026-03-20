@@ -18,7 +18,9 @@ const io = new Server(server, {
         origin: "*",
         methods: ["GET", "POST"],
         credentials: true
-    }
+    },
+    pingInterval: 10000,
+    pingTimeout: 5000
 });
 
 // Stockage des parties
@@ -80,7 +82,7 @@ function nextPlayer(roomCode) {
 
 function win(player, points) {
     player.score += points;
-    if (player.score >= 20) {
+    if (player.score >= 15) {
         return true;
     }
     return false;
@@ -116,7 +118,9 @@ io.on("connection", (socket) => {
     // Rejoindre une partie
     socket.on("join_game", (roomCode) => {
         if (rooms[roomCode]) {
-            if (rooms[roomCode].players.length <= 4) {
+            if (rooms[roomCode].playerOrder && rooms[roomCode].playerOrder.length > 0) {
+                socket.emit("game_already_started");
+            } else if (rooms[roomCode].players.length <= 4) {
                 rooms[roomCode].players.push({ id: socket.id, name: "Player", isHost: false, isReady: false, score: 0, deck: { cards: null } });
                 socket.join(roomCode);
                 const players = rooms[roomCode].players;
@@ -182,6 +186,18 @@ io.on("connection", (socket) => {
                         room.players[0].isHost = true;
                     }
                     io.to(code).emit("room_updated", { players: room.players });
+
+                    // Si on était en jeu, on met à jour l'ordre de jeu et on passe le tour si c'était à lui
+                    if (room.playerOrder && room.playerOrder.includes(idPlayer)) {
+                        room.playerOrder = room.playerOrder.filter(id => id !== idPlayer);
+                        // On notifie les joueurs restants du nouveau tour de jeu
+                        if (room.playerOrder.length > 0) {
+                            io.to(code).emit("turn_updated", room.playerOrder);
+                        } else {
+                            // Si plus de joueur pour jouer, la partie peut se terminer (ou simplement être vide)
+                            delete rooms[code];
+                        }
+                    }
                 }
                 break;
             }
@@ -250,7 +266,7 @@ io.on("connection", (socket) => {
         for (const code in rooms) {
             const player = rooms[code].players.find(p => p.id === socket.id);
             if (player) {
-                io.to(code).emit("message_received", socket.id, message);
+                io.to(code).emit("message_received", player.name, message);
                 break;
             }
         }
@@ -264,6 +280,7 @@ io.on("connection", (socket) => {
             if (player) {
                 // Générer de nouvelles règles
                 room.rules = generateRules();
+                delete room.playerOrder;
 
                 // Remise à zéro des joueurs
                 room.players.forEach(p => {

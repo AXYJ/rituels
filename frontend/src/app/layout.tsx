@@ -4,6 +4,9 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Rituels",
   description: "Projet Rituels",
+  icons: {
+    icon: "/favicon.png",
+  },
 };
 
 export default function RootLayout({

@@ -12,6 +12,7 @@ import WinnerScreen from "../game/WinnerScreen";
 import Helper from "../game/Helper";
 import RulesModal from "../header/RulesModal";
 import Logo from "../logo";
+import { h2 } from "framer-motion/client";
 
 export default function Game() {
   const [message, setMessage] = useState("");
@@ -287,8 +288,11 @@ export default function Game() {
       {opponents.map((opponent, index) => (
         <div
           key={opponent?.id || index}
-          className={getOpponentPlacementClass(index, opponents.length)}
+          className={`relative ${getOpponentPlacementClass(index, opponents.length)}`}
         >
+          <h2 className="text-4xl absolute left-1/2 -translate-x-1/2 -bottom-1 whitespace-nowrap">
+            {opponent?.name}
+          </h2>
           {opponent?.deck?.cards?.map((card, cardIndex) => (
             <motion.div
               layout
@@ -314,7 +318,7 @@ export default function Game() {
         <div className="col-start-3 col-end-4 row-start-2 row-end-4 flex flex-col items-center justify-end gap-8">
           <div className="flex items-center gap-2">
             <Image
-              src={`/cards/seed.png`}
+              src={`/cards/Seed.png`}
               alt="card"
               width={1000}
               height={1000}

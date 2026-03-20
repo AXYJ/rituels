@@ -72,6 +72,15 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     newSocket.on("disconnect", (reason) => {
       setIsConnected(false);
       console.log("Socket déconnecté:", reason);
+      setView("home");
+      setError("Vous avez été déconnecté du serveur.");
+      setRoomCode("");
+      setPlayers([]);
+      setRules(null);
+      setPlayerNumber(0);
+      setHistory([]);
+      setLastEffect(null);
+      setDisplayOrder(null);
     });
 
     // ----------------
@@ -109,6 +118,9 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     });
     newSocket.on("room_not_found", () => {
       setError("Partie introuvable !");
+    });
+    newSocket.on("game_already_started", () => {
+      setError("La partie a déjà commencé !");
     });
 
     // Mise à jour du lobby
@@ -184,6 +196,12 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     // Partie gagnée
     newSocket.on("game_won", (idPlayer) => {
       setWinner(idPlayer);
+    });
+
+    // Mise à jour du tour de jeu (ex: déconnexion)
+    newSocket.on("turn_updated", (newOrder) => {
+      setPlayerTurn(newOrder[0]);
+      setPlayerOrder(newOrder);
     });
 
     // Partie réinitialisée (Rejouer)
@@ -304,15 +322,17 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
           // Effets rémanents (qui s'appliquent au tour actuel à cause du joueur précédent)
           if (lastEffect === "Gel") {
             points = 0;
+          } else if (lastEffect === "Inversion") {
+            points *= -1;
           }
 
           // Effets immédiats (qui modifient les points de la carte que je pose)
           switch (effectiveEffect) {
             case "Inversion":
-              points *= -1;
+              // N'altère pas mes points actuels, mais `effectiveEffect` sera enregistré pour l'inversion du prochain tour !
               break;
             case "Gel":
-              // N'altère pas mes points actuels, mais `effectiveEffect` sera enregistré pour le gel du prochain !
+              // N'altère pas mes points actuels, mais `effectiveEffect` sera enregistré pour le gel du prochain tour !
               break;
             case "Neutre":
             default:
