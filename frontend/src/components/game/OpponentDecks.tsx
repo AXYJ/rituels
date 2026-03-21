@@ -9,9 +9,9 @@ export default function OpponentDecks() {
 
   const opponents = displayOrder
     ? displayOrder
-      .slice(1)
-      .map((id) => players.find((p) => p.id === id))
-      .filter((p) => p !== undefined)
+        .slice(1)
+        .map((id) => players.find((p) => p.id === id))
+        .filter((p) => p !== undefined)
     : [];
 
   const getOpponentPlacementClass = (index: number, total: number) => {
@@ -57,7 +57,9 @@ export default function OpponentDecks() {
           key={opponent?.id || index}
           className={`relative ${getOpponentPlacementClass(index, opponents.length)}`}
         >
-          <h2 className={`text-4xl absolute whitespace-nowrap ${getOpponentNamePlacementClass(index, opponents.length)}`}>
+          <h2
+            className={`absolute text-4xl whitespace-nowrap ${getOpponentNamePlacementClass(index, opponents.length)}`}
+          >
             {opponent?.name}
           </h2>
           {opponent?.deck?.cards?.map((card: any, cardIndex: number) => (

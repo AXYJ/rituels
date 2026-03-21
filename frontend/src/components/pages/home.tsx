@@ -64,7 +64,7 @@ export default function Home() {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="absolute top-10 flex items-center gap-4 rounded-md bg-red px-8 py-4 text-2xl font-bold text-white shadow-lg z-50"
+            className="bg-red absolute top-10 z-50 flex items-center gap-4 rounded-md px-8 py-4 text-2xl font-bold text-white shadow-lg"
           >
             <span>{error}</span>
             <button
@@ -100,14 +100,14 @@ export default function Home() {
           <button
             onClick={startGame}
             disabled={btnDisabled}
-            className={`relative w-1/2 cursor-pointer px-12 py-4 rounded-3xl transition-all duration-300 ease-in-out hover:-translate-y-2 hover:shadow-lg hover:shadow-black`}
+            className={`relative w-1/2 cursor-pointer rounded-3xl px-12 py-4 transition-all duration-300 ease-in-out hover:-translate-y-2 hover:shadow-lg hover:shadow-black`}
           >
             <Image
               src="/assets/button-long.png"
               alt=""
               width={800}
               height={100}
-              className="object-fill pointer-events-none absolute inset-0 z-0 h-full w-full select-none"
+              className="pointer-events-none absolute inset-0 z-0 h-full w-full object-fill select-none"
             />
             <span className="relative z-50 text-4xl text-black">
               Créer une nouvelle partie
@@ -125,14 +125,14 @@ export default function Home() {
             </div>
             <button
               onClick={handleJoinGame}
-              className="relative w-fit cursor-pointer px-6 py-4 rounded-3xl transition-all duration-300 ease-in-out hover:-translate-y-2 hover:shadow-lg hover:shadow-black"
+              className="relative w-fit cursor-pointer rounded-3xl px-6 py-4 transition-all duration-300 ease-in-out hover:-translate-y-2 hover:shadow-lg hover:shadow-black"
             >
               <Image
                 src="/assets/button-short.png"
                 alt=""
                 width={300}
                 height={100}
-                className="object-fill pointer-events-none absolute inset-0 z-0 h-full w-full select-none"
+                className="pointer-events-none absolute inset-0 z-0 h-full w-full object-fill select-none"
               />
               <span className="relative z-50 text-4xl text-nowrap text-black">
                 Entrez le code

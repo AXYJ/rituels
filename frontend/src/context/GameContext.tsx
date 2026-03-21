@@ -47,7 +47,8 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     // Initialisation de la connexion
-    const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:4000";
+    const socketUrl =
+      process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:4000";
     const newSocket = io(socketUrl, {
       transports: ["websocket", "polling"],
     });
@@ -184,7 +185,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
         if (sfxVolume > 0) {
           const sound = new Audio("/sfx/flipcard.mp3");
           sound.volume = sfxVolume;
-          sound.play().catch(e => console.error("Erreur lecture audio :", e));
+          sound.play().catch((e) => console.error("Erreur lecture audio :", e));
         }
         setPlayers((prev) =>
           prev.map((p) => (p.id === idPlayer ? { ...p, score: newScore } : p))
@@ -201,7 +202,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       if (sfxVolume > 0) {
         const sound = new Audio("/sfx/notification.mp3");
         sound.volume = sfxVolume;
-        sound.play().catch(e => console.error("Erreur lecture audio :", e));
+        sound.play().catch((e) => console.error("Erreur lecture audio :", e));
       }
     });
 
@@ -348,12 +349,6 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
             default:
               break;
           }
-        }
-
-        if (sfxVolume > 0) {
-          const sound = new Audio("/sfx/flipcard.mp3");
-          sound.volume = sfxVolume;
-          sound.play().catch(e => console.error("Erreur lecture audio :", e));
         }
 
         socket.emit("card_played", socket.id, points, card, effectiveEffect);

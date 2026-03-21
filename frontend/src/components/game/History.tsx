@@ -7,7 +7,7 @@ import { useGame } from "../../context/GameContext";
 export default function History() {
   const [message, setMessage] = useState("");
   const { history, players, sendMessage } = useGame();
-  
+
   const historyContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -28,8 +28,17 @@ export default function History() {
 
   return (
     <div className="relative col-start-1 col-end-2 row-start-3 row-end-4 flex h-full flex-col justify-between">
-      <Image src="/assets/historique.png" alt="" width={800} height={100} className="object-fill pointer-events-none absolute inset-0 z-0 h-full w-full select-none" />
-      <div ref={historyContainerRef} className="h-full overflow-y-auto py-6 pl-6 pr-2 mr-4 my-2 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-400 [&::-webkit-scrollbar-thumb]:rounded-full">
+      <Image
+        src="/assets/historique.png"
+        alt=""
+        width={800}
+        height={100}
+        className="pointer-events-none absolute inset-0 z-0 h-full w-full object-fill select-none"
+      />
+      <div
+        ref={historyContainerRef}
+        className="my-2 mr-4 h-full overflow-y-auto py-6 pr-2 pl-6 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-400 [&::-webkit-scrollbar-track]:bg-transparent"
+      >
         {history.map((h, index) => {
           const playerName =
             players.find((p) => p.id === h.player)?.name || h.player;
@@ -37,21 +46,19 @@ export default function History() {
           if (h.type === "message") {
             return (
               <div key={index} className="text-xl">
-                <span className="font-semibold text-green">
-                  {playerName}
-                </span>{" "}
-                : <span>{h.message}</span>
+                <span className="text-green font-semibold">{playerName}</span> :{" "}
+                <span>{h.message}</span>
               </div>
             );
           }
 
           return (
             <div key={index} className="text-xl">
-              <span className="font-semibold">{playerName}</span> a joué {" "}
+              <span className="font-semibold">{playerName}</span> a joué{" "}
               <span className="italic">
                 {h.card?.symbol} {h.card?.color}
               </span>{" "}
-               et a gagné <span className="font-semibold">{h.points}</span>
+              et a gagné <span className="font-semibold">{h.points}</span>
               {"  "}
               points
             </div>
@@ -60,19 +67,19 @@ export default function History() {
       </div>
 
       <form
-        className="flex overflow-hidden rounded-lg bg-white mx-4 mb-4 z-10"
+        className="z-10 mx-4 mb-4 flex overflow-hidden rounded-lg bg-white"
         onSubmit={handleSendMessage}
       >
         <input
           type="text"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          className="w-full bg-transparent px-4 py-4 text-black outline-none text-xl"
+          className="w-full bg-transparent px-4 py-4 text-xl text-black outline-none"
           placeholder="Envoyer un message..."
         />
         <button
           type="submit"
-          className="px-8 text-xl bg-black transition-colors duration-300 ease-in-out hover:bg-gray-700 text-white"
+          className="bg-black px-8 text-xl text-white transition-colors duration-300 ease-in-out hover:bg-gray-700"
         >
           Envoyer
         </button>

@@ -10,8 +10,15 @@ import Image from "next/image";
 
 export default function Lobby() {
   // Appel du contexte
-  const { players, roomCode, beReady, quitLobby, startGame, socket, changeName } =
-    useGame();
+  const {
+    players,
+    roomCode,
+    beReady,
+    quitLobby,
+    startGame,
+    socket,
+    changeName,
+  } = useGame();
 
   const me = players.find((p) => p.id === socket?.id);
   const isHost = me?.isHost || false;
@@ -40,7 +47,7 @@ export default function Lobby() {
   };
 
   return (
-    <section className="flex min-h-screen flex-col items-center justify-center gap-16 max-w-[1024px] w-full mx-auto">
+    <section className="mx-auto flex min-h-screen w-full max-w-[1024px] flex-col items-center justify-center gap-16">
       <h1 className="relative flex items-center gap-4 text-5xl">
         Code : {roomCode}{" "}
         <button
@@ -52,11 +59,10 @@ export default function Lobby() {
             alt="Copier"
             width={40}
             height={40}
-            className="h-10 w-10 hover:-translate-y-2 hover:shadow-lg hover:shadow-black transition-all duration-300 ease-in-out"
+            className="h-10 w-10 transition-all duration-300 ease-in-out hover:-translate-y-2 hover:shadow-lg hover:shadow-black"
           />
         </button>
       </h1>
-
 
       {/* Liste des joueurs */}
       <div className="w-1/2 text-center">
@@ -68,7 +74,7 @@ export default function Lobby() {
               return (
                 <li
                   key={index}
-                  className={`flex w-full items-center justify-center rounded-full py-4 text-3xl relative hover:-translate-y-2 hover:shadow-lg hover:shadow-black transition-all duration-300 ease-in-out ${player.id === socket?.id ? "cursor-pointer" : "pointer-events-none"}`}
+                  className={`relative flex w-full items-center justify-center rounded-full py-4 text-3xl transition-all duration-300 ease-in-out hover:-translate-y-2 hover:shadow-lg hover:shadow-black ${player.id === socket?.id ? "cursor-pointer" : "pointer-events-none"}`}
                   onClick={() => {
                     if (player.id === socket?.id && !isEditing) {
                       setIsEditing(true);
@@ -85,13 +91,13 @@ export default function Lobby() {
                     alt=""
                     width={800}
                     height={100}
-                    className="object-fill pointer-events-none absolute inset-0 z-0 h-full w-full select-none"
+                    className="pointer-events-none absolute inset-0 z-0 h-full w-full object-fill select-none"
                   />
                   {isEditing && player.id === socket?.id ? (
                     <input
                       autoFocus
                       type="text"
-                      className={`relative z-50 text-4xl bg-transparent border-b-2 outline-none text-center w-1/2 uppercase ${player.isHost || player.isReady ? "text-black border-black" : "text-white border-white"}`}
+                      className={`relative z-50 w-1/2 border-b-2 bg-transparent text-center text-4xl uppercase outline-none ${player.isHost || player.isReady ? "border-black text-black" : "border-white text-white"}`}
                       value={editName}
                       onChange={(e) => setEditName(e.target.value)}
                       onBlur={() => {
@@ -108,24 +114,26 @@ export default function Lobby() {
                       }}
                     />
                   ) : (
-                    <span className={`relative z-50 text-4xl ${player.isHost || player.isReady ? "text-black" : "text-white"}`}>
-                      {player.name} {(player.isHost || player.isReady) && "(Prêt)"}
+                    <span
+                      className={`relative z-50 text-4xl ${player.isHost || player.isReady ? "text-black" : "text-white"}`}
+                    >
+                      {player.name}{" "}
+                      {(player.isHost || player.isReady) && "(Prêt)"}
                     </span>
                   )}
                   {player.id === socket?.id && (
-                      <Image
-                        src={
-                          player.isHost || player.isReady
-                            ? "/assets/pen-to-square-black.png"
-                            : "/assets/pen-to-square.png"
-                        }
-                        alt=""
-                        width={100}
-                        height={100}
-                        className="pointer-events-none z-0 w-12 select-none absolute right-4"
-                      />
-                    )
-                  }
+                    <Image
+                      src={
+                        player.isHost || player.isReady
+                          ? "/assets/pen-to-square-black.png"
+                          : "/assets/pen-to-square.png"
+                      }
+                      alt=""
+                      width={100}
+                      height={100}
+                      className="pointer-events-none absolute right-4 z-0 w-12 select-none"
+                    />
+                  )}
                 </li>
               );
             }
@@ -133,14 +141,14 @@ export default function Lobby() {
             return (
               <li
                 key={index}
-                className="flex w-full items-center justify-center rounded-full py-4 text-3xl transition-colors relative cursor-default"
+                className="relative flex w-full cursor-default items-center justify-center rounded-full py-4 text-3xl transition-colors"
               >
                 <Image
                   src="/assets/button-long-border.png"
                   alt=""
                   width={800}
                   height={100}
-                  className="object-fill pointer-events-none absolute inset-0 z-0 h-full w-full select-none"
+                  className="pointer-events-none absolute inset-0 z-0 h-full w-full object-fill select-none"
                 />
                 <span className="relative z-50 text-4xl text-white">
                   En attente de joueurs...
@@ -152,28 +160,31 @@ export default function Lobby() {
       </div>
 
       {/* Boutons d'action */}
-      <div className="flex gap-4 w-1/2">
+      <div className="flex w-1/2 gap-4">
         {isHost && (
           <button
             onClick={onGameStart}
             disabled={
-              players.filter((p) => p.isHost || p.isReady).length !== players.length || players.length === 5
+              players.filter((p) => p.isHost || p.isReady).length !==
+                players.length || players.length === 5
             }
-            className={`relative rounded-full px-6 py-2 font-bold text-white w-full cursor-pointer transition-all duration-300 ease-in-out ${players.filter((p) => p.isHost || p.isReady).length === players.length ? "hover:-translate-y-2 hover:shadow-lg hover:shadow-black" : "cursor-not-allowed opacity-50"}`}
+            className={`relative w-full cursor-pointer rounded-full px-6 py-2 font-bold text-white transition-all duration-300 ease-in-out ${players.filter((p) => p.isHost || p.isReady).length === players.length ? "hover:-translate-y-2 hover:shadow-lg hover:shadow-black" : "cursor-not-allowed opacity-50"}`}
           >
             <Image
               src={
-                players.filter((p) => p.isHost || p.isReady).length === players.length && players.length !== 1
+                players.filter((p) => p.isHost || p.isReady).length ===
+                  players.length && players.length !== 1
                   ? "/assets/button-long-green.png"
                   : "/assets/button-long-red.png"
               }
               alt=""
               width={800}
               height={100}
-              className="object-fill pointer-events-none absolute inset-0 z-0 h-full w-full select-none"
+              className="pointer-events-none absolute inset-0 z-0 h-full w-full object-fill select-none"
             />
             <span className="relative z-50 text-2xl text-white">
-              Lancer la partie ({players.filter((p) => p.isHost || p.isReady).length}/
+              Lancer la partie (
+              {players.filter((p) => p.isHost || p.isReady).length}/
               {players.length})
             </span>
           </button>
@@ -181,7 +192,7 @@ export default function Lobby() {
         {!isHost && (
           <button
             onClick={handleReady}
-            className="relative rounded-full px-6 py-2 font-bold text-white w-full cursor-pointer hover:-translate-y-2 hover:shadow-lg hover:shadow-black transition-all duration-300 ease-in-out"
+            className="relative w-full cursor-pointer rounded-full px-6 py-2 font-bold text-white transition-all duration-300 ease-in-out hover:-translate-y-2 hover:shadow-lg hover:shadow-black"
           >
             <Image
               src={
@@ -192,7 +203,7 @@ export default function Lobby() {
               alt=""
               width={800}
               height={100}
-              className="object-fill pointer-events-none absolute inset-0 z-0 h-full w-full select-none"
+              className="pointer-events-none absolute inset-0 z-0 h-full w-full object-fill select-none"
             />
             <span className="relative z-50 text-2xl text-white">
               {isReady ? "Annuler" : "Prêt"}
@@ -201,18 +212,16 @@ export default function Lobby() {
         )}
         <button
           onClick={handleQuit}
-          className="relative rounded-full px-6 py-2 font-bold text-white w-full cursor-pointer hover:-translate-y-2 hover:shadow-lg hover:shadow-black transition-all duration-300 ease-in-out"
+          className="relative w-full cursor-pointer rounded-full px-6 py-2 font-bold text-white transition-all duration-300 ease-in-out hover:-translate-y-2 hover:shadow-lg hover:shadow-black"
         >
           <Image
             src="/assets/button-long-red.png"
             alt=""
             width={800}
             height={100}
-            className="object-fill pointer-events-none absolute inset-0 z-0 h-full w-full select-none"
+            className="pointer-events-none absolute inset-0 z-0 h-full w-full object-fill select-none"
           />
-          <span className="relative z-50 text-2xl text-white">
-            Quitter
-          </span>
+          <span className="relative z-50 text-2xl text-white">Quitter</span>
         </button>
       </div>
 

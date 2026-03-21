@@ -11,12 +11,17 @@ type PlayerDeckProps = {
   handleCardClick: (card: Card) => void;
 };
 
-export default function PlayerDeck({ me, isMyTurn, deck, handleCardClick }: PlayerDeckProps) {
+export default function PlayerDeck({
+  me,
+  isMyTurn,
+  deck,
+  handleCardClick,
+}: PlayerDeckProps) {
   return (
     <div
-      className={`col-start-2 col-end-3 row-start-3 row-end-4 grid grid-cols-3 items-start gap-4 relative ${isMyTurn ? "" : "pointer-events-none grayscale-80"}`}
+      className={`relative col-start-2 col-end-3 row-start-3 row-end-4 grid grid-cols-3 items-start gap-4 ${isMyTurn ? "" : "pointer-events-none grayscale-80"}`}
     >
-      <h2 className="text-4xl absolute left-1/2 -translate-x-1/2 -top-1/4">
+      <h2 className="absolute -top-1/4 left-1/2 -translate-x-1/2 text-4xl">
         {me?.name}
       </h2>
       <AnimatePresence>
