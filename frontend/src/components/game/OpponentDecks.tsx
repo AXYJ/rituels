@@ -1,0 +1,83 @@
+"use client";
+
+import Image from "next/image";
+import { motion } from "framer-motion";
+import { useGame } from "../../context/GameContext";
+
+export default function OpponentDecks() {
+  const { players, displayOrder } = useGame();
+
+  const opponents = displayOrder
+    ? displayOrder
+      .slice(1)
+      .map((id) => players.find((p) => p.id === id))
+      .filter((p) => p !== undefined)
+    : [];
+
+  const getOpponentPlacementClass = (index: number, total: number) => {
+    // Note: Tailwindcss n'accepte pas les strings dynamiques ex: `col-start-${x}`
+    // On doit écrire en entier la classe pour qu'elle soit compilée !
+    if (total === 1)
+      return "col-start-2 col-end-3 row-start-1 row-end-2 flex -translate-y-1/2 items-center justify-center gap-4";
+    if (total === 2) {
+      if (index === 0)
+        return "col-start-1 col-end-2 row-start-2 row-end-3 flex items-end justify-center gap-4 rotate-90 -translate-x-1/2 h-fit";
+      if (index === 1)
+        return "col-start-3 col-end-4 row-start-2 row-end-3 flex items-end justify-center gap-4 -rotate-90 translate-x-1/2 h-fit";
+    }
+    if (total === 3) {
+      if (index === 0)
+        return "col-start-1 col-end-2 row-start-2 row-end-3 flex items-center justify-center gap-4 rotate-90 -translate-x-1/2";
+      if (index === 1)
+        return "col-start-2 col-end-3 row-start-1 row-end-2 flex -translate-y-1/2 items-center justify-center gap-4";
+      if (index === 2)
+        return "col-start-3 col-end-4 row-start-2 row-end-3 flex items-center justify-center gap-4 -rotate-90 translate-x-1/2";
+    }
+    return "hidden";
+  };
+
+  const getOpponentNamePlacementClass = (index: number, total: number) => {
+    if (total === 1) return "left-1/2 -translate-x-1/2 -bottom-1";
+    if (total === 2) {
+      if (index === 0) return "right-1/2 translate-x-1/2 -top-16"; // gauche
+      if (index === 1) return "left-1/2 -translate-x-1/2 -top-16"; // droite
+    }
+    if (total === 3) {
+      if (index === 0) return "right-1/2 translate-x-1/2 -top-16"; // gauche
+      if (index === 1) return "left-1/2 -translate-x-1/2 -bottom-1"; // haut
+      if (index === 2) return "left-1/2 -translate-x-1/2 -top-16"; // droite
+    }
+    return "left-1/2 -translate-x-1/2 -bottom-1";
+  };
+
+  return (
+    <>
+      {opponents.map((opponent, index) => (
+        <div
+          key={opponent?.id || index}
+          className={`relative ${getOpponentPlacementClass(index, opponents.length)}`}
+        >
+          <h2 className={`text-4xl absolute whitespace-nowrap ${getOpponentNamePlacementClass(index, opponents.length)}`}>
+            {opponent?.name}
+          </h2>
+          {opponent?.deck?.cards?.map((card: any, cardIndex: number) => (
+            <motion.div
+              layout
+              layoutId={`card-back-${opponent?.id}-${card.id || cardIndex}`}
+              key={card.id || cardIndex}
+              className="flex items-center justify-center"
+            >
+              <Image
+                src={`/cards/card-back.png`}
+                alt="card back"
+                width={400}
+                height={600}
+                className="h-32 w-24 object-contain"
+              />
+            </motion.div>
+          ))}
+        </div>
+      ))}
+    </>
+  );
+}

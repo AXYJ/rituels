@@ -100,7 +100,7 @@ export default function Home() {
           <button
             onClick={startGame}
             disabled={btnDisabled}
-            className={`relative w-1/2 cursor-pointer px-12 py-4 transition-all duration-300 ease-in-out hover:-translate-y-2 hover:shadow-lg hover:shadow-black`}
+            className={`relative w-1/2 cursor-pointer px-12 py-4 rounded-3xl transition-all duration-300 ease-in-out hover:-translate-y-2 hover:shadow-lg hover:shadow-black`}
           >
             <Image
               src="/assets/button-long.png"
@@ -125,7 +125,7 @@ export default function Home() {
             </div>
             <button
               onClick={handleJoinGame}
-              className="relative w-fit cursor-pointer px-6 py-4 transition-all duration-300 ease-in-out hover:-translate-y-2 hover:shadow-lg hover:shadow-black"
+              className="relative w-fit cursor-pointer px-6 py-4 rounded-3xl transition-all duration-300 ease-in-out hover:-translate-y-2 hover:shadow-lg hover:shadow-black"
             >
               <Image
                 src="/assets/button-short.png"

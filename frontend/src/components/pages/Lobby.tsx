@@ -45,7 +45,7 @@ export default function Lobby() {
         Code : {roomCode}{" "}
         <button
           onClick={handleCopyCode}
-          className="absolute top-1/2 -right-1/2 -translate-y-1/2"
+          className="absolute top-1/2 -right-1/2 -translate-y-1/2 cursor-pointer"
         >
           <Image
             src="/assets/copy.svg"
@@ -133,7 +133,7 @@ export default function Lobby() {
             return (
               <li
                 key={index}
-                className="flex w-full items-center justify-center rounded-full py-4 text-3xl transition-colors relative"
+                className="flex w-full items-center justify-center rounded-full py-4 text-3xl transition-colors relative cursor-default"
               >
                 <Image
                   src="/assets/button-long-border.png"
@@ -159,7 +159,7 @@ export default function Lobby() {
             disabled={
               players.filter((p) => p.isHost || p.isReady).length !== players.length || players.length === 5
             }
-            className={`relative rounded-full px-6 py-2 font-bold text-white w-full transition-all duration-300 ease-in-out ${players.filter((p) => p.isHost || p.isReady).length === players.length ? "hover:-translate-y-2 hover:shadow-lg hover:shadow-black" : "cursor-not-allowed opacity-50"}`}
+            className={`relative rounded-full px-6 py-2 font-bold text-white w-full cursor-pointer transition-all duration-300 ease-in-out ${players.filter((p) => p.isHost || p.isReady).length === players.length ? "hover:-translate-y-2 hover:shadow-lg hover:shadow-black" : "cursor-not-allowed opacity-50"}`}
           >
             <Image
               src={
@@ -181,7 +181,7 @@ export default function Lobby() {
         {!isHost && (
           <button
             onClick={handleReady}
-            className="relative rounded-full px-6 py-2 font-bold text-white w-full hover:-translate-y-2 hover:shadow-lg hover:shadow-black transition-all duration-300 ease-in-out"
+            className="relative rounded-full px-6 py-2 font-bold text-white w-full cursor-pointer hover:-translate-y-2 hover:shadow-lg hover:shadow-black transition-all duration-300 ease-in-out"
           >
             <Image
               src={
@@ -201,7 +201,7 @@ export default function Lobby() {
         )}
         <button
           onClick={handleQuit}
-          className="relative rounded-full px-6 py-2 font-bold text-white w-full hover:-translate-y-2 hover:shadow-lg hover:shadow-black transition-all duration-300 ease-in-out"
+          className="relative rounded-full px-6 py-2 font-bold text-white w-full cursor-pointer hover:-translate-y-2 hover:shadow-lg hover:shadow-black transition-all duration-300 ease-in-out"
         >
           <Image
             src="/assets/button-long-red.png"

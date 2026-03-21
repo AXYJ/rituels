@@ -30,3 +30,20 @@ body {
   height: 10%;
   z-index: 10;
 }
+
+.aside-btn-1 {
+  top: anchor(--settings top, 10%);
+  left: anchor(--settings left, 0%);
+  transform: translateX(-100%);
+}
+
+.aside-btn-2 {
+  top: anchor(--settings top, 20%);
+  left: anchor(--settings left, 0%);
+  transform: translateX(-100%);
+}
+
+p {
+  font-size: 1.5rem;
+  line-height: 1;
+}

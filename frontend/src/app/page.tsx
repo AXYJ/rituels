@@ -2,6 +2,7 @@
 
 // Components
 import { GameProvider, useGame } from "../context/GameContext";
+import { useEffect, useRef } from "react";
 import Home from "../components/pages/home";
 import Lobby from "../components/pages/Lobby";
 import Game from "../components/pages/Game";
@@ -17,10 +18,44 @@ function GameContent() {
     case "lobby":
       return <Lobby />;
     case "game":
-      return <Game />;
+      return (
+        <>
+          <AudioPlayer />
+          <Game />
+        </>
+      );
     default:
       return <Home />;
   }
+}
+
+function AudioPlayer() {
+  const { volume } = useGame();
+  const audioRef = useRef<HTMLAudioElement>(null);
+
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = volume;
+      if (audioRef.current.paused) {
+        audioRef.current.play().catch(() => {});
+      }
+    }
+  }, [volume]);
+
+  useEffect(() => {
+    const handleInteraction = () => {
+      if (audioRef.current?.paused) {
+        audioRef.current.play().catch(() => {});
+      }
+      document.removeEventListener("click", handleInteraction);
+    };
+    document.addEventListener("click", handleInteraction);
+    return () => document.removeEventListener("click", handleInteraction);
+  }, []);
+
+  return (
+    <audio ref={audioRef} autoPlay loop src="/music.wav" />
+  );
 }
 
 export default function App() {

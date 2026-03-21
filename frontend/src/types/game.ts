@@ -71,6 +71,11 @@ export interface GameContextType {
   setWinner: (winner: string | null) => void;
   displayOrder: string[] | null;
   setDisplayOrder: (displayOrder: string[] | null) => void;
+  // Volume
+  volume: number;
+  setVolume: (volume: number) => void;
+  sfxVolume: number;
+  setSfxVolume: (sfxVolume: number) => void;
 }
 
 // Types pour les règles issues du serveur

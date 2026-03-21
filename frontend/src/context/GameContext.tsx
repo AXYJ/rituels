@@ -42,6 +42,8 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   const [lastEffect, setLastEffect] = useState<string | null>(null);
   const [winner, setWinner] = useState<string | null>(null);
   const [displayOrder, setDisplayOrder] = useState<string[] | null>(null);
+  const [volume, setVolume] = useState(0.5);
+  const [sfxVolume, setSfxVolume] = useState(0.5);
 
   useEffect(() => {
     // Initialisation de la connexion
@@ -179,6 +181,11 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
         setPlayerTurn(newOrder[0]);
         setPlayerOrder(newOrder);
         // Met à jour le score du joueur
+        if (sfxVolume > 0) {
+          const sound = new Audio("/sfx/flipcard.mp3");
+          sound.volume = sfxVolume;
+          sound.play().catch(e => console.error("Erreur lecture audio :", e));
+        }
         setPlayers((prev) =>
           prev.map((p) => (p.id === idPlayer ? { ...p, score: newScore } : p))
         );
@@ -191,6 +198,11 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
         ...prev,
         { type: "message", player: idPlayer, message },
       ]);
+      if (sfxVolume > 0) {
+        const sound = new Audio("/sfx/notification.mp3");
+        sound.volume = sfxVolume;
+        sound.play().catch(e => console.error("Erreur lecture audio :", e));
+      }
     });
 
     // Partie gagnée
@@ -322,14 +334,12 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
           // Effets rémanents (qui s'appliquent au tour actuel à cause du joueur précédent)
           if (lastEffect === "Gel") {
             points = 0;
-          } else if (lastEffect === "Inversion") {
-            points *= -1;
           }
 
           // Effets immédiats (qui modifient les points de la carte que je pose)
           switch (effectiveEffect) {
             case "Inversion":
-              // N'altère pas mes points actuels, mais `effectiveEffect` sera enregistré pour l'inversion du prochain tour !
+              points *= -1;
               break;
             case "Gel":
               // N'altère pas mes points actuels, mais `effectiveEffect` sera enregistré pour le gel du prochain tour !
@@ -338,6 +348,12 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
             default:
               break;
           }
+        }
+
+        if (sfxVolume > 0) {
+          const sound = new Audio("/sfx/flipcard.mp3");
+          sound.volume = sfxVolume;
+          sound.play().catch(e => console.error("Erreur lecture audio :", e));
         }
 
         socket.emit("card_played", socket.id, points, card, effectiveEffect);
@@ -419,6 +435,10 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       setDisplayOrder,
       resetGame,
       updateDeck,
+      volume,
+      setVolume,
+      sfxVolume,
+      setSfxVolume,
     }),
     [
       socket,
@@ -454,6 +474,10 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       setDisplayOrder,
       resetGame,
       updateDeck,
+      volume,
+      setVolume,
+      sfxVolume,
+      setSfxVolume,
     ]
   );
 
