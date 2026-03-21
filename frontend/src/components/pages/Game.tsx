@@ -81,7 +81,7 @@ export default function Game() {
 
   return (
     <div className="grid h-screen w-full grid-cols-3 grid-rows-3 gap-8 overflow-hidden p-4">
-      <Logo className="absolute top-4 left-4 w-40" setView={quitLobby} />
+      <Logo className="absolute top-4 left-4 w-40 h-16" setView={quitLobby} />
 
       <button
         onClick={() => {
