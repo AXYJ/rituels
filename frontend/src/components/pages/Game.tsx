@@ -15,6 +15,7 @@ import PlayerDeck from "../game/PlayerDeck";
 import OpponentDecks from "../game/OpponentDecks";
 import RulesModal from "../header/RulesModal";
 import Logo from "../logo";
+import { section } from "framer-motion/client";
 
 export default function Game() {
   const [showRules, setShowRules] = useState(false);
@@ -80,102 +81,109 @@ export default function Game() {
   }, [deck?.cards, rules, setLocalPlayerDeck, updateDeck]);
 
   return (
-    <div className="grid h-screen w-full grid-cols-3 grid-rows-3 gap-8 overflow-hidden p-4">
-      <Logo className="absolute top-4 left-4 w-40 h-16" setView={quitLobby} />
+    <section className="bg-[radial-gradient(ellipse_31.48%_48.47%_at_51.72%_50.00%,_#464441_0%,_#191918_100%)]">
+      <div className="grid h-screen w-full grid-cols-3 grid-rows-3 gap-8 overflow-hidden p-4">
+        <Logo className="absolute top-4 left-4 h-16 w-40" setView={quitLobby} />
 
-      <button
-        onClick={() => {
-          setShowRules(true);
-        }}
-        className="col-start-3 col-end-4 h-fit w-fit justify-self-end rounded-full px-6 py-2 font-bold transition-transform duration-300 hover:scale-110"
-      >
-        <Image src="/assets/settings.png" alt="rules" width={50} height={50} />
-      </button>
+        <button
+          onClick={() => {
+            setShowRules(true);
+          }}
+          className="col-start-3 col-end-4 h-fit w-fit justify-self-end rounded-full px-6 py-2 font-bold transition-transform duration-300 hover:scale-110"
+        >
+          <Image
+            src="/assets/settings.png"
+            alt="rules"
+            width={50}
+            height={50}
+          />
+        </button>
 
-      {/* Historique des actions */}
+        {/* Historique des actions */}
 
-      <History />
+        <History />
 
-      {/* Zone de jeu */}
+        {/* Zone de jeu */}
 
-      <div className="relative col-start-2 col-end-3 row-start-2 row-end-3 flex items-end justify-center p-8">
-        <h2 className="absolute -top-16 text-center text-4xl">
-          Au tour de :{" "}
-          {players.find((p) => p.id === playerTurn)?.name || playerTurn}
-        </h2>
-        <AnimatePresence>
-          {(() => {
-            const playedCards = history
-              .filter((h) => h.type === "card" && h.card)
-              .map((h) => h.card!);
+        <div className="relative col-start-2 col-end-3 row-start-2 row-end-3 flex items-end justify-center p-8">
+          <h2 className="absolute -top-16 text-center">
+            Au tour de :{" "}
+            {players.find((p) => p.id === playerTurn)?.name || playerTurn}
+          </h2>
+          <AnimatePresence>
+            {(() => {
+              const playedCards = history
+                .filter((h) => h.type === "card" && h.card)
+                .map((h) => h.card!);
 
-            // On ajoute pendingCard uniquement s'il est différent de la dernière carte enregistrée par le serveur
-            if (pendingCard) {
-              const lastPlayedCard =
-                playedCards.length > 0
-                  ? playedCards[playedCards.length - 1]
-                  : null;
-              if (!lastPlayedCard || lastPlayedCard.id !== pendingCard.id) {
-                playedCards.push(pendingCard);
+              // On ajoute pendingCard uniquement s'il est différent de la dernière carte enregistrée par le serveur
+              if (pendingCard) {
+                const lastPlayedCard =
+                  playedCards.length > 0
+                    ? playedCards[playedCards.length - 1]
+                    : null;
+                if (!lastPlayedCard || lastPlayedCard.id !== pendingCard.id) {
+                  playedCards.push(pendingCard);
+                }
               }
-            }
 
-            return playedCards.map((played, i) => (
-              <motion.div
-                layout
-                layoutId={`card-${played.id || played.symbol + played.color}`}
-                // Utiliser l'index ou une combinaison avec l'index pour garantir l'unicité de la clé,
-                // car layoutId gère l'animation, la "key" React sert juste à l'arbre.
-                key={`played-${played.id}-${i}`}
-                initial={{ opacity: 0, scale: 0.5, y: -50 }}
-                animate={{
-                  opacity: 1,
-                  scale: 1,
-                  y: 0,
-                  rotate: (i % 5) * 6 - 12,
-                }}
-                exit={{ opacity: 0, scale: 0.5 }}
-                transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                className="absolute h-32 w-24 drop-shadow-sm md:h-48 md:w-32 lg:h-48 lg:w-32"
-              >
-                <Image
-                  src={`/cards/${played.symbol}-${played.color}.png`}
-                  alt="played card"
-                  width={400}
-                  height={600}
-                  className="pointer-events-none h-full w-full object-contain"
-                />
-              </motion.div>
-            ));
-          })()}
+              return playedCards.map((played, i) => (
+                <motion.div
+                  layout
+                  layoutId={`card-${played.id || played.symbol + played.color}`}
+                  // Utiliser l'index ou une combinaison avec l'index pour garantir l'unicité de la clé,
+                  // car layoutId gère l'animation, la "key" React sert juste à l'arbre.
+                  key={`played-${played.id}-${i}`}
+                  initial={{ opacity: 0, scale: 0.5, y: -50 }}
+                  animate={{
+                    opacity: 1,
+                    scale: 1,
+                    y: 0,
+                    rotate: (i % 5) * 6 - 12,
+                  }}
+                  exit={{ opacity: 0, scale: 0.5 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                  className="absolute h-32 w-24 drop-shadow-sm md:h-48 md:w-32 lg:h-48 lg:w-32"
+                >
+                  <Image
+                    src={`/cards/${played.symbol}-${played.color}.png`}
+                    alt="played card"
+                    width={400}
+                    height={600}
+                    className="pointer-events-none h-full w-full object-contain"
+                  />
+                </motion.div>
+              ));
+            })()}
+          </AnimatePresence>
+        </div>
+
+        {/* Deck Joueur principal*/}
+
+        <PlayerDeck
+          me={me}
+          isMyTurn={isMyTurn}
+          deck={deck}
+          handleCardClick={handleCardClick}
+        />
+
+        {/* Decks adverses (haut et côtés) */}
+
+        <OpponentDecks />
+
+        {/* Helper and Score */}
+
+        <Helper />
+
+        {/* Winner */}
+
+        {winner && <WinnerScreen />}
+
+        {/* Rules Modal */}
+        <AnimatePresence>
+          {showRules && <RulesModal onClose={() => setShowRules(false)} />}
         </AnimatePresence>
       </div>
-
-      {/* Deck Joueur principal*/}
-
-      <PlayerDeck
-        me={me}
-        isMyTurn={isMyTurn}
-        deck={deck}
-        handleCardClick={handleCardClick}
-      />
-
-      {/* Decks adverses (haut et côtés) */}
-
-      <OpponentDecks />
-
-      {/* Helper and Score */}
-
-      <Helper />
-
-      {/* Winner */}
-
-      {winner && <WinnerScreen />}
-
-      {/* Rules Modal */}
-      <AnimatePresence>
-        {showRules && <RulesModal onClose={() => setShowRules(false)} />}
-      </AnimatePresence>
-    </div>
+    </section>
   );
 }

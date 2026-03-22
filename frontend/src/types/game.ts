@@ -76,6 +76,9 @@ export interface GameContextType {
   setVolume: (volume: number) => void;
   sfxVolume: number;
   setSfxVolume: (sfxVolume: number) => void;
+  // Seuil
+  threshold: number;
+  setThreshold: (threshold: number) => void;
 }
 
 // Types pour les règles issues du serveur

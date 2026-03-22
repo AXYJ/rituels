@@ -54,13 +54,14 @@ export default function History() {
 
           return (
             <div key={index} className="text-xl">
-              <span className="font-semibold">{playerName}</span> a joué{" "}
+              <span className="font-semibold">{playerName}</span>
+              {" a joué "}
               <span className="italic">
                 {h.card?.symbol} {h.card?.color}
-              </span>{" "}
-              et a gagné <span className="font-semibold">{h.points}</span>
-              {"  "}
-              points
+              </span>
+              {" et a gagné "}
+              <span className="font-semibold">{h.points}</span>
+              {" points"}
             </div>
           );
         })}

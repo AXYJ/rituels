@@ -80,9 +80,9 @@ function nextPlayer(roomCode) {
     return playerOrder;
 }
 
-function win(player, points) {
+function win(player, points, room) {
     player.score += points;
-    if (player.score >= 15) {
+    if (player.score >= room.threshold) {
         return true;
     }
     return false;
@@ -210,7 +210,7 @@ io.on("connection", (socket) => {
     });
 
     // Démarrer la partie
-    socket.on("start_game", (roomCode) => {
+    socket.on("start_game", (roomCode, threshold) => {
         for (const code in rooms) {
             if (code !== roomCode) continue;
             const room = rooms[code];
@@ -220,6 +220,7 @@ io.on("connection", (socket) => {
                 const playerOrder = whoStart(roomCode);
                 const playerTurn = playerOrder[0];
                 room.players.forEach(player => player.score = 0);
+                room.threshold = threshold;
                 io.to(code).emit("game_started", playerTurn, playerOrder);
                 break;
             }
@@ -249,7 +250,7 @@ io.on("connection", (socket) => {
             const room = rooms[code];
             const player = room.players.find(p => p.id === idPlayer);
             if (player) {
-                const isWin = win(player, points);
+                const isWin = win(player, points, room);
                 const newOrder = nextPlayer(code);
                 io.to(code).emit("card_played", card, idPlayer, newOrder, player.score, points, effectiveEffect);
 
@@ -281,6 +282,7 @@ io.on("connection", (socket) => {
                 // Générer de nouvelles règles
                 room.rules = generateRules();
                 delete room.playerOrder;
+                room.threshold = 15;
 
                 // Remise à zéro des joueurs
                 room.players.forEach(p => {

@@ -17,6 +17,14 @@ body {
   color: white;
 }
 
+h2 {
+  @apply text-6xl text-white;
+}
+
+h3 {
+  @apply text-4xl text-white;
+}
+
 .need-border::before {
   content: "";
   background-image: url("/assets/border.png");
@@ -39,6 +47,12 @@ body {
 
 .aside-btn-2 {
   top: anchor(--settings top, 20%);
+  left: anchor(--settings left, 0%);
+  transform: translateX(-100%);
+}
+
+.aside-btn-3 {
+  top: anchor(--settings top, 30%);
   left: anchor(--settings left, 0%);
   transform: translateX(-100%);
 }

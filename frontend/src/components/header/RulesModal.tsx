@@ -5,7 +5,7 @@ import { useGame } from "../../context/GameContext";
 import { useState } from "react";
 
 export default function RulesModal({ onClose }: { onClose: () => void }) {
-  const { volume, setVolume, sfxVolume, setSfxVolume } = useGame();
+  const { volume, setVolume, sfxVolume, setSfxVolume, quitLobby } = useGame();
 
   const [settings, setSettings] = useState(true);
   const [rules, setRules] = useState(false);
@@ -18,8 +18,8 @@ export default function RulesModal({ onClose }: { onClose: () => void }) {
     } else if (id === "rules-btn") {
       setRules(!rules);
       setSettings(rules);
-    } else if (id === "close-btn") {
-      onClose();
+    } else if (id === "quit-btn") {
+      quitLobby();
     }
   };
 
@@ -91,101 +91,115 @@ export default function RulesModal({ onClose }: { onClose: () => void }) {
             className={`flex-col gap-6 ${rules ? "flex" : "hidden"}`}
           >
             <h2 className="text-center text-4xl font-bold">
-              Procédure du protocole
+              Objectif de l'itération
             </h2>
             <p>
-              Bienvenue dans votre session de test. Votre objectif est simple :
-              soyez le premier sujet à accumuler le nombre de graines convenu au
-              début du protocole (20 par défaut) pour valider l&apos;expérience.
+              Bienvenue dans votre session de test. Votre objectif est de
+              saturer votre compteur de graines (points) avant les autres
+              spécimens. Le premier sujet à atteindre le seuil critique (15
+              unités par défaut) valide l'expérience et met fin à la session.
             </p>
 
-            <div className="flex flex-col gap-2">
-              <h3 className="text-3xl font-bold">Déroulement de la session</h3>
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-2">
+                <h3 className="text-3xl font-bold">Déroulement du test</h3>
+                <p>Chaque session regroupe 2 à 4 sujets.</p>
 
-              <p>
-                Chaque session regroupe 2 à 4 sujets. Vous commencez avec une
-                dotation de 3 cartes en main. À son tour, le sujet doit choisir
-                et soumettre une seule de ses cartes. Une fois la carte jouée,
-                une nouvelle est immédiatement ajoutée à sa main afin qu&apos;il
-                en ait toujours trois à disposition.
-              </p>
+                <ul className="text-2xl">
+                  <li>
+                    Dotation : Vous disposez en permanence de 3 vecteurs
+                    (cartes) en main.
+                  </li>
+                  <li>
+                    Soumission : À votre tour, vous devez soumettre une seule
+                    carte.
+                  </li>
+                  <li>
+                    Récupération : Une nouvelle carte est immédiatement ajoutée
+                    à votre dotation pour maintenir votre stock à trois unités.
+                  </li>
+                </ul>
+              </div>
 
-              <p>Chaque carte est composée de deux variables : </p>
+              <div className="flex flex-col gap-2">
+                <h3 className="text-3xl font-bold">Analyse des vecteurs</h3>
 
-              <ul className="text-2xl">
-                <li>
-                  <strong>Le symbole</strong> détermine la valeur en points
-                  d&apos;une carte lorsqu&apos;elle est posée. Ces valeurs sont
-                  comprises entre -1 et 3. C&apos;est en cumulant ces points que
-                  vous pourrez atteindre l&apos;objectif de victoire.
-                </li>
-                <li>
-                  <strong>La couleur</strong> déclenche un effet spécial qui
-                  peut modifier le cours du test. Les effets sont les suivants :
-                  <ul className="pl-8 text-2xl">
-                    <li>
-                      <strong>inversion</strong> : Les points accordés par cette
-                      carte sont inversés (multipliés par -1)
-                    </li>
-                    <li>
-                      <strong>gel</strong> : le prochaine joueur ne gagnera
-                      aucun point au prochain tour
-                    </li>
-                    <li>
-                      <strong>répétition </strong> : l&apos;effet de la carte
-                      précédente est répété
-                    </li>
-                    <li>
-                      <strong>neutre</strong> : aucun effet (2 couleurs auront
-                      cette effet)
-                    </li>
-                  </ul>
-                </li>
-              </ul>
+                <p>
+                  Chaque carte est une combinaison de deux variables instables :
+                </p>
 
-              <p className="mt-2 text-justify">
-                <strong>Rituels</strong> est un jeu de cartes rapide où
-                l&apos;objectif est d&apos;accumuler un certain nombre de
-                points, fixé en début de partie. Pour gagner, il vous faudra
-                faire preuve de stratégie, utiliser les effets uniques de chaque
-                carte à votre avantage et, surtout, déjouer les plans de vos
-                adversaires.
-              </p>
-            </div>
+                <ul className="text-2xl">
+                  <li>
+                    <strong>Le Symbole</strong> : Détermine la valeur brute en
+                    points (comprise entre -1 et 3). C’est l’accumulation de ces
+                    valeurs qui vous rapproche de la victoire.
+                  </li>
+                  <li>
+                    <strong>La Couleur</strong> : Déclenche un modificateur
+                    systémique qui altère le cours du test :
+                    <ul className="list-inside list-disc text-2xl">
+                      <li>
+                        Inversion : La polarité des points est inversée (ex: un
+                        2 devient -2).
+                      </li>
+                      <li>
+                        Gel : Le sujet suivant ne pourra accumuler aucune unité
+                        lors de son prochain tour (score forcé à 0).
+                      </li>
+                      <li>
+                        Répétition : Le système reproduit l'effet de la carte
+                        précédemment soumise.
+                      </li>
+                      <li>
+                        Neutre : La valeur du symbole est appliquée sans
+                        modification (2 teintes possèdent cet état).
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+              </div>
 
-            <div className="flex flex-col gap-2">
-              <h3 className="text-3xl font-bold">Fin de la session</h3>
+              <div className="flex flex-col gap-2">
+                <h3 className="text-3xl font-bold">
+                  Note sur l'instabilité du Système
+                </h3>
 
-              <p>
-                La session de test s’arrête dès qu’un sujet atteint le nombre de
-                graines requis.
-              </p>
-
-              <p>
-                <strong>Note importante</strong> : Au début de chaque session,
-                les points et les effets liés aux symboles et aux couleurs sont{" "}
-                <strong>re-distribués aléatoirement</strong>. Ce qui était vrai
-                lors de la session précédente ne l&apos;est plus. C&apos;est à
-                vous d&apos;observer les résultats de chaque carte pour déduire
-                les règles de la partie en cours.
-              </p>
+                <p>
+                  Attention : Au lancement de chaque nouvelle session, les
+                  effets des cartes sont réinitialisés. Les valeurs des symboles
+                  et les pouvoirs des couleurs sont redistribués aléatoirement.
+                </p>
+                <p>
+                  Ce qui était vrai lors de l'itération précédente est désormais
+                  caduc. Votre survie dépend de votre capacité à observer les
+                  résultats de chaque carte pour déduire les lois du protocole
+                  en cours.
+                </p>
+              </div>
             </div>
           </div>
+          <button
+            className={`aside-btn-1 absolute rounded-lg rounded-r-none bg-white px-4 py-2 text-center text-4xl font-bold text-black transition-all duration-300 hover:w-48 ${settings ? "w-48" : "w-40"}`}
+            id="settings-btn"
+            onClick={handleClick}
+          >
+            Réglages
+          </button>
+          <button
+            className={`aside-btn-2 absolute rounded-lg rounded-r-none bg-white px-4 py-2 text-center text-4xl font-bold text-black transition-all duration-300 hover:w-48 ${rules ? "w-48" : "w-40"}`}
+            id="rules-btn"
+            onClick={handleClick}
+          >
+            Règles
+          </button>
+          <button
+            className={`aside-btn-3 bg-red absolute rounded-lg rounded-r-none px-4 py-2 text-center text-4xl font-bold text-white transition-all duration-300 hover:w-48 ${rules ? "w-48" : "w-40"}`}
+            id="quit-btn"
+            onClick={handleClick}
+          >
+            Quitter
+          </button>
         </div>
-        <button
-          className={`aside-btn-1 absolute top-4 left-0 rounded-lg rounded-r-none bg-white px-4 py-2 text-center text-4xl font-bold text-black transition-all duration-300 hover:w-48 ${settings ? "w-48" : "w-40"}`}
-          id="settings-btn"
-          onClick={handleClick}
-        >
-          Réglages
-        </button>
-        <button
-          className={`aside-btn-2 absolute top-20 left-0 rounded-lg rounded-r-none bg-white px-4 py-2 text-center text-4xl font-bold text-black transition-all duration-300 hover:w-48 ${rules ? "w-48" : "w-40"}`}
-          id="rules-btn"
-          onClick={handleClick}
-        >
-          Règles
-        </button>
       </div>
     </motion.div>
   );

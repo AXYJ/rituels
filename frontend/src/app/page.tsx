@@ -58,7 +58,7 @@ function AudioPlayer() {
 
 export default function App() {
   return (
-    <main className="bg-[radial-gradient(ellipse_31.48%_48.47%_at_51.72%_50.00%,_#464441_0%,_#191918_100%)]">
+    <main>
       <GameProvider>
         <GameContent />
       </GameProvider>

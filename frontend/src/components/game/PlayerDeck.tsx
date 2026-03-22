@@ -21,7 +21,7 @@ export default function PlayerDeck({
     <div
       className={`relative col-start-2 col-end-3 row-start-3 row-end-4 grid grid-cols-3 items-start gap-4 ${isMyTurn ? "" : "pointer-events-none grayscale-80"}`}
     >
-      <h2 className="absolute -top-1/4 left-1/2 -translate-x-1/2 text-4xl">
+      <h2 className="absolute -top-1/4 left-1/2 -translate-x-1/2">
         {me?.name}
       </h2>
       <AnimatePresence>

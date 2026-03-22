@@ -3,15 +3,15 @@
 import { useGame } from "../../context/GameContext";
 
 export default function WinnerScreen() {
-  const { winner, rules, players, resetGame } = useGame();
+  const { winner, rules, players, resetGame, threshold } = useGame();
 
   const playerWin = players.find((p) => p.id === winner);
   return (
     <div className="fixed top-0 left-0 flex h-full w-full items-center justify-center bg-black/50">
       <div className="flex w-full max-w-[1024px] flex-col items-center rounded-lg bg-black p-6">
-        <h2 className="mb-8 text-center text-6xl font-bold">
+        <h2 className="mb-8 text-center font-bold">
           Bravo {playerWin?.name} ! <br />
-          Vous êtes le premier à avoir atteint 20 graines
+          Vous êtes le premier à avoir atteint {threshold} graines
         </h2>
         <h3 className="mb-4 text-center text-4xl">
           Voici les règles de cette partie :

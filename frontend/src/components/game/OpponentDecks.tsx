@@ -58,7 +58,7 @@ export default function OpponentDecks() {
           className={`relative ${getOpponentPlacementClass(index, opponents.length)}`}
         >
           <h2
-            className={`absolute text-4xl whitespace-nowrap ${getOpponentNamePlacementClass(index, opponents.length)}`}
+            className={`absolute whitespace-nowrap ${getOpponentNamePlacementClass(index, opponents.length)}`}
           >
             {opponent?.name}
           </h2>

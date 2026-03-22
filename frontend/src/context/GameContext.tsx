@@ -44,6 +44,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   const [displayOrder, setDisplayOrder] = useState<string[] | null>(null);
   const [volume, setVolume] = useState(0.5);
   const [sfxVolume, setSfxVolume] = useState(0.5);
+  const [threshold, setThreshold] = useState(15);
 
   useEffect(() => {
     // Initialisation de la connexion
@@ -84,6 +85,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       setHistory([]);
       setLastEffect(null);
       setDisplayOrder(null);
+      setThreshold(15);
     });
 
     // ----------------
@@ -225,6 +227,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       setWinner(null);
       setLastEffect(null);
       setDisplayOrder(null);
+      setThreshold(15);
       setView("lobby");
     });
 
@@ -299,14 +302,15 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     setHistory([]);
     setLastEffect(null);
     setDisplayOrder(null);
+    setThreshold(15);
   }, [socket]);
 
   // Démarrer la partie
   const startGame = useCallback(() => {
     if (socket) {
-      socket.emit("start_game", roomCode);
+      socket.emit("start_game", roomCode, threshold);
     }
-  }, [socket, roomCode]);
+  }, [socket, roomCode, threshold]);
 
   // Mis à jour du deck
   const updateDeck = useCallback(
@@ -434,6 +438,8 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       setVolume,
       sfxVolume,
       setSfxVolume,
+      threshold,
+      setThreshold,
     }),
     [
       socket,
@@ -473,6 +479,8 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       setVolume,
       sfxVolume,
       setSfxVolume,
+      threshold,
+      setThreshold,
     ]
   );
 
