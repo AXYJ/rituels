@@ -196,12 +196,12 @@ export default function Home() {
             </p>
             <p>3 — Deck : les cartes actuellement en votre possession ;</p>
             <p>
-              4 — Compteur : graines accumulées (attention, les valeurs
-              négatives sont possibles) ;
+              4 — Bloc-notes : un espace pour consigner vos découvertes sur les
+              règles en vigueur ;
             </p>
             <p>
-              5 — Bloc-notes : un espace pour consigner vos découvertes sur les
-              règles en vigueur.
+              5 — Compteur : graines accumulées (attention, les valeurs
+              négatives sont possibles).
             </p>
           </div>
         </div>
@@ -219,7 +219,7 @@ export default function Home() {
               Les symboles possèdent une valeur fixe (de -1 à 3), tandis que les
               couleurs appliquent des modificateurs de score.
             </p>
-            <p>Les effets possibles sont les suivants :</p>
+            <p>Les pouvoirs possibles sont les suivants :</p>
             <ul className="ml-4 list-inside list-disc text-2xl">
               <li>
                 Inversion : inverse la valeur du symbole (un 2 devient -2) ;
@@ -236,7 +236,16 @@ export default function Home() {
             <p>
               Note : chaque symbole possède une valeur unique. Pour les
               couleurs, deux d'entre elles sont systématiquement "Neutres", les
-              autres se partagent les effets restants.
+              autres se partagent les pouvoirs restants.
+            </p>
+            <p>À votre tour, vous devez jouer une carte de votre main.</p>
+            <p>
+              Le joueur dont le score atteint ou dépasse le seuil défini en
+              premier remporte la partie.
+            </p>
+            <p>
+              Pour vous aider, vous pouvez utiliser le bloc-notes pour noter vos
+              découvertes.
             </p>
           </div>
         </div>

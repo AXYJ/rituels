@@ -107,16 +107,15 @@ export default function RulesModal({ onClose }: { onClose: () => void }) {
 
                 <ul className="text-2xl">
                   <li>
-                    Dotation : Vous disposez en permanence de 3 vecteurs
-                    (cartes) en main.
+                    Main : Vous disposez en permanence de 3 cartes en main.
                   </li>
                   <li>
-                    Soumission : À votre tour, vous devez soumettre une seule
+                    Soumission : À votre tour, vous devez jouer une seule
                     carte.
                   </li>
                   <li>
                     Récupération : Une nouvelle carte est immédiatement ajoutée
-                    à votre dotation pour maintenir votre stock à trois unités.
+                    à votre main pour maintenir votre stock à trois cartes.
                   </li>
                 </ul>
               </div>
@@ -135,20 +134,20 @@ export default function RulesModal({ onClose }: { onClose: () => void }) {
                     valeurs qui vous rapproche de la victoire.
                   </li>
                   <li>
-                    <strong>La Couleur</strong> : Déclenche un modificateur
-                    systémique qui altère le cours du test :
+                    <strong>La Couleur</strong> : Déclenche un pouvoir qui
+                    altère le calcul des points :
                     <ul className="list-inside list-disc text-2xl">
                       <li>
-                        Inversion : La polarité des points est inversée (ex: un
+                        Inversion : La valeur des points est inversée (ex: un
                         2 devient -2).
                       </li>
                       <li>
-                        Gel : Le sujet suivant ne pourra accumuler aucune unité
+                        Gel : Le joueur suivant ne pourra gagner aucune graine
                         lors de son prochain tour (score forcé à 0).
                       </li>
                       <li>
-                        Répétition : Le système reproduit l'effet de la carte
-                        précédemment soumise.
+                        Répétition : Le système reproduit le pouvoir de la carte
+                        précédemment jouée.
                       </li>
                       <li>
                         Neutre : La valeur du symbole est appliquée sans
