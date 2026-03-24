@@ -56,7 +56,7 @@ export default function Helper() {
             height={1000}
             className="z-10 h-16 w-16 object-contain"
           />
-          <p className="z-10 rounded-full bg-black/50 px-3 py-1 text-xl font-bold">
+          <p className="z-10 px-3 py-1 text-xl font-bold">
             x {me.score}
           </p>
 

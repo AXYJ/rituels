@@ -81,6 +81,8 @@ export default function Lobby() {
                 type="number"
                 value={threshold}
                 onChange={(e) => setThreshold(Number(e.target.value))}
+                max={99}
+                min={5}
                 className="w-10 text-center text-2xl"
               />
               <button

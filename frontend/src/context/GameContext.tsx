@@ -60,6 +60,12 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     // Écouteurs de base (réponse du serveur)
     // ----------------
 
+    // Keep-alive HTTP pour empêcher les serveurs gratuits (comme Render) de se mettre en veille
+    // Render endort le serveur après 15 min sans trafic HTTP (le trafic WebSocket ne compte pas)
+    const keepAliveInterval = setInterval(() => {
+      fetch(socketUrl).catch(err => console.error("Erreur keep-alive", err));
+    }, 5 * 60 * 1000); // Toutes les 5 minutes
+
     // Connexion
     newSocket.on("connect", () => {
       setIsConnected(true);
@@ -242,6 +248,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
 
     // Nettoyage automatique
     return () => {
+      clearInterval(keepAliveInterval);
       newSocket.removeAllListeners();
       newSocket.disconnect();
     };

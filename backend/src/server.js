@@ -19,8 +19,8 @@ const io = new Server(server, {
         methods: ["GET", "POST"],
         credentials: true
     },
-    pingInterval: 10000,
-    pingTimeout: 5000
+    pingInterval: 25000,   // Un ping toutes les 25 secondes
+    pingTimeout: 60000     // 60 secondes pour répondre avant d'être déconnecté
 });
 
 // Stockage des parties
