@@ -17,12 +17,17 @@ body {
 }
 
 h2 {
-  @apply text-4xl text-white md:text-6xl;
+  @apply text-3xl text-white lg:text-6xl;
 }
 
 h3 {
-  @apply text-3xl text-white md:text-4xl;
+  @apply text-2xl text-white lg:text-4xl;
 }
+
+p {
+  @apply text-2xl;
+}
+
 
 .need-border::before {
   content: "";
@@ -38,24 +43,37 @@ h3 {
   z-index: 10;
 }
 
-.aside-btn-1 {
-  top: anchor(--settings top, 10%);
-  left: anchor(--settings left, 0%);
-  transform: translateX(-100%);
-}
+ .aside-btn-1 {
+    top: anchor(--settings top, 10%);
+    left: anchor(--settings left, 0%);
+    transform: translateX(-100%);
+  }
+
 
 .aside-btn-2 {
-  top: anchor(--settings top, 20%);
-  left: anchor(--settings left, 0%);
-  transform: translateX(-100%);
-}
-
-.aside-btn-3 {
   top: anchor(--settings top, 30%);
   left: anchor(--settings left, 0%);
   transform: translateX(-100%);
 }
 
-p {
-  @apply text-xl md:text-2xl;
+.aside-btn-3 {
+  top: anchor(--settings top, 50%);
+  left: anchor(--settings left, 0%);
+  transform: translateX(-100%);
 }
+
+@media (min-width: 1024px) {
+  .aside-btn-1 {
+    top: anchor(--settings top, 10%);
+  }
+
+
+.aside-btn-2 {
+  top: anchor(--settings top, 20%);
+}
+
+.aside-btn-3 {
+  top: anchor(--settings top, 30%);
+}
+}
+

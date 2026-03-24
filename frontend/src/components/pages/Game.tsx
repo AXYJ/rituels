@@ -105,7 +105,7 @@ export default function Game() {
 
         {/* Zone de jeu */}
 
-        <div className="relative col-start-2 col-end-3 row-start-2 row-end-3 flex items-end justify-center p-8">
+        <div className="relative col-start-2 col-end-3 row-start-2 row-end-3 flex items-end justify-center p-0 lg:p-8">
           <h2 className="absolute -top-16 text-center">
             Au tour de :{" "}
             {players.find((p) => p.id === playerTurn)?.name || playerTurn}
@@ -143,7 +143,7 @@ export default function Game() {
                   }}
                   exit={{ opacity: 0, scale: 0.5 }}
                   transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                  className="absolute h-32 w-24 drop-shadow-sm lg:h-48 lg:w-32"
+                  className="absolute h-24 w-16 drop-shadow-sm lg:h-48 lg:w-32"
                 >
                   <Image
                     src={`/cards/${played.symbol}-${played.color}.png`}

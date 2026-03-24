@@ -83,7 +83,7 @@ export default function Helper() {
             alt="card"
             width={1000}
             height={1000}
-            className="relative z-50 mr-4 mb-2 ml-auto h-16 w-16 cursor-pointer object-contain drop-shadow-lg"
+            className="relative z-50 mr-4 mb-2 ml-auto h-12 w-12 cursor-pointer object-contain drop-shadow-lg"
             onClick={() => setIsEditing(!isEditing)}
           />
 

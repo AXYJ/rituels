@@ -19,6 +19,7 @@ export default function RulesModal({ onClose }: { onClose: () => void }) {
       setRules(!rules);
       setSettings(rules);
     } else if (id === "quit-btn") {
+
       quitLobby();
     }
   };
@@ -33,7 +34,7 @@ export default function RulesModal({ onClose }: { onClose: () => void }) {
       onClick={() => onClose()}
     >
       <div
-        className="fixed top-1/2 left-1/2 z-50 h-[90vh] w-11/12 max-w-2xl -translate-x-1/2 -translate-y-1/2"
+        className="fixed top-1/2 left-1/2 z-50 h-[90vh] w-1/2 max-w-2xl -translate-x-1/2 -translate-y-1/2 lg:w-11/12"
         style={{ "--anchor-name": "--settings" } as React.CSSProperties}
         onClick={(e) => e.stopPropagation()}
       >
@@ -177,21 +178,21 @@ export default function RulesModal({ onClose }: { onClose: () => void }) {
             </div>
           </div>
           <button
-            className={`aside-btn-1 absolute rounded-lg rounded-r-none bg-white px-4 py-2 text-center text-4xl font-bold text-black transition-all duration-300 hover:w-48 ${settings ? "w-48" : "w-40"}`}
+            className={`aside-btn-1 absolute rounded-lg rounded-r-none bg-white px-4 py-2 text-center text-2xl lg:text-4xl font-bold text-black transition-all duration-300 hover:w-48 ${settings ? "w-48" : "w-40"}`}
             id="settings-btn"
             onClick={handleClick}
           >
             Réglages
           </button>
           <button
-            className={`aside-btn-2 absolute rounded-lg rounded-r-none bg-white px-4 py-2 text-center text-4xl font-bold text-black transition-all duration-300 hover:w-48 ${rules ? "w-48" : "w-40"}`}
+            className={`aside-btn-2 absolute rounded-lg rounded-r-none bg-white px-4 py-2 text-center text-2xl lg:text-4xl font-bold text-black transition-all duration-300 hover:w-48 ${rules ? "w-48" : "w-40"}`}
             id="rules-btn"
             onClick={handleClick}
           >
             Règles
           </button>
           <button
-            className={`aside-btn-3 bg-red absolute rounded-lg rounded-r-none px-4 py-2 text-center text-4xl font-bold text-white transition-all duration-300 hover:w-48 ${rules ? "w-48" : "w-40"}`}
+            className={`aside-btn-3 bg-red absolute rounded-lg rounded-r-none px-4 py-2 text-center text-2xl lg:text-4xl font-bold text-white transition-all duration-300 hover:w-48 w-40`}
             id="quit-btn"
             onClick={handleClick}
           >
