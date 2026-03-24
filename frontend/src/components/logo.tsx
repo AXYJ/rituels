@@ -11,10 +11,16 @@ export default function Logo({
 }) {
   return (
     <div
-      className={`flex items-center ${setView ? "cursor-pointer" : ""}${className || ""}`}
+      className={`flex items-center justify-center ${setView ? "cursor-pointer" : ""}${className || ""}`}
       onClick={() => setView?.("home")}
     >
-      <Image src="/logo-v3.png" alt="Logo" width={500} height={500} />
+      <Image
+        src="/logo-v3.png"
+        alt="Logo"
+        width={500}
+        height={500}
+        className="w-1/2 md:w-full"
+      />
     </div>
   );
 }

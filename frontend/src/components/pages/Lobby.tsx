@@ -49,8 +49,8 @@ export default function Lobby() {
   };
 
   return (
-    <section className="bg-[radial-gradient(ellipse_31.48%_48.47%_at_51.72%_50.00%,_#464441_0%,_#191918_100%)]">
-      <div className="mx-auto flex min-h-screen w-full max-w-[1024px] flex-col items-center justify-center gap-16">
+    <section className="bg-[radial-gradient(ellipse_31.48%_48.47%_at_51.72%_50.00%,_#464441_0%,_#191918_100%)] py-16 md:py-0">
+      <div className="mx-auto flex min-h-screen w-full max-w-[1024px] flex-col items-center justify-center gap-8 md:gap-16">
         <h1 className="relative flex items-center gap-4 text-5xl">
           Code : {roomCode}{" "}
           <button
@@ -93,7 +93,7 @@ export default function Lobby() {
           </div>
         )}
         {/* Liste des joueurs */}
-        <div className="w-1/2 text-center">
+        <div className="w-8/10 text-center md:w-1/2">
           <ul className="flex flex-col gap-4">
             {Array.from({ length: 4 }).map((_, index) => {
               const player = players[index];
@@ -188,7 +188,7 @@ export default function Lobby() {
         </div>
 
         {/* Boutons d'action */}
-        <div className="flex w-1/2 gap-4">
+        <div className="flex w-8/10 gap-4 md:w-1/2">
           {isHost && (
             <button
               onClick={onGameStart}

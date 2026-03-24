@@ -7,7 +7,6 @@
 
 @theme {
   --font-family-sweet-and-salty: "Sweet and Salty";
-
   --color-red: #bc2e24;
   --color-green: #62c74d;
 }
@@ -18,11 +17,11 @@ body {
 }
 
 h2 {
-  @apply text-6xl text-white;
+  @apply text-4xl text-white md:text-6xl;
 }
 
 h3 {
-  @apply text-4xl text-white;
+  @apply text-3xl text-white md:text-4xl;
 }
 
 .need-border::before {
@@ -58,6 +57,5 @@ h3 {
 }
 
 p {
-  font-size: 1.5rem;
-  line-height: 1;
+  @apply text-xl md:text-2xl;
 }

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import OrientationGuard from "../components/OrientationGuard";
 
 export const metadata: Metadata = {
   title: "Rituels",
@@ -13,7 +14,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="fr">
-      <body>{children}</body>
+      <body>
+        <OrientationGuard />
+        {children}
+      </body>
     </html>
   );
 }

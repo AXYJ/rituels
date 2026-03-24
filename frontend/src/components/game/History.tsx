@@ -37,7 +37,7 @@ export default function History() {
       />
       <div
         ref={historyContainerRef}
-        className="my-2 mr-4 h-full overflow-y-auto py-6 pr-2 pl-6 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-400 [&::-webkit-scrollbar-track]:bg-transparent"
+        className="my-2 mr-2 h-full overflow-y-auto py-2 pr-2 pl-4 md:mr-4 md:py-6 md:pl-6 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-400 [&::-webkit-scrollbar-track]:bg-transparent"
       >
         {history.map((h, index) => {
           const playerName =
@@ -45,7 +45,7 @@ export default function History() {
 
           if (h.type === "message") {
             return (
-              <div key={index} className="text-xl">
+              <div key={index} className="text-sm md:text-xl">
                 <span className="text-green font-semibold">{playerName}</span> :{" "}
                 <span>{h.message}</span>
               </div>
@@ -53,7 +53,7 @@ export default function History() {
           }
 
           return (
-            <div key={index} className="text-xl">
+            <div key={index} className="text-sm md:text-xl">
               <span className="font-semibold">{playerName}</span>
               {" a joué "}
               <span className="italic">
@@ -68,19 +68,19 @@ export default function History() {
       </div>
 
       <form
-        className="z-10 mx-4 mb-4 flex overflow-hidden rounded-lg bg-white"
+        className="z-10 mx-2 mb-2 flex overflow-hidden rounded-lg bg-white md:mx-4 md:mb-4"
         onSubmit={handleSendMessage}
       >
         <input
           type="text"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          className="w-full bg-transparent px-4 py-4 text-xl text-black outline-none"
+          className="w-full bg-transparent px-4 py-4 text-sm text-black outline-none md:text-xl"
           placeholder="Envoyer un message..."
         />
         <button
           type="submit"
-          className="bg-black px-8 text-xl text-white transition-colors duration-300 ease-in-out hover:bg-gray-700"
+          className="bg-black px-8 text-sm text-white transition-colors duration-300 ease-in-out hover:bg-gray-700 md:text-xl"
         >
           Envoyer
         </button>

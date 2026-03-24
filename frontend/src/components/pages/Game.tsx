@@ -82,7 +82,7 @@ export default function Game() {
 
   return (
     <section className="bg-[radial-gradient(ellipse_31.48%_48.47%_at_51.72%_50.00%,_#464441_0%,_#191918_100%)]">
-      <div className="grid h-screen w-full grid-cols-3 grid-rows-3 gap-8 overflow-hidden p-4">
+      <div className="grid h-screen w-full grid-cols-3 grid-rows-3 gap-2 overflow-hidden p-4 md:gap-8">
         <Logo className="absolute top-4 left-4 h-16 w-40" setView={quitLobby} />
 
         <button

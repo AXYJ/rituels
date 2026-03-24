@@ -110,8 +110,7 @@ export default function RulesModal({ onClose }: { onClose: () => void }) {
                     Main : Vous disposez en permanence de 3 cartes en main.
                   </li>
                   <li>
-                    Soumission : À votre tour, vous devez jouer une seule
-                    carte.
+                    Soumission : À votre tour, vous devez jouer une seule carte.
                   </li>
                   <li>
                     Récupération : Une nouvelle carte est immédiatement ajoutée
@@ -138,8 +137,8 @@ export default function RulesModal({ onClose }: { onClose: () => void }) {
                     altère le calcul des points :
                     <ul className="list-inside list-disc text-2xl">
                       <li>
-                        Inversion : La valeur des points est inversée (ex: un
-                        2 devient -2).
+                        Inversion : La valeur des points est inversée (ex: un 2
+                        devient -2).
                       </li>
                       <li>
                         Gel : Le joueur suivant ne pourra gagner aucune graine
