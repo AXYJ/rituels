@@ -52,13 +52,13 @@ export default function OrientationGuard() {
     >
       <div className="mb-8 animate-pulse text-8xl">📱</div>
       <h2
-        className="mb-4 text-4xl font-bold md:text-5xl"
+        className="mb-4 text-4xl font-bold lg:text-5xl"
         style={{ fontFamily: "var(--font-family-sweet-and-salty)" }}
       >
         Tourner votre écran <br /> à l'horizontal
       </h2>
       <p
-        className="mt-4 text-xl opacity-80 md:text-2xl"
+        className="mt-4 text-xl opacity-80 lg:text-2xl"
         style={{ fontFamily: "sans-serif" }}
       >
         L'affichage en mode portrait n'est pas supporté sur mobile.

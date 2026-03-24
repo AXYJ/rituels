@@ -7,8 +7,8 @@ export default function WinnerScreen() {
 
   const playerWin = players.find((p) => p.id === winner);
   return (
-    <div className="fixed top-0 left-0 z-15 flex h-full w-full justify-center overflow-y-auto bg-black/50 md:overflow-hidden">
-      <div className="flex w-full max-w-[1024px] flex-col items-center overflow-y-auto rounded-lg bg-black p-6 md:overflow-hidden">
+    <div className="fixed top-0 left-0 z-15 flex h-full w-full justify-center overflow-y-auto bg-black/50 lg:overflow-hidden">
+      <div className="flex w-full max-w-[1024px] flex-col items-center overflow-y-auto rounded-lg bg-black p-6 lg:overflow-hidden">
         <h2 className="mb-8 text-center font-bold">
           Bravo {playerWin?.name} ! <br />
           Vous êtes le premier à avoir atteint {threshold} graines

@@ -40,15 +40,15 @@ export default function Helper() {
     <>
       {isEditing && (
         <div
-          className="fixed inset-0 z-30 md:hidden"
+          className="fixed inset-0 z-30 lg:hidden"
           onClick={() => setIsEditing(false)}
         />
       )}
 
       <div
-        className={`pointer-events-none fixed right-0 bottom-0 left-0 z-40 flex w-full flex-col justify-end transition-colors duration-300 md:pointer-events-auto md:static md:col-start-3 md:col-end-4 md:row-start-2 md:row-end-4 md:w-auto md:items-center md:justify-end md:gap-8 ${isEditing ? "bg-linear-to-t from-[#191918] via-[#191918]/95 to-transparent" : ""} `}
+        className={`pointer-events-none fixed right-0 bottom-0 left-0 z-40 flex w-full flex-col justify-end transition-colors duration-300 lg:pointer-events-auto lg:static lg:col-start-3 lg:col-end-4 lg:row-start-2 lg:row-end-4 lg:w-auto lg:items-center lg:justify-end lg:gap-8 ${isEditing ? "bg-linear-to-t from-[#191918] via-[#191918]/95 to-transparent" : ""} `}
       >
-        <div className="pointer-events-auto relative mr-4 mb-4 flex items-center gap-2 self-end md:mr-0 md:mb-0 md:self-center">
+        <div className="pointer-events-auto relative mr-4 mb-4 flex items-center gap-2 self-end lg:mr-0 lg:mb-0 lg:self-center">
           <Image
             src={`/cards/Seed.png`}
             alt="card"
@@ -68,7 +68,7 @@ export default function Helper() {
                 animate={{ opacity: 1, y: -40, x: 20 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 1.5, ease: "easeOut" }}
-                className={`pointer-events-none absolute top-0 left-1/2 z-0 -translate-x-1/2 text-3xl font-bold drop-shadow-md md:right-0 md:left-auto ${diff > 0 ? "text-green-500" : "text-red-500"}`}
+                className={`pointer-events-none absolute top-0 left-1/2 z-0 -translate-x-1/2 text-3xl font-bold drop-shadow-md lg:right-0 lg:left-auto ${diff > 0 ? "text-green-500" : "text-red-500"}`}
               >
                 {diff > 0 ? "+" : ""}
                 {diff}
@@ -77,7 +77,7 @@ export default function Helper() {
           </AnimatePresence>
         </div>
 
-        <div className="pointer-events-auto flex w-full flex-col items-end justify-end md:hidden">
+        <div className="pointer-events-auto flex w-full flex-col items-end justify-end lg:hidden">
           <Image
             src={`/assets/edit.png`}
             alt="card"
@@ -104,7 +104,7 @@ export default function Helper() {
                         className="flex items-center justify-between gap-2"
                       >
                         <label
-                          className="w-24 text-xl md:text-2xl"
+                          className="w-24 text-xl lg:text-2xl"
                           htmlFor={symbol}
                         >
                           {symbol}
@@ -132,7 +132,7 @@ export default function Helper() {
                       className="flex items-center justify-between gap-2"
                     >
                       <label
-                        className="w-24 text-xl md:text-2xl"
+                        className="w-24 text-xl lg:text-2xl"
                         htmlFor={color}
                       >
                         {color}

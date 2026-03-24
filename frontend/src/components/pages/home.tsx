@@ -102,7 +102,7 @@ export default function Home() {
               <button
                 onClick={startGame}
                 disabled={btnDisabled}
-                className={`relative w-full cursor-pointer rounded-3xl px-12 py-4 transition-all duration-300 ease-in-out hover:-translate-y-2 hover:shadow-lg hover:shadow-black md:w-1/2`}
+                className={`relative w-full cursor-pointer rounded-3xl px-12 py-4 transition-all duration-300 ease-in-out hover:-translate-y-2 hover:shadow-lg hover:shadow-black lg:w-1/2`}
               >
                 <Image
                   src="/assets/button-long.png"
@@ -115,7 +115,7 @@ export default function Home() {
                   Créer une nouvelle partie
                 </span>
               </button>
-              <div className="items-between flex w-full gap-4 text-white md:w-1/2">
+              <div className="items-between flex w-full gap-4 text-white lg:w-1/2">
                 <div className="need-border relative w-full">
                   <input
                     type="text"
@@ -151,7 +151,7 @@ export default function Home() {
           <h2>
             Séquence de test <span className="text-4xl text-white">n° 458</span>
           </h2>
-          <div className="flex w-8/10 max-w-[1024px] flex-col gap-4 text-white md:w-1/2">
+          <div className="flex w-8/10 max-w-[1024px] flex-col gap-4 text-white lg:w-1/2">
             <p>
               Dans cette enceinte, rien n'est laissé au hasard, mais tout semble
               imprévisible.
@@ -174,10 +174,10 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="bg-[#191918] pb-32 md:pb-0">
+      <section className="bg-[#191918] pb-32 lg:pb-0">
         <div className="mb-32 flex flex-col items-center justify-center gap-8">
           <h2>Fonctionnement du système</h2>
-          <div className="flex w-8/10 max-w-[1024px] flex-col gap-4 text-white md:w-1/2">
+          <div className="flex w-8/10 max-w-[1024px] flex-col gap-4 text-white lg:w-1/2">
             <Image
               src="/screen/game.png"
               alt="Interface de test"
@@ -207,7 +207,7 @@ export default function Home() {
         </div>
         <div className="flex flex-col items-center justify-center gap-8">
           <h2>Protocole de jeu (explication du jeu)</h2>
-          <div className="flex w-8/10 max-w-[1024px] flex-col gap-4 text-white md:w-1/2">
+          <div className="flex w-8/10 max-w-[1024px] flex-col gap-4 text-white lg:w-1/2">
             <p>Rituels est un jeu de cartes expérimental pour 2 à 4 joueurs.</p>
             <p>
               Au lancement de chaque partie, le système redistribue
