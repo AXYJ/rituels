@@ -40,7 +40,7 @@ export default function Helper() {
     <>
       {isEditing && (
         <div
-          className="fixed inset-0 z-30 lg:hidden"
+          className="fixed inset-0 z-30"
           onClick={() => setIsEditing(false)}
         />
       )}
@@ -77,18 +77,18 @@ export default function Helper() {
           </AnimatePresence>
         </div>
 
-        <div className="pointer-events-auto flex w-full flex-col items-end justify-end lg:hidden">
+        <div className="pointer-events-auto flex w-full flex-col items-end justify-end">
           <Image
             src={`/assets/edit.png`}
             alt="card"
             width={1000}
             height={1000}
-            className="relative z-50 mr-4 mb-2 ml-auto h-12 w-12 cursor-pointer object-contain drop-shadow-lg"
+            className="relative z-50 mr-4 mb-2 ml-auto h-12 w-12 cursor-pointer object-contain drop-shadow-lg lg:hidden"
             onClick={() => setIsEditing(!isEditing)}
           />
 
           <div
-            className={`grid w-full transition-[grid-template-rows,padding] duration-300 ease-in-out ${
+            className={`grid w-full transition-[grid-template-rows,padding] duration-300 ease-in-out lg:grid-rows-[1fr] lg:pt-4 lg:pb-6 ${
               isEditing
                 ? "grid-rows-[1fr] pt-4 pb-6"
                 : "grid-rows-[0fr] pt-0 pb-0"
