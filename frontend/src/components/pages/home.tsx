@@ -236,6 +236,7 @@ export default function Home() {
                 bounce: 0.6,
                 delay: 0.5,
               }}
+              className="flex items-center"
             >
               <a href="#rules">
                 <Image
@@ -243,7 +244,7 @@ export default function Home() {
                   alt=""
                   width={800}
                   height={100}
-                  className="absolute bottom-4 left-1/2 z-0 h-6 w-12 -translate-x-1/2 cursor-pointer object-fill lg:h-12 lg:w-24"
+                  className="z-0 h-6 w-12 cursor-pointer object-fill mt-4 lg:mt-8 lg:h-12 lg:w-24"
                 />
               </a>
             </motion.div>
@@ -618,6 +619,10 @@ export default function Home() {
           </motion.a>
         </div>
       </section>
+      <footer className="bg-[#191918] py-8 text-center text-white">
+        <p>Rituels - 2026 | HEFF</p>
+        <p>Créé par : Alex Xiao 3TIWeb</p>
+      </footer>
     </>
   );
 }
