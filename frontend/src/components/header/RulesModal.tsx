@@ -48,7 +48,7 @@ export default function RulesModal({ onClose }: { onClose: () => void }) {
                 <input
                   type="range"
                   id="sfx"
-                  step={0.1}
+                  step={0.01}
                   min={0}
                   max={1}
                   value={sfxVolume}
@@ -69,7 +69,7 @@ export default function RulesModal({ onClose }: { onClose: () => void }) {
                 <input
                   type="range"
                   id="ost"
-                  step={0.1}
+                  step={0.01}
                   min={0}
                   max={1}
                   value={volume}

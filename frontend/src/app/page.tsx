@@ -53,7 +53,7 @@ function AudioPlayer() {
     return () => document.removeEventListener("click", handleInteraction);
   }, []);
 
-  return <audio ref={audioRef} autoPlay loop src="/music.wav" />;
+  return <audio ref={audioRef} autoPlay loop src="/music.mp3" />;
 }
 
 export default function App() {
