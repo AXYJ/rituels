@@ -18,20 +18,20 @@ export default function OpponentDecks() {
     // Note: Tailwindcss n'accepte pas les strings dynamiques ex: `col-start-${x}`
     // On doit écrire en entier la classe pour qu'elle soit compilée !
     if (total === 1)
-      return "col-start-2 col-end-3 row-start-1 row-end-2 flex -translate-y-1/2 items-center justify-center gap-4";
+      return "col-start-2 col-end-3 row-start-1 row-end-2 flex -translate-y-1/2 items-center justify-center gap-1 lg:gap-4";
     if (total === 2) {
       if (index === 0)
-        return "col-start-1 col-end-2 row-start-2 row-end-3 flex items-end justify-center gap-4 rotate-90 -translate-x-1/2 h-fit";
+        return "col-start-1 col-end-2 row-start-2 row-end-3 flex items-end justify-center gap-0 lg:gap-4 rotate-90 -translate-x-1/2 h-fit";
       if (index === 1)
-        return "col-start-3 col-end-4 row-start-2 row-end-3 flex items-end justify-center gap-4 -rotate-90 translate-x-1/2 h-fit";
+        return "col-start-3 col-end-4 row-start-2 row-end-3 flex items-end justify-center gap-0 lg:gap-4 -rotate-90 translate-x-1/2 h-fit";
     }
     if (total === 3) {
       if (index === 0)
-        return "col-start-1 col-end-2 row-start-2 row-end-3 flex items-center justify-center gap-4 rotate-90 -translate-x-1/2";
+        return "col-start-1 col-end-2 row-start-2 row-end-3 flex items-center justify-center gap-0 lg:gap-4 rotate-90 -translate-x-1/2";
       if (index === 1)
-        return "col-start-2 col-end-3 row-start-1 row-end-2 flex -translate-y-1/2 items-center justify-center gap-4";
+        return "col-start-2 col-end-3 row-start-1 row-end-2 flex -translate-y-1/2 items-center justify-center gap-0 lg:gap-4";
       if (index === 2)
-        return "col-start-3 col-end-4 row-start-2 row-end-3 flex items-center justify-center gap-4 -rotate-90 translate-x-1/2";
+        return "col-start-3 col-end-4 row-start-2 row-end-3 flex items-center justify-center gap-0 lg:gap-4 -rotate-90 translate-x-1/2";
     }
     return "hidden";
   };
@@ -74,7 +74,7 @@ export default function OpponentDecks() {
                 alt="card back"
                 width={400}
                 height={600}
-                className="h-32 w-24 object-contain"
+                className="h-16 w-12 object-contain lg:h-32 lg:w-24"
               />
             </motion.div>
           ))}

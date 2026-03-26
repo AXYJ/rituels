@@ -39,14 +39,11 @@ export default function Helper() {
   return (
     <>
       {isEditing && (
-        <div
-          className="fixed inset-0 z-30"
-          onClick={() => setIsEditing(false)}
-        />
+        <div className="fixed inset-0 z-30" onClick={() => setIsEditing(false)} />
       )}
 
       <div
-        className={`pointer-events-none fixed right-0 bottom-0 left-0 z-10 flex w-full flex-col justify-end transition-colors duration-300 lg:pointer-events-auto lg:static lg:col-start-3 lg:col-end-4 lg:row-start-2 lg:row-end-4 lg:w-auto lg:items-center lg:justify-end lg:gap-8 ${isEditing ? "bg-linear-to-t from-[#191918] via-[#191918]/95 to-transparent" : ""} `}
+        className={`pointer-events-none fixed right-0 bottom-0 left-0 flex w-full flex-col justify-end transition-colors duration-300 lg:pointer-events-auto lg:static lg:col-start-3 lg:col-end-4 lg:row-start-2 lg:row-end-4 lg:w-auto lg:items-center lg:justify-end lg:gap-8 ${isEditing ? "z-40 bg-linear-to-t from-[#191918] via-[#191918]/95 to-transparent" : "z-10"} `}
       >
         <div className="pointer-events-auto relative mr-4 mb-4 flex items-center gap-2 self-end lg:mr-0 lg:mb-0 lg:self-center">
           <Image
@@ -75,18 +72,26 @@ export default function Helper() {
           </AnimatePresence>
         </div>
 
-        <div className="pointer-events-auto flex w-full flex-col items-end justify-end">
+        <div className="flex w-full flex-col items-end justify-end">
           <Image
             src={`/assets/edit.png`}
             alt="card"
             width={1000}
             height={1000}
-            className="relative z-50 mr-4 mb-2 ml-auto h-12 w-12 cursor-pointer object-contain drop-shadow-lg lg:hidden"
+            className="pointer-events-auto relative z-50 mr-4 mb-2 ml-auto h-12 w-12 cursor-pointer object-contain drop-shadow-lg lg:hidden"
             onClick={() => setIsEditing(!isEditing)}
           />
 
-          <div
-            className={`grid w-full transition-[grid-template-rows,padding] duration-300 ease-in-out lg:grid-rows-[1fr] lg:pt-4 lg:pb-6 ${
+          <motion.div
+            drag="y"
+            dragConstraints={{ top: 0, bottom: 0 }}
+            dragElastic={0.2}
+            onDragEnd={(e, info) => {
+              if (info.offset.y > 100) {
+                setIsEditing(false);
+              }
+            }}
+            className={`pointer-events-auto grid w-full transition-[grid-template-rows,padding] duration-300 ease-in-out lg:grid-rows-[1fr] lg:pt-4 lg:pb-6 ${
               isEditing
                 ? "grid-rows-[1fr] pt-4 pb-6"
                 : "grid-rows-[0fr] pt-0 pb-0"
@@ -154,7 +159,7 @@ export default function Helper() {
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </>

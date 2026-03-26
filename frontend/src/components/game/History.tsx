@@ -27,7 +27,7 @@ export default function History() {
   };
 
   return (
-    <div className="relative col-start-1 col-end-2 row-start-3 row-end-4 flex h-full flex-col justify-between">
+    <div className="relative col-start-1 col-end-2 row-start-3 row-end-4 flex h-full flex-col justify-between z-10">
       <Image
         src="/assets/historique.png"
         alt=""
