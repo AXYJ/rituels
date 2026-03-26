@@ -123,7 +123,7 @@ export default function Home() {
         className="bg-[radial-gradient(ellipse_31.48%_48.47%_at_51.72%_50.00%,_#464441_0%,_#191918_100%)] pb-32"
         id="launch-btn"
       >
-        <div className="flex min-h-screen flex-col items-center justify-center gap-2 lg:gap-8">
+        <div className="flex min-h-screen flex-col items-center lg:justify-center pt-8 lg:pt-0 gap-2 lg:gap-8">
           <AnimatePresence>
             <motion.div
               key="title"
