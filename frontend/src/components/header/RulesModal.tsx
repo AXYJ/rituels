@@ -19,7 +19,6 @@ export default function RulesModal({ onClose }: { onClose: () => void }) {
       setRules(!rules);
       setSettings(rules);
     } else if (id === "quit-btn") {
-
       quitLobby();
     }
   };
@@ -178,21 +177,21 @@ export default function RulesModal({ onClose }: { onClose: () => void }) {
             </div>
           </div>
           <button
-            className={`aside-btn-1 absolute rounded-lg rounded-r-none bg-white px-4 py-2 text-center text-2xl lg:text-4xl font-bold text-black transition-all duration-300 hover:w-48 ${settings ? "w-48" : "w-40"}`}
+            className={`aside-btn-1 absolute rounded-lg rounded-r-none bg-white px-4 py-2 text-center text-2xl font-bold text-black transition-all duration-300 hover:w-48 lg:text-4xl ${settings ? "w-48" : "w-40"}`}
             id="settings-btn"
             onClick={handleClick}
           >
             Réglages
           </button>
           <button
-            className={`aside-btn-2 absolute rounded-lg rounded-r-none bg-white px-4 py-2 text-center text-2xl lg:text-4xl font-bold text-black transition-all duration-300 hover:w-48 ${rules ? "w-48" : "w-40"}`}
+            className={`aside-btn-2 absolute rounded-lg rounded-r-none bg-white px-4 py-2 text-center text-2xl font-bold text-black transition-all duration-300 hover:w-48 lg:text-4xl ${rules ? "w-48" : "w-40"}`}
             id="rules-btn"
             onClick={handleClick}
           >
             Règles
           </button>
           <button
-            className={`aside-btn-3 bg-red absolute rounded-lg rounded-r-none px-4 py-2 text-center text-2xl lg:text-4xl font-bold text-white transition-all duration-300 hover:w-48 w-40`}
+            className={`aside-btn-3 bg-red absolute w-40 rounded-lg rounded-r-none px-4 py-2 text-center text-2xl font-bold text-white transition-all duration-300 hover:w-48 lg:text-4xl`}
             id="quit-btn"
             onClick={handleClick}
           >

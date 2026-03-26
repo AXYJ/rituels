@@ -11,6 +11,10 @@
   --color-green: #62c74d;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   font-family: var(--font-family-sweet-and-salty);
   color: white;
@@ -28,7 +32,6 @@ p {
   @apply text-2xl;
 }
 
-
 .need-border::before {
   content: "";
   background-image: url("/assets/border.png");
@@ -43,12 +46,11 @@ p {
   z-index: 10;
 }
 
- .aside-btn-1 {
-    top: anchor(--settings top, 10%);
-    left: anchor(--settings left, 0%);
-    transform: translateX(-100%);
-  }
-
+.aside-btn-1 {
+  top: anchor(--settings top, 10%);
+  left: anchor(--settings left, 0%);
+  transform: translateX(-100%);
+}
 
 .aside-btn-2 {
   top: anchor(--settings top, 30%);
@@ -67,13 +69,11 @@ p {
     top: anchor(--settings top, 10%);
   }
 
+  .aside-btn-2 {
+    top: anchor(--settings top, 20%);
+  }
 
-.aside-btn-2 {
-  top: anchor(--settings top, 20%);
+  .aside-btn-3 {
+    top: anchor(--settings top, 30%);
+  }
 }
-
-.aside-btn-3 {
-  top: anchor(--settings top, 30%);
-}
-}
-

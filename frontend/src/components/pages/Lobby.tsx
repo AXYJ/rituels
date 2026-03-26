@@ -6,7 +6,37 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 
-// Importations des composants
+// Variants pour l'animation d'entrée
+const frameVariants = {
+  hidden: {
+    opacity: 0,
+  },
+  visible: {
+    opacity: 1,
+    transition: {
+      duration: 1,
+      staggerChildren: 0.2, // Délai entre chaque bloc
+      type: "spring",
+      bounce: 0.6,
+    } as any,
+  },
+};
+
+const itemVariants = {
+  hidden: {
+    opacity: 0,
+    y: 50,
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.8,
+      type: "spring",
+      bounce: 0.6,
+    } as any,
+  },
+};
 
 export default function Lobby() {
   // Appel du contexte
@@ -31,9 +61,11 @@ export default function Lobby() {
   const [editName, setEditName] = useState("");
 
   const handleCopyCode = () => {
-    navigator.clipboard.writeText(roomCode);
-    setCopySuccess(true);
-    setTimeout(() => setCopySuccess(false), 2000);
+    if (typeof navigator !== "undefined") {
+      navigator.clipboard.writeText(roomCode);
+      setCopySuccess(true);
+      setTimeout(() => setCopySuccess(false), 2000);
+    }
   };
 
   const handleReady = () => {
@@ -48,10 +80,29 @@ export default function Lobby() {
     startGame();
   };
 
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const target = e.target as HTMLButtonElement;
+    if (target.classList.contains("minus")) {
+      if (threshold === 5) return;
+      setThreshold(threshold - 1);
+    } else {
+      if (threshold === 99) return;
+      setThreshold(threshold + 1);
+    }
+  };
+
   return (
     <section className="bg-[radial-gradient(ellipse_31.48%_48.47%_at_51.72%_50.00%,_#464441_0%,_#191918_100%)] py-16 lg:py-0">
-      <div className="mx-auto flex min-h-screen w-full max-w-[1024px] flex-col items-center justify-center gap-8 lg:gap-16">
-        <h1 className="relative flex items-center gap-4 text-5xl">
+      <motion.div
+        variants={frameVariants}
+        initial="hidden"
+        animate="visible"
+        className="mx-auto flex min-h-screen w-full max-w-[1024px] flex-col items-center justify-center gap-4 lg:gap-8"
+      >
+        <motion.h1
+          variants={itemVariants}
+          className="relative flex items-center gap-4 text-3xl lg:text-5xl"
+        >
           Code : {roomCode}{" "}
           <button
             onClick={handleCopyCode}
@@ -62,18 +113,21 @@ export default function Lobby() {
               alt="Copier"
               width={40}
               height={40}
-              className="h-10 w-10 transition-all duration-300 ease-in-out hover:-translate-y-2 hover:shadow-lg hover:shadow-black"
+              className="h-10 w-10 transition-transform duration-300 ease-in-out hover:-translate-y-2"
             />
           </button>
-        </h1>
+        </motion.h1>
 
         {isHost && (
-          <div className="flex flex-col items-center gap-4">
+          <motion.div
+            variants={itemVariants}
+            className="flex flex-col items-center gap-4"
+          >
             <h3>Seuil de victoire</h3>
             <div className="flex items-center gap-4">
               <button
-                onClick={() => setThreshold(threshold - 1)}
-                className="text-2xl"
+                onClick={handleClick}
+                className="minus cursor-pointer text-5xl"
               >
                 -
               </button>
@@ -86,16 +140,20 @@ export default function Lobby() {
                 className="w-10 text-center text-2xl"
               />
               <button
-                onClick={() => setThreshold(threshold + 1)}
-                className="text-2xl"
+                onClick={handleClick}
+                className="plus cursor-pointer text-5xl"
               >
                 +
               </button>
             </div>
-          </div>
+          </motion.div>
         )}
+
         {/* Liste des joueurs */}
-        <div className="w-8/10 text-center lg:w-1/2">
+        <motion.div
+          variants={itemVariants}
+          className="w-8/10 text-center lg:w-1/2"
+        >
           <ul className="flex flex-col gap-4">
             {Array.from({ length: 4 }).map((_, index) => {
               const player = players[index];
@@ -104,7 +162,7 @@ export default function Lobby() {
                 return (
                   <li
                     key={index}
-                    className={`relative flex w-full items-center justify-center rounded-full py-4 text-3xl transition-all duration-300 ease-in-out hover:-translate-y-2 hover:shadow-lg hover:shadow-black ${player.id === socket?.id ? "cursor-pointer" : "pointer-events-none"}`}
+                    className={`relative flex w-full items-center justify-center rounded-full py-4 text-3xl transition-shadow duration-300 hover:shadow-lg hover:shadow-black ${player.id === socket?.id ? "cursor-pointer" : "pointer-events-none"}`}
                     onClick={() => {
                       if (player.id === socket?.id && !isEditing) {
                         setIsEditing(true);
@@ -171,7 +229,7 @@ export default function Lobby() {
               return (
                 <li
                   key={index}
-                  className="relative flex w-full cursor-default items-center justify-center rounded-full py-4 text-3xl transition-colors"
+                  className="relative flex w-full cursor-default items-center justify-center rounded-full py-4 text-3xl"
                 >
                   <Image
                     src="/assets/button-long-border.png"
@@ -187,18 +245,27 @@ export default function Lobby() {
               );
             })}
           </ul>
-        </div>
+        </motion.div>
 
         {/* Boutons d'action */}
-        <div className="flex w-8/10 gap-4 lg:w-1/2">
+        <motion.div
+          variants={itemVariants}
+          className="flex w-8/10 gap-4 lg:w-1/2"
+        >
           {isHost && (
-            <button
+            <motion.button
+              whileHover={
+                players.filter((p) => p.isHost || p.isReady).length ===
+                players.length
+                  ? { y: -5 }
+                  : {}
+              }
               onClick={onGameStart}
               disabled={
                 players.filter((p) => p.isHost || p.isReady).length !==
                   players.length || players.length === 5
               }
-              className={`relative w-full cursor-pointer rounded-full px-6 py-2 font-bold text-white transition-all duration-300 ease-in-out ${players.filter((p) => p.isHost || p.isReady).length === players.length ? "hover:-translate-y-2 hover:shadow-lg hover:shadow-black" : "cursor-not-allowed opacity-50"}`}
+              className={`relative w-full cursor-pointer rounded-full px-6 py-2 font-bold text-white shadow-black transition-shadow duration-300 ${players.filter((p) => p.isHost || p.isReady).length === players.length ? "hover:shadow-lg" : "cursor-not-allowed opacity-50"}`}
             >
               <Image
                 src={
@@ -217,12 +284,13 @@ export default function Lobby() {
                 {players.filter((p) => p.isHost || p.isReady).length}/
                 {players.length})
               </span>
-            </button>
+            </motion.button>
           )}
           {!isHost && (
-            <button
+            <motion.button
+              whileHover={{ y: -5 }}
               onClick={handleReady}
-              className="relative w-full cursor-pointer rounded-full px-6 py-2 font-bold text-white transition-all duration-300 ease-in-out hover:-translate-y-2 hover:shadow-lg hover:shadow-black"
+              className="relative w-full cursor-pointer rounded-full px-6 py-2 font-bold text-white shadow-black transition-shadow duration-300 hover:shadow-lg"
             >
               <Image
                 src={
@@ -238,11 +306,12 @@ export default function Lobby() {
               <span className="relative z-50 text-2xl text-white">
                 {isReady ? "Annuler" : "Prêt"}
               </span>
-            </button>
+            </motion.button>
           )}
-          <button
+          <motion.button
+            whileHover={{ y: -5 }}
             onClick={handleQuit}
-            className="relative w-full cursor-pointer rounded-full px-6 py-2 font-bold text-white transition-all duration-300 ease-in-out hover:-translate-y-2 hover:shadow-lg hover:shadow-black"
+            className="relative w-full cursor-pointer rounded-full px-6 py-2 font-bold text-white shadow-black transition-shadow duration-300 hover:shadow-lg"
           >
             <Image
               src="/assets/button-long-red.png"
@@ -252,8 +321,8 @@ export default function Lobby() {
               className="pointer-events-none absolute inset-0 z-0 h-full w-full object-fill select-none"
             />
             <span className="relative z-50 text-2xl text-white">Quitter</span>
-          </button>
-        </div>
+          </motion.button>
+        </motion.div>
 
         <AnimatePresence>
           {copySuccess && (
@@ -269,7 +338,7 @@ export default function Lobby() {
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
+      </motion.div>
     </section>
   );
 }

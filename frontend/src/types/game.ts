@@ -1,3 +1,4 @@
+import React from "react";
 import { Socket } from "socket.io-client";
 
 // Définition des vues
@@ -35,7 +36,7 @@ export interface GameContextType {
   roomCode: string;
   setRoomCode: (code: string) => void;
   players: Player[];
-  setPlayers: (players: Player[]) => void;
+  setPlayers: React.Dispatch<React.SetStateAction<Player[]>>;
   // Actions
   createGame: () => void;
   joinGame: (code: string) => void;
@@ -49,28 +50,25 @@ export interface GameContextType {
   resetGame: () => void;
   // Règles
   rules: GameRules | null;
-  setRules: (rules: GameRules | null) => void;
+  setRules: React.Dispatch<React.SetStateAction<GameRules | null>>;
   // Joueur
   playerNumber: number;
   setPlayerNumber: (number: number) => void;
-  // Carte
-  card: Card | null;
-  setCard: (card: Card | null) => void;
   // Modifier localement le deck du joueur
   setLocalPlayerDeck: (cards: Card[]) => void;
   // Jeu
   playerTurn: string;
-  setPlayerTurn: (playerTurn: string) => void;
+  setPlayerTurn: React.Dispatch<React.SetStateAction<string>>;
   playerOrder: string[];
-  setPlayerOrder: (playerOrder: string[]) => void;
+  setPlayerOrder: React.Dispatch<React.SetStateAction<string[]>>;
   history: HistoryItem[];
-  setHistory: (history: HistoryItem[]) => void;
+  setHistory: React.Dispatch<React.SetStateAction<HistoryItem[]>>;
   lastEffect: string | null;
-  setLastEffect: (lastEffect: string | null) => void;
+  setLastEffect: React.Dispatch<React.SetStateAction<string | null>>;
   winner: string | null;
-  setWinner: (winner: string | null) => void;
+  setWinner: React.Dispatch<React.SetStateAction<string | null>>;
   displayOrder: string[] | null;
-  setDisplayOrder: (displayOrder: string[] | null) => void;
+  setDisplayOrder: React.Dispatch<React.SetStateAction<string[] | null>>;
   // Volume
   volume: number;
   setVolume: (volume: number) => void;

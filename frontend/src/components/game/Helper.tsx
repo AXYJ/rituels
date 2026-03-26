@@ -46,7 +46,7 @@ export default function Helper() {
       )}
 
       <div
-        className={`pointer-events-none fixed right-0 bottom-0 left-0 z-40 flex w-full flex-col justify-end transition-colors duration-300 lg:pointer-events-auto lg:static lg:col-start-3 lg:col-end-4 lg:row-start-2 lg:row-end-4 lg:w-auto lg:items-center lg:justify-end lg:gap-8 ${isEditing ? "bg-linear-to-t from-[#191918] via-[#191918]/95 to-transparent" : ""} `}
+        className={`pointer-events-none fixed right-0 bottom-0 left-0 z-10 flex w-full flex-col justify-end transition-colors duration-300 lg:pointer-events-auto lg:static lg:col-start-3 lg:col-end-4 lg:row-start-2 lg:row-end-4 lg:w-auto lg:items-center lg:justify-end lg:gap-8 ${isEditing ? "bg-linear-to-t from-[#191918] via-[#191918]/95 to-transparent" : ""} `}
       >
         <div className="pointer-events-auto relative mr-4 mb-4 flex items-center gap-2 self-end lg:mr-0 lg:mb-0 lg:self-center">
           <Image
@@ -56,9 +56,7 @@ export default function Helper() {
             height={1000}
             className="z-10 h-16 w-16 object-contain"
           />
-          <p className="z-10 px-3 py-1 text-xl font-bold">
-            x {me.score}
-          </p>
+          <p className="z-10 px-3 py-1 text-xl font-bold">x {me.score}</p>
 
           <AnimatePresence>
             {scoreDiffs.map(({ id, diff }) => (

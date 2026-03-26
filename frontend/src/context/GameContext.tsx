@@ -35,7 +35,6 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   const [players, setPlayers] = useState<Player[]>([]);
   const [rules, setRules] = useState<GameRules | null>(null);
   const [playerNumber, setPlayerNumber] = useState(0);
-  const [card, setCard] = useState<Card | null>(null);
   const [playerTurn, setPlayerTurn] = useState("");
   const [playerOrder, setPlayerOrder] = useState<string[]>([]);
   const [history, setHistory] = useState<HistoryItem[]>([]);
@@ -62,9 +61,14 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
 
     // Keep-alive HTTP pour empêcher les serveurs gratuits (comme Render) de se mettre en veille
     // Render endort le serveur après 15 min sans trafic HTTP (le trafic WebSocket ne compte pas)
-    const keepAliveInterval = setInterval(() => {
-      fetch(socketUrl).catch(err => console.error("Erreur keep-alive", err));
-    }, 5 * 60 * 1000); // Toutes les 5 minutes
+    const keepAliveInterval = setInterval(
+      () => {
+        fetch(socketUrl).catch((err) =>
+          console.error("Erreur keep-alive", err)
+        );
+      },
+      5 * 60 * 1000
+    ); // Toutes les 5 minutes
 
     // Connexion
     newSocket.on("connect", () => {
@@ -234,6 +238,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       setLastEffect(null);
       setDisplayOrder(null);
       setThreshold(15);
+      setPlayerNumber(0);
       setView("lobby");
     });
 
@@ -305,11 +310,11 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     setRoomCode("");
     setPlayers([]);
     setRules(null);
-    setPlayerNumber(0);
     setHistory([]);
     setLastEffect(null);
     setDisplayOrder(null);
     setThreshold(15);
+    setPlayerNumber(0);
   }, [socket]);
 
   // Démarrer la partie
@@ -348,7 +353,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
             points = 0;
           }
 
-          // Effets immédiats (qui modifient les points de la carte que je pose)
+          // Effets immédiat (qui modifient les points de la carte que je pose)
           switch (effectiveEffect) {
             case "Inversion":
               points *= -1;
@@ -422,8 +427,6 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       beReady,
       quitLobby,
       startGame,
-      card,
-      setCard,
       playerTurn,
       setPlayerTurn,
       cardPlayed,
@@ -454,17 +457,19 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       isConnected,
       error,
       roomCode,
+      setRoomCode,
       players,
+      setPlayers,
       createGame,
       joinGame,
       changeName,
       rules,
+      setRules,
       playerNumber,
+      setPlayerNumber,
       beReady,
       quitLobby,
       startGame,
-      card,
-      setCard,
       playerTurn,
       setPlayerTurn,
       cardPlayed,

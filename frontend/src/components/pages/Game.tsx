@@ -15,7 +15,6 @@ import PlayerDeck from "../game/PlayerDeck";
 import OpponentDecks from "../game/OpponentDecks";
 import RulesModal from "../header/RulesModal";
 import Logo from "../logo";
-import { section } from "framer-motion/client";
 
 export default function Game() {
   const [showRules, setShowRules] = useState(false);
@@ -81,7 +80,7 @@ export default function Game() {
   }, [deck?.cards, rules, setLocalPlayerDeck, updateDeck]);
 
   return (
-    <section className="bg-[radial-gradient(ellipse_31.48%_48.47%_at_51.72%_50.00%,_#464441_0%,_#191918_100%)]">
+    <section className="bg-[radial-gradient(ellipse_31.48%_48.47%_at_51.72%_50.00%,#464441_0%,#191918_100%)]">
       <div className="grid h-screen w-full grid-cols-3 grid-rows-3 gap-2 overflow-hidden p-4 lg:gap-8">
         <Logo className="absolute top-4 left-4 h-16 w-40" setView={quitLobby} />
 
