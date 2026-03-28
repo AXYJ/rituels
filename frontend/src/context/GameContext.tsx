@@ -6,6 +6,7 @@ import {
   useContext,
   useState,
   useEffect,
+  useRef,
   ReactNode,
   useCallback,
   useMemo,
@@ -43,7 +44,19 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   const [displayOrder, setDisplayOrder] = useState<string[] | null>(null);
   const [volume, setVolume] = useState(0.5);
   const [sfxVolume, setSfxVolume] = useState(0.5);
+  const sfxVolumeRef = useRef(sfxVolume);
   const [threshold, setThreshold] = useState(15);
+  const [propositions, setPropositions] = useState<{
+    symbolRules: Record<string, string>;
+    colorRules: Record<string, string>;
+  }>({
+    symbolRules: {},
+    colorRules: {},
+  });
+
+  useEffect(() => {
+    sfxVolumeRef.current = sfxVolume;
+  }, [sfxVolume]);
 
   useEffect(() => {
     // Initialisation de la connexion
@@ -93,9 +106,8 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       setRules(null);
       setPlayerNumber(0);
       setHistory([]);
-      setLastEffect(null);
-      setDisplayOrder(null);
       setThreshold(15);
+      setPropositions({ symbolRules: {}, colorRules: {} });
     });
 
     // ----------------
@@ -194,9 +206,9 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
         setPlayerTurn(newOrder[0]);
         setPlayerOrder(newOrder);
         // Met à jour le score du joueur
-        if (sfxVolume > 0) {
+        if (sfxVolumeRef.current > 0) {
           const sound = new Audio("/sfx/flipcard.mp3");
-          sound.volume = sfxVolume;
+          sound.volume = sfxVolumeRef.current;
           sound.play().catch((e) => console.error("Erreur lecture audio :", e));
         }
         setPlayers((prev) =>
@@ -211,9 +223,9 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
         ...prev,
         { type: "message", player: idPlayer, message },
       ]);
-      if (sfxVolume > 0) {
+      if (sfxVolumeRef.current > 0) {
         const sound = new Audio("/sfx/notification.mp3");
-        sound.volume = sfxVolume;
+        sound.volume = sfxVolumeRef.current;
         sound.play().catch((e) => console.error("Erreur lecture audio :", e));
       }
     });
@@ -235,9 +247,8 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       setPlayers(players);
       setHistory([]);
       setWinner(null);
-      setLastEffect(null);
-      setDisplayOrder(null);
       setThreshold(15);
+      setPropositions({ symbolRules: {}, colorRules: {} });
       setPlayerNumber(0);
       setView("lobby");
     });
@@ -249,6 +260,10 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       setPlayers((prev) =>
         prev.map((p) => (p.id === idPlayer ? { ...p, deck } : p))
       );
+    });
+
+    newSocket.on("threshold_updated", (newThreshold) => {
+      setThreshold(newThreshold);
     });
 
     // Nettoyage automatique
@@ -329,6 +344,17 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     (deck: { cards: Card[] | null }) => {
       if (socket) {
         socket.emit("update_deck", socket.id, deck);
+      }
+    },
+    [socket]
+  );
+
+  // Mise à jour du seuil de victoire
+  const updateThreshold = useCallback(
+    (newThreshold: number) => {
+      if (socket) {
+        setThreshold(newThreshold);
+        socket.emit("update_threshold", newThreshold);
       }
     },
     [socket]
@@ -449,7 +475,10 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       sfxVolume,
       setSfxVolume,
       threshold,
+      updateThreshold,
       setThreshold,
+      propositions,
+      setPropositions,
     }),
     [
       socket,
@@ -492,7 +521,10 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       sfxVolume,
       setSfxVolume,
       threshold,
+      updateThreshold,
       setThreshold,
+      propositions,
+      setPropositions,
     ]
   );
 

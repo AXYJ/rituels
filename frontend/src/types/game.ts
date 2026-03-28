@@ -77,6 +77,18 @@ export interface GameContextType {
   // Seuil
   threshold: number;
   setThreshold: (threshold: number) => void;
+  updateThreshold: (newThreshold: number) => void;
+  // Propositions
+  propositions: {
+    symbolRules: Record<string, string>;
+    colorRules: Record<string, string>;
+  };
+  setPropositions: React.Dispatch<
+    React.SetStateAction<{
+      symbolRules: Record<string, string>;
+      colorRules: Record<string, string>;
+    }>
+  >;
 }
 
 // Types pour les règles issues du serveur

@@ -238,13 +238,14 @@ export default function Home() {
               }}
               className="flex items-center"
             >
-              <a href="#rules">
+              <a href="#rules" className="flex flex-col items-center">
+                <span className="text-3xl text-white">Règles du jeu</span>
                 <Image
                   src="/assets/arrow-down.png"
                   alt=""
                   width={800}
                   height={100}
-                  className="z-0 h-6 w-12 cursor-pointer object-fill mt-4 lg:mt-8 lg:h-12 lg:w-24"
+                  className="z-0 h-6 w-12 cursor-pointer object-fill mt-4 lg:h-12 lg:w-24"
                 />
               </a>
             </motion.div>
@@ -471,10 +472,7 @@ export default function Home() {
               }}
               className="overflow-hidden"
             >
-              Au lancement de chaque partie, le système redistribue
-              aléatoirement les valeurs et les pouvoirs. Votre but est
-              d'identifier ces variables avant vos adversaires et être le
-              premier à atteindre le score défini.
+              Les cartes sont composées de 2 éléments : un symbole et une couleur. Chaque symbole possède une valeur fixe (de -1 à 3), tandis que chaque couleur possède un pouvoir.
             </motion.p>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -489,8 +487,10 @@ export default function Home() {
               }}
               className="overflow-hidden"
             >
-              Les symboles possèdent une valeur fixe (de -1 à 3), tandis que les
-              couleurs appliquent des modificateurs de score.
+              Au lancement de chaque partie, le système distribue
+              aléatoirement les valeurs et les pouvoirs. Votre but est
+              d'identifier ces variables avant vos adversaires et être le
+              premier à atteindre le score défini.
             </motion.p>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -521,12 +521,11 @@ export default function Home() {
               className="ml-4 list-inside list-disc text-2xl"
             >
               <li>
-                Inversion : inverse la valeur du symbole (un 2 devient -2) ;
+                Inversion : inverse la valeur du symbole de la carte que vous jouez (un 2 devient -2) ;
               </li>
               <li>Gel : le prochain joueur ne reçoit aucune graine ;</li>
               <li>
-                Répétition : la carte copie le pouvoir de la carte précédemment
-                jouée;
+                Répétition : la carte copie le pouvoir de la carte précédemment jouée;
               </li>
               <li>
                 Neutre : la valeur du symbole est appliquée sans modification.

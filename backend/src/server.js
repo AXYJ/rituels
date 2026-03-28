@@ -168,6 +168,19 @@ io.on("connection", (socket) => {
         }
     });
 
+    // Mise à jour du seuil de victoire
+    socket.on("update_threshold", (newThreshold) => {
+        for (const code in rooms) {
+            const room = rooms[code];
+            const host = room.players.find(p => p.id === socket.id && p.isHost);
+            if (host) {
+                room.threshold = newThreshold;
+                io.to(code).emit("threshold_updated", newThreshold);
+                break;
+            }
+        }
+    });
+
     // Fonction utilitaire pour gérer le départ d'un joueur
     const handlePlayerLeave = (idPlayer) => {
         for (const code in rooms) {

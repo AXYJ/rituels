@@ -50,6 +50,7 @@ export default function Lobby() {
     changeName,
     threshold,
     setThreshold,
+    updateThreshold,
   } = useGame();
 
   const me = players.find((p) => p.id === socket?.id);
@@ -84,10 +85,10 @@ export default function Lobby() {
     const target = e.target as HTMLButtonElement;
     if (target.classList.contains("minus")) {
       if (threshold === 5) return;
-      setThreshold(threshold - 1);
+      updateThreshold(threshold - 1);
     } else {
       if (threshold === 99) return;
-      setThreshold(threshold + 1);
+      updateThreshold(threshold + 1);
     }
   };
 
@@ -109,7 +110,7 @@ export default function Lobby() {
             className="absolute top-1/2 -right-1/2 -translate-y-1/2 cursor-pointer"
           >
             <Image
-              src="/assets/copy.svg"
+              src="/assets/copy.png"
               alt="Copier"
               width={40}
               height={40}
@@ -134,7 +135,7 @@ export default function Lobby() {
               <input
                 type="number"
                 value={threshold}
-                onChange={(e) => setThreshold(Number(e.target.value))}
+                onChange={(e) => updateThreshold(Number(e.target.value))}
                 max={99}
                 min={5}
                 className="w-10 text-center text-2xl"
@@ -145,6 +146,18 @@ export default function Lobby() {
               >
                 +
               </button>
+            </div>
+          </motion.div>
+        )}
+
+        {!isHost && (
+          <motion.div
+            variants={itemVariants}
+            className="flex flex-col items-center gap-4"
+          >
+            <h3>Seuil de victoire</h3>
+            <div className="flex items-center gap-4">
+              <span className="text-4xl text-white">{threshold}</span>
             </div>
           </motion.div>
         )}

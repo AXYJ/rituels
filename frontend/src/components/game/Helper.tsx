@@ -8,7 +8,7 @@ import { useGame } from "../../context/GameContext";
 export default function Helper() {
   const [isEditing, setIsEditing] = useState(false);
 
-  const { rules, players, socket } = useGame();
+  const { rules, players, socket, propositions, setPropositions } = useGame();
 
   const me = players.find((p) => p.id === socket?.id);
 
@@ -63,7 +63,7 @@ export default function Helper() {
                 animate={{ opacity: 1, y: -40, x: 20 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 1.5, ease: "easeOut" }}
-                className={`pointer-events-none absolute top-0 left-1/2 z-0 -translate-x-1/2 text-3xl font-bold drop-shadow-md lg:right-0 lg:left-auto ${diff > 0 ? "text-green-500" : "text-red-500"}`}
+                className={`pointer-events-none absolute top-0 right-0 -translate-y-1/2 z-0 text-5xl font-bold drop-shadow-md lg:right-0 lg:left-auto ${diff > 0 ? "text-green-500" : "text-red-500"}`}
               >
                 {diff > 0 ? "+" : ""}
                 {diff}
@@ -115,6 +115,16 @@ export default function Helper() {
                         <select
                           name={symbol}
                           id={symbol}
+                          value={propositions.symbolRules[symbol] || ""}
+                          onChange={(e) =>
+                            setPropositions((prev) => ({
+                              ...prev,
+                              symbolRules: {
+                                ...prev.symbolRules,
+                                [symbol]: e.target.value,
+                              },
+                            }))
+                          }
                           className="col-span-2 w-full rounded-md border border-gray-300 bg-white p-2 text-black"
                         >
                           <option value="">--</option>
@@ -143,6 +153,16 @@ export default function Helper() {
                       <select
                         name={color}
                         id={color}
+                        value={propositions.colorRules[color] || ""}
+                        onChange={(e) =>
+                          setPropositions((prev) => ({
+                            ...prev,
+                            colorRules: {
+                              ...prev.colorRules,
+                              [color]: e.target.value,
+                            },
+                          }))
+                        }
                         className="col-span-2 w-full rounded-md border border-gray-300 bg-white p-2 text-black"
                       >
                         <option value="">--</option>

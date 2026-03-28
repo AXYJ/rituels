@@ -57,11 +57,11 @@ export default function OpponentDecks() {
           key={opponent?.id || index}
           className={`relative ${getOpponentPlacementClass(index, opponents.length)}`}
         >
-          <h2
+          <h3
             className={`absolute whitespace-nowrap ${getOpponentNamePlacementClass(index, opponents.length)}`}
           >
-            {opponent?.name}
-          </h2>
+            {opponent?.name} ({opponent?.score})
+          </h3>
           {opponent?.deck?.cards?.map((card: any, cardIndex: number) => (
             <motion.div
               layout
