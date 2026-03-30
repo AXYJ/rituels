@@ -1,7 +1,7 @@
 "use client";
 
 // Importations des modules
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 // On définit les variants à l'extérieur pour éviter de les recréer à chaque rendu (performance)
@@ -116,6 +116,16 @@ export default function Home() {
     }
   };
 
+  // Fait disparaître l'erreur automatiquement après 5 secondes
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => {
+        setError(null);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [error, setError]);
+
   return (
     <>
       {/* // Animation au chargement */}
@@ -144,23 +154,25 @@ export default function Home() {
               <Logo />
             </motion.div>
 
-            {error && (
-              <motion.div
-                key="error-message"
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                className="bg-red absolute top-10 z-50 flex items-center gap-4 rounded-md px-8 py-4 text-2xl font-bold text-white shadow-lg"
-              >
-                <span>{error}</span>
-                <button
-                  onClick={() => setError(null)}
-                  className="text-white hover:text-gray-200"
+            <AnimatePresence>
+              {error && (
+                <motion.div
+                  key="error-message"
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  className="bg-red absolute top-10 z-50 flex items-center gap-4 rounded-md px-8 py-4 text-2xl font-bold text-white shadow-lg"
                 >
-                  ✕
-                </button>
-              </motion.div>
-            )}
+                  <span>{error}</span>
+                  <button
+                    onClick={() => setError(null)}
+                    className="text-white hover:text-gray-200"
+                  >
+                    ✕
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             <motion.div
               key="launch-container"
@@ -253,7 +265,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="bg-[#191918] pb-32">
+      <section className="min-h-[70dvh] bg-[#191918] pb-64">
         <div
           className="flex flex-col items-center justify-center gap-8"
           id="rules"
@@ -333,7 +345,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="bg-[#191918] pb-32">
+      <section className="min-h-[70dvh] bg-[#191918] pb-64">
         <div className="flex flex-col items-center justify-center gap-8">
           <h2>Fonctionnement du système</h2>
           <div className="flex w-8/10 max-w-[1024px] flex-col gap-4 text-white lg:w-1/2">
@@ -435,13 +447,13 @@ export default function Home() {
               }}
               className="overflow-hidden"
             >
-              5 — Compteur : graines accumulées (attention, les valeurs
-              négatives sont possibles).
+              5 — Compteur : points accumulés (attention, les valeurs négatives
+              sont possibles).
             </motion.p>
           </div>
         </div>
       </section>
-      <section className="bg-[#191918] pb-32">
+      <section className="min-h-[70dvh] bg-[#191918] pb-64">
         <div className="flex flex-col items-center justify-center gap-8">
           <h2>Protocole de jeu (explication du jeu)</h2>
           <div className="flex w-8/10 max-w-[1024px] flex-col gap-4 text-white lg:w-1/2">
@@ -527,7 +539,7 @@ export default function Home() {
                 Inversion : inverse la valeur du symbole de la carte que vous
                 jouez (un 2 devient -2) ;
               </li>
-              <li>Gel : le prochain joueur ne reçoit aucune graine ;</li>
+              <li>Gel : le prochain joueur ne reçoit aucun point ;</li>
               <li>
                 Répétition : la carte copie le pouvoir de la carte précédemment
                 jouée;

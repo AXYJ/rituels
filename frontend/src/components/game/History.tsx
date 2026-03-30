@@ -27,7 +27,7 @@ export default function History() {
   };
 
   return (
-    <div className="relative z-10 col-start-1 col-end-2 row-start-3 row-end-4 flex h-full flex-col justify-between">
+    <div className="relative z-10 col-start-1 col-end-2 row-start-3 row-end-4 mr-4 flex h-full flex-col justify-between">
       <Image
         src="/assets/historique.png"
         alt=""
@@ -59,10 +59,16 @@ export default function History() {
               <span className="italic">
                 {h.card?.symbol} {h.card?.color}
               </span>
-              {" et a gagné "}
-              <span className="font-semibold">{h.points}</span>
-              {" points"}
-            </div>
+              {h.points === 0 ? (
+                " et n'a rien gagné"
+              ) : (
+                <>
+                  {h.points! > 0 ? " et a gagné " : " et a perdu "}
+                  <span>{Math.abs(h.points ?? 0)}</span>{" "}
+                  {Math.abs(h.points ?? 0) > 1 ? "graines" : "graine"}
+                </>
+              )}
+            </div>  
           );
         })}
       </div>

@@ -46,7 +46,7 @@ export default function RulesModal({ onClose }: { onClose: () => void }) {
                 alt="Fermer"
                 width={32}
                 height={32}
-                className="h-8 w-8 cursor-pointer transition-transform duration-300 ease-in-out hover:scale-110"
+                className="h-4 w-4 cursor-pointer transition-transform duration-300 ease-in-out hover:scale-110 lg:h-8 lg:w-8"
               />
             </button>
           </div>
@@ -127,7 +127,7 @@ export default function RulesModal({ onClose }: { onClose: () => void }) {
                   les règles en vigueur ;
                 </p>
                 <p>
-                  5 — Compteur : graines accumulées (attention, les valeurs
+                  5 — Compteur : points accumulés (attention, les valeurs
                   négatives sont possibles).
                 </p>
               </div>
@@ -156,7 +156,7 @@ export default function RulesModal({ onClose }: { onClose: () => void }) {
                     vous jouez (un 2 devient -2) ;
                   </li>
                   <li className="ml-5 list-disc text-2xl">
-                    Gel : le prochain joueur ne reçoit aucune graine ;
+                    Gel : le prochain joueur ne reçoit aucun point ;
                   </li>
                   <li className="ml-5 list-disc text-2xl">
                     Répétition : la carte copie le pouvoir de la carte

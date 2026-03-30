@@ -2,7 +2,7 @@
 
 // Importations des modules
 import { useGame } from "../../context/GameContext";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 
@@ -51,6 +51,8 @@ export default function Lobby() {
     threshold,
     setThreshold,
     updateThreshold,
+    error,
+    setError,
   } = useGame();
 
   const me = players.find((p) => p.id === socket?.id);
@@ -87,13 +89,73 @@ export default function Lobby() {
       if (threshold === 5) return;
       updateThreshold(threshold - 1);
     } else {
-      if (threshold === 99) return;
+      if (threshold === 30) return;
       updateThreshold(threshold + 1);
     }
   };
 
+  // État local pour un affichage immédiat de la frappe
+  const [localThreshold, setLocalThreshold] = useState<string | number>(
+    threshold
+  );
+
+  // Synchronise l'input local quand la valeur globale change (via boutons +/- ou serveur)
+  useEffect(() => {
+    setLocalThreshold(threshold);
+  }, [threshold]);
+
+  // Valide et envoie au serveur après un délai de réflexion (debouncing)
+  useEffect(() => {
+    if (localThreshold === "" || Number(localThreshold) === threshold) return;
+
+    const timer = setTimeout(() => {
+      const valNum = Number(localThreshold);
+      if (isNaN(valNum)) return;
+
+      const clamped = Math.min(Math.max(valNum, 5), 30);
+      updateThreshold(clamped);
+      setLocalThreshold(clamped);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [localThreshold, threshold, updateThreshold]);
+
+  const handleThresholdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setLocalThreshold(e.target.value);
+  };
+
+  // Fait disparaître l'erreur automatiquement après 5 secondes
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => {
+        setError(null);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [error, setError]);
+
   return (
     <section className="bg-[radial-gradient(ellipse_31.48%_48.47%_at_51.72%_50.00%,_#464441_0%,_#191918_100%)] py-16 lg:py-0">
+      <AnimatePresence>
+        {error && (
+          <motion.div
+            key="error-message"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="bg-red absolute top-10 left-1/2 z-50 flex -translate-x-1/2 items-center gap-4 rounded-md px-8 py-4 text-2xl text-white shadow-lg"
+          >
+            <span>{error}</span>
+            <button
+              onClick={() => setError(null)}
+              className="text-white hover:text-gray-200"
+            >
+              ✕
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <motion.div
         variants={frameVariants}
         initial="hidden"
@@ -134,11 +196,11 @@ export default function Lobby() {
               </button>
               <input
                 type="number"
-                value={threshold}
-                onChange={(e) => updateThreshold(Number(e.target.value))}
-                max={99}
+                value={localThreshold}
+                onChange={handleThresholdChange}
+                className="w-16 rounded-md border border-gray-300 bg-white p-1 text-center text-2xl text-black"
                 min={5}
-                className="w-10 text-center text-2xl"
+                max={30}
               />
               <button
                 onClick={handleClick}
@@ -204,8 +266,17 @@ export default function Lobby() {
                         onBlur={() => {
                           setIsEditing(false);
                           const trimmed = editName.trim();
-                          if (trimmed !== "" && trimmed !== player.name) {
+                          if (
+                            trimmed !== "" &&
+                            trimmed !== player.name &&
+                            trimmed.length <= 10
+                          ) {
                             changeName(trimmed);
+                          } else {
+                            setEditName(player.name);
+                            setError(
+                              "Le nom doit contenir entre 1 et 10 caractères."
+                            );
                           }
                         }}
                         onKeyDown={(e) => {
@@ -265,6 +336,21 @@ export default function Lobby() {
           variants={itemVariants}
           className="flex w-8/10 gap-4 lg:w-1/2"
         >
+          <motion.button
+            whileHover={{ y: -5 }}
+            onClick={handleQuit}
+            className="relative w-full cursor-pointer rounded-full px-6 py-2 text-white shadow-black transition-shadow duration-300 hover:shadow-lg"
+          >
+            <Image
+              src="/assets/button-long-red.png"
+              alt=""
+              width={800}
+              height={100}
+              className="pointer-events-none absolute inset-0 z-0 h-full w-full object-fill select-none"
+            />
+            <span className="relative z-50 text-2xl text-white">Quitter</span>
+          </motion.button>
+
           {isHost && (
             <motion.button
               whileHover={
@@ -278,7 +364,7 @@ export default function Lobby() {
                 players.filter((p) => p.isHost || p.isReady).length !==
                   players.length || players.length === 5
               }
-              className={`relative w-full cursor-pointer rounded-full px-6 py-2 font-bold text-white shadow-black transition-shadow duration-300 ${players.filter((p) => p.isHost || p.isReady).length === players.length ? "hover:shadow-lg" : "cursor-not-allowed opacity-50"}`}
+              className={`relative w-full cursor-pointer rounded-full px-6 py-2 text-white shadow-black transition-shadow duration-300 ${players.filter((p) => p.isHost || p.isReady).length === players.length ? "hover:shadow-lg" : "cursor-not-allowed opacity-50"}`}
             >
               <Image
                 src={
@@ -292,7 +378,9 @@ export default function Lobby() {
                 height={100}
                 className="pointer-events-none absolute inset-0 z-0 h-full w-full object-fill select-none"
               />
-              <span className="relative z-50 text-2xl text-white">
+              <span
+                className={`relative z-50 text-2xl ${players.filter((p) => p.isHost || p.isReady).length === players.length ? "text-black" : "text-white"}`}
+              >
                 Lancer la partie (
                 {players.filter((p) => p.isHost || p.isReady).length}/
                 {players.length})
@@ -303,7 +391,7 @@ export default function Lobby() {
             <motion.button
               whileHover={{ y: -5 }}
               onClick={handleReady}
-              className="relative w-full cursor-pointer rounded-full px-6 py-2 font-bold text-white shadow-black transition-shadow duration-300 hover:shadow-lg"
+              className="relative w-full cursor-pointer rounded-full px-6 py-2 text-white shadow-black transition-shadow duration-300 hover:shadow-lg"
             >
               <Image
                 src={
@@ -316,25 +404,13 @@ export default function Lobby() {
                 height={100}
                 className="pointer-events-none absolute inset-0 z-0 h-full w-full object-fill select-none"
               />
-              <span className="relative z-50 text-2xl text-white">
+              <span
+                className={`relative z-50 text-2xl ${isReady ? "text-white" : "text-black"} `}
+              >
                 {isReady ? "Annuler" : "Prêt"}
               </span>
             </motion.button>
           )}
-          <motion.button
-            whileHover={{ y: -5 }}
-            onClick={handleQuit}
-            className="relative w-full cursor-pointer rounded-full px-6 py-2 font-bold text-white shadow-black transition-shadow duration-300 hover:shadow-lg"
-          >
-            <Image
-              src="/assets/button-long-red.png"
-              alt=""
-              width={800}
-              height={100}
-              className="pointer-events-none absolute inset-0 z-0 h-full w-full object-fill select-none"
-            />
-            <span className="relative z-50 text-2xl text-white">Quitter</span>
-          </motion.button>
         </motion.div>
 
         <AnimatePresence>

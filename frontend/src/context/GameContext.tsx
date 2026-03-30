@@ -106,7 +106,6 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       setRules(null);
       setPlayerNumber(0);
       setHistory([]);
-      setThreshold(15);
       setPropositions({ symbolRules: {}, colorRules: {} });
     });
 
@@ -115,29 +114,37 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     // ----------------
 
     // Création d'un lobby
-    newSocket.on("room_created", (code, rules, serverPlayers, playerNumber) => {
-      setRoomCode(code);
-      setRules(rules);
-      // Initialisation de l'état des joueurs
-      setPlayers(
-        serverPlayers.map((p: Player) => ({
-          ...p,
-          deck: p.deck ?? { cards: null },
-          score: p.score ?? 0,
-        }))
-      );
-      setPlayerNumber(playerNumber);
-      setView("lobby");
-    });
+    newSocket.on(
+      "room_created",
+      (code, rules, serverPlayers, playerNumber, threshold) => {
+        setRoomCode(code);
+        setRules(rules);
+        if (threshold !== undefined) setThreshold(threshold);
+        // Initialisation de l'état des joueurs
+        setPlayers(
+          serverPlayers.map((p: Player) => ({
+            ...p,
+            deck: p.deck ?? { cards: null },
+            score: p.score ?? 0,
+          }))
+        );
+        setPlayerNumber(playerNumber);
+        setView("lobby");
+      }
+    );
 
     // Rejoindre une partie
-    newSocket.on("join_game_success", (code, rules, players, playerNumber) => {
-      setRoomCode(code);
-      setRules(rules);
-      setPlayers(players);
-      setPlayerNumber(playerNumber);
-      setView("lobby");
-    });
+    newSocket.on(
+      "join_game_success",
+      (code, rules, players, playerNumber, threshold) => {
+        setRoomCode(code);
+        setRules(rules);
+        if (threshold !== undefined) setThreshold(threshold);
+        setPlayers(players);
+        setPlayerNumber(playerNumber);
+        setView("lobby");
+      }
+    );
 
     // Erreurs de connexion
     newSocket.on("room_full", () => {
@@ -242,12 +249,11 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     });
 
     // Partie réinitialisée (Rejouer)
-    newSocket.on("game_reset", (rules, players) => {
+    newSocket.on("game_reset", (rules, players, threshold) => {
       setRules(rules);
       setPlayers(players);
       setHistory([]);
       setWinner(null);
-      setThreshold(15);
       setPropositions({ symbolRules: {}, colorRules: {} });
       setPlayerNumber(0);
       setView("lobby");
@@ -328,7 +334,6 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     setHistory([]);
     setLastEffect(null);
     setDisplayOrder(null);
-    setThreshold(15);
     setPlayerNumber(0);
   }, [socket]);
 

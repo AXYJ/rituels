@@ -2,7 +2,7 @@
 
 // Importations des modules
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 import { useGame } from "../../context/GameContext";
@@ -38,6 +38,27 @@ export default function Game() {
   const deck = me?.deck;
 
   const [pendingCard, setPendingCard] = useState<Card | null>(null);
+  const [scoreDiffs, setScoreDiffs] = useState<{ id: number; diff: number }[]>(
+    []
+  );
+  const prevScoreRef = useRef(me?.score ?? 0);
+  const diffIdRef = useRef(0);
+
+  useEffect(() => {
+    if (me && me.score !== prevScoreRef.current) {
+      const diff = me.score - prevScoreRef.current;
+      prevScoreRef.current = me.score;
+
+      if (diff !== 0) {
+        const id = diffIdRef.current++;
+        setScoreDiffs((prev) => [...prev, { id, diff }]);
+
+        setTimeout(() => {
+          setScoreDiffs((prev) => prev.filter((d) => d.id !== id));
+        }, 1500);
+      }
+    }
+  }, [me?.score]);
 
   useEffect(() => {
     queueMicrotask(() => setPendingCard(null));
@@ -87,7 +108,7 @@ export default function Game() {
 
     // Petit délai pour laisser le temps au layout de se stabiliser
     const timeoutId = setTimeout(hideAddressBar, 100);
-    
+
     // On peut aussi le refaire si le joueur touche l'écran (souvent nécessaire sur mobile)
     const handleTouch = () => {
       if (window.scrollY === 0) {
@@ -104,8 +125,8 @@ export default function Game() {
   }, []);
 
   return (
-    <section className="min-h-[100.1dvh] bg-[radial-gradient(ellipse_31.48%_48.47%_at_51.72%_50.00%,#464441_0%,#191918_100%)] overflow-x-hidden lg:min-h-dvh">
-      <div className="grid h-dvh w-full grid-cols-3 grid-rows-3 gap-2 overflow-hidden p-4 lg:gap-8">
+    <section className="min-h-[100.1dvh] overflow-x-hidden bg-[radial-gradient(ellipse_31.48%_48.47%_at_51.72%_50.00%,#464441_0%,#191918_100%)] lg:min-h-dvh">
+      <div className="grid h-dvh w-full grid-cols-3 grid-rows-[25%_50%_25%] gap-2 overflow-hidden p-4">
         <Logo className="absolute top-4 left-4 h-16 w-40" setView={quitLobby} />
 
         <button
@@ -128,11 +149,31 @@ export default function Game() {
 
         {/* Zone de jeu */}
 
-        <div className="relative col-start-2 col-end-3 row-start-2 row-end-3 flex items-end justify-center p-0 lg:p-8">
-          <h2 className="absolute -top-16 text-center">
+        <div className="relative col-start-2 col-end-3 row-start-2 row-end-3 flex items-start justify-center p-0 lg:p-8">
+          <span className="absolute -top-10 text-center text-5xl">
             Au tour de :{" "}
             {players.find((p) => p.id === playerTurn)?.name || playerTurn}
-          </h2>
+          </span>
+
+          {/* {Animation du score} */}
+          <div className="pointer-events-auto absolute top-0 right-8 z-50 flex items-center self-end">
+            <AnimatePresence>
+              {scoreDiffs.map(({ id, diff }) => (
+                <motion.div
+                  key={id}
+                  initial={{ opacity: 0, y: 10, x: 20 }}
+                  animate={{ opacity: 1, y: -40, x: 20 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 1, ease: "easeOut" }}
+                  className={`pointer-events-none absolute top-0 right-0 text-5xl lg:text-9xl ${diff > 0 ? "text-green" : "text-red"}`}
+                >
+                  {diff > 0 ? "+" : ""}
+                  {diff}
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </div>
+
           <AnimatePresence>
             {(() => {
               const playedCards = history
@@ -166,7 +207,7 @@ export default function Game() {
                   }}
                   exit={{ opacity: 0, scale: 0.5 }}
                   transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                  className="absolute h-24 w-16 drop-shadow-sm lg:h-48 lg:w-32"
+                  className="absolute h-24 w-16 drop-shadow-sm lg:h-56 lg:w-40"
                 >
                   <Image
                     src={`/cards/${played.symbol}-${played.color}.png`}

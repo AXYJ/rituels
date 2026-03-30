@@ -57,11 +57,25 @@ export default function OpponentDecks() {
           key={opponent?.id || index}
           className={`relative ${getOpponentPlacementClass(index, opponents.length)}`}
         >
-          <h3
-            className={`absolute whitespace-nowrap ${getOpponentNamePlacementClass(index, opponents.length)}`}
+          <div
+            className={`absolute z-30 flex items-center gap-8 whitespace-nowrap ${getOpponentNamePlacementClass(index, opponents.length)}`}
           >
-            {opponent?.name} ({opponent?.score})
-          </h3>
+            <h3>{opponent?.name}</h3>
+            <div className="flex w-full items-center gap-2">
+              <Image
+                src={`/cards/Seed.png`}
+                alt="card"
+                width={1000}
+                height={1000}
+                className="z-10 h-12 w-12 object-contain"
+              />
+              <span className="pointer-events-none z-10 -ml-2 w-full px-3 py-1 text-4xl whitespace-nowrap">
+                {opponent?.score}{" "}
+                {Math.abs(opponent?.score) > 1 ? "graines" : "graine"}
+              </span>
+            </div>
+          </div>
+
           {opponent?.deck?.cards?.map((card: any, cardIndex: number) => (
             <motion.div
               layout

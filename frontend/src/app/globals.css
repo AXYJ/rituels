@@ -63,7 +63,7 @@ button {
 }
 
 .aside-btn-3 {
-  top: anchor(--settings top, 50%);
+  top: anchor(--settings top, 80%);
   left: anchor(--settings left, 0%);
   transform: translateX(-100%);
 }
@@ -78,6 +78,6 @@ button {
   }
 
   .aside-btn-3 {
-    top: anchor(--settings top, 30%);
+    top: anchor(--settings top, 80%);
   }
 }
