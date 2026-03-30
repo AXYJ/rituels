@@ -79,9 +79,33 @@ export default function Game() {
     }
   }, [deck?.cards, rules, setLocalPlayerDeck, updateDeck]);
 
+  useEffect(() => {
+    // Tentative de masquer la barre d'adresse sur mobile au chargement
+    const hideAddressBar = () => {
+      window.scrollTo(0, 1);
+    };
+
+    // Petit délai pour laisser le temps au layout de se stabiliser
+    const timeoutId = setTimeout(hideAddressBar, 100);
+    
+    // On peut aussi le refaire si le joueur touche l'écran (souvent nécessaire sur mobile)
+    const handleTouch = () => {
+      if (window.scrollY === 0) {
+        window.scrollTo(0, 1);
+      }
+    };
+
+    window.addEventListener("touchstart", handleTouch);
+
+    return () => {
+      clearTimeout(timeoutId);
+      window.removeEventListener("touchstart", handleTouch);
+    };
+  }, []);
+
   return (
-    <section className="bg-[radial-gradient(ellipse_31.48%_48.47%_at_51.72%_50.00%,#464441_0%,#191918_100%)]">
-      <div className="grid h-screen w-full grid-cols-3 grid-rows-3 gap-2 overflow-hidden p-4 lg:gap-8">
+    <section className="min-h-[100.1dvh] bg-[radial-gradient(ellipse_31.48%_48.47%_at_51.72%_50.00%,#464441_0%,#191918_100%)] overflow-x-hidden lg:min-h-dvh">
+      <div className="grid h-dvh w-full grid-cols-3 grid-rows-3 gap-2 overflow-hidden p-4 lg:gap-8">
         <Logo className="absolute top-4 left-4 h-16 w-40" setView={quitLobby} />
 
         <button
