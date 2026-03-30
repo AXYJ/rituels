@@ -39,7 +39,10 @@ export default function Helper() {
   return (
     <>
       {isEditing && (
-        <div className="fixed inset-0 z-30" onClick={() => setIsEditing(false)} />
+        <div
+          className="fixed inset-0 z-30"
+          onClick={() => setIsEditing(false)}
+        />
       )}
 
       <div
@@ -53,7 +56,9 @@ export default function Helper() {
             height={1000}
             className="z-10 h-16 w-16 object-contain"
           />
-          <p className="z-10 px-3 py-1 text-xl font-bold">x {me.score}</p>
+          <p className="pointer-events-none z-10 px-3 py-1 text-xl font-bold">
+            x {me.score}
+          </p>
 
           <AnimatePresence>
             {scoreDiffs.map(({ id, diff }) => (
@@ -63,7 +68,7 @@ export default function Helper() {
                 animate={{ opacity: 1, y: -40, x: 20 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 1.5, ease: "easeOut" }}
-                className={`pointer-events-none absolute top-0 right-0 -translate-y-1/2 z-0 text-5xl font-bold drop-shadow-md lg:right-0 lg:left-auto ${diff > 0 ? "text-green-500" : "text-red-500"}`}
+                className={`pointer-events-none absolute top-0 right-0 z-0 -translate-y-1/2 text-5xl font-bold drop-shadow-md lg:right-0 lg:left-auto ${diff > 0 ? "text-green-500" : "text-red-500"}`}
               >
                 {diff > 0 ? "+" : ""}
                 {diff}
@@ -125,7 +130,7 @@ export default function Helper() {
                               },
                             }))
                           }
-                          className="col-span-2 w-full rounded-md border border-gray-300 bg-white p-2 text-black"
+                          className="col-span-2 w-full cursor-pointer rounded-md border border-gray-300 bg-white p-2 text-black"
                         >
                           <option value="">--</option>
                           {[3, 2, 1, 0, -1].map((value) => (

@@ -19,7 +19,7 @@ export default function Logo({
         alt="Logo"
         width={500}
         height={500}
-        className="w-1/2 lg:w-full"
+        className="pointer-events-none w-1/2 lg:w-full"
       />
     </div>
   );

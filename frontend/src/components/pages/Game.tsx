@@ -88,7 +88,7 @@ export default function Game() {
           onClick={() => {
             setShowRules(true);
           }}
-          className="z-10 col-start-3 col-end-4 h-fit w-fit justify-self-end rounded-full px-6 py-2 font-bold transition-transform duration-300 hover:scale-110"
+          className="z-10 col-start-3 col-end-4 h-fit w-fit cursor-pointer justify-self-end rounded-full px-6 py-2 font-bold transition-transform duration-300 hover:scale-110"
         >
           <Image
             src="/assets/settings.png"

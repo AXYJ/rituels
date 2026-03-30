@@ -27,7 +27,7 @@ export default function History() {
   };
 
   return (
-    <div className="relative col-start-1 col-end-2 row-start-3 row-end-4 flex h-full flex-col justify-between z-10">
+    <div className="relative z-10 col-start-1 col-end-2 row-start-3 row-end-4 flex h-full flex-col justify-between">
       <Image
         src="/assets/historique.png"
         alt=""
@@ -80,7 +80,7 @@ export default function History() {
         />
         <button
           type="submit"
-          className="bg-black px-8 text-sm text-white transition-colors duration-300 ease-in-out hover:bg-gray-700 lg:text-xl"
+          className="cursor-pointer bg-black px-8 text-sm text-white transition-colors duration-300 ease-in-out hover:bg-gray-700 lg:text-xl"
         >
           Envoyer
         </button>

@@ -32,6 +32,10 @@ p {
   @apply text-2xl;
 }
 
+button {
+  @apply cursor-pointer;
+}
+
 .need-border::before {
   content: "";
   background-image: url("/assets/border.png");

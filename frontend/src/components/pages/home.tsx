@@ -123,7 +123,7 @@ export default function Home() {
         className="bg-[radial-gradient(ellipse_31.48%_48.47%_at_51.72%_50.00%,_#464441_0%,_#191918_100%)] pb-32"
         id="launch-btn"
       >
-        <div className="flex min-h-screen flex-col items-center lg:justify-center pt-8 lg:pt-0 gap-2 lg:gap-8">
+        <div className="flex min-h-screen flex-col items-center gap-2 pt-8 lg:justify-center lg:gap-8 lg:pt-0">
           <AnimatePresence>
             <motion.div
               key="title"
@@ -245,7 +245,7 @@ export default function Home() {
                   alt=""
                   width={800}
                   height={100}
-                  className="z-0 h-6 w-12 cursor-pointer object-fill mt-4 lg:h-12 lg:w-24"
+                  className="z-0 mt-4 h-6 w-12 cursor-pointer object-fill lg:h-12 lg:w-24"
                 />
               </a>
             </motion.div>
@@ -326,7 +326,8 @@ export default function Home() {
               className="overflow-hidden"
             >
               Analysez vos résultats, surveillez ceux des autres spécimens et
-              déduisez la logique du système pour atteindre le seuil critique.
+              déduisez la logique du système pour atteindre le seuil de
+              victoire.
             </motion.p>
           </div>
         </div>
@@ -472,7 +473,9 @@ export default function Home() {
               }}
               className="overflow-hidden"
             >
-              Les cartes sont composées de 2 éléments : un symbole et une couleur. Chaque symbole possède une valeur fixe (de -1 à 3), tandis que chaque couleur possède un pouvoir.
+              Les cartes sont composées de 2 éléments : un symbole et une
+              couleur. Chaque symbole possède une valeur fixe (de -1 à 3),
+              tandis que chaque couleur possède un pouvoir.
             </motion.p>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -487,10 +490,10 @@ export default function Home() {
               }}
               className="overflow-hidden"
             >
-              Au lancement de chaque partie, le système distribue
-              aléatoirement les valeurs et les pouvoirs. Votre but est
-              d'identifier ces variables avant vos adversaires et être le
-              premier à atteindre le score défini.
+              Au lancement de chaque partie, le système distribue aléatoirement
+              les valeurs et les pouvoirs. Votre but est d'identifier ces
+              variables avant vos adversaires et être le premier à atteindre le
+              score défini (seuil de victoire).
             </motion.p>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -521,11 +524,13 @@ export default function Home() {
               className="ml-4 list-inside list-disc text-2xl"
             >
               <li>
-                Inversion : inverse la valeur du symbole de la carte que vous jouez (un 2 devient -2) ;
+                Inversion : inverse la valeur du symbole de la carte que vous
+                jouez (un 2 devient -2) ;
               </li>
               <li>Gel : le prochain joueur ne reçoit aucune graine ;</li>
               <li>
-                Répétition : la carte copie le pouvoir de la carte précédemment jouée;
+                Répétition : la carte copie le pouvoir de la carte précédemment
+                jouée;
               </li>
               <li>
                 Neutre : la valeur du symbole est appliquée sans modification.

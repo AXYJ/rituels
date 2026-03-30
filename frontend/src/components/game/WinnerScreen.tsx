@@ -3,19 +3,22 @@
 import { useGame } from "../../context/GameContext";
 
 export default function WinnerScreen() {
-  const { winner, rules, players, resetGame, threshold, propositions } = useGame();
+  const { winner, rules, players, resetGame, threshold, propositions } =
+    useGame();
 
   const playerWin = players.find((p) => p.id === winner);
   return (
     <div className="fixed top-0 left-0 z-15 flex h-full w-full justify-center overflow-y-auto bg-black/50 lg:overflow-hidden">
-      <div className="flex w-full max-w-[1024px] flex-col items-center overflow-y-auto rounded-lg bg-black p-6 lg:justify-center lg:overflow-hidden">
+      <div className="flex w-full max-w-[1024px] flex-col items-center overflow-y-auto rounded-lg bg-black p-6 lg:justify-center lg:gap-8 lg:overflow-hidden">
         <h2 className="mb-8 text-center font-bold">
           Bravo {playerWin?.name} ! <br />
           Vous êtes le premier à avoir atteint {threshold} graines
         </h2>
         <div className="flex gap-12">
           <div>
-            <h3 className="mb-4 text-center">Voici les règles de cette partie :</h3>
+            <h3 className="mb-4 text-center">
+              Voici les règles de cette partie :
+            </h3>
             <div className="mb-8 flex justify-center gap-16">
               <ul>
                 <h4 className="text-center text-4xl">Symboles</h4>
