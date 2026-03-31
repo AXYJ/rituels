@@ -35,7 +35,7 @@ export default function RulesModal({ onClose }: { onClose: () => void }) {
     >
       <div
         className="fixed top-1/2 left-1/2 z-50 h-[90vh] w-1/2 max-w-2xl -translate-x-1/2 -translate-y-1/2 lg:w-11/12"
-        style={{ "anchor-name": "--settings" } as React.CSSProperties}
+        style={{ anchorName: "--settings" } as React.CSSProperties}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex h-full w-full flex-col gap-8 overflow-y-auto rounded-lg bg-black p-6 text-white shadow-lg [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-400 [&::-webkit-scrollbar-track]:bg-transparent">

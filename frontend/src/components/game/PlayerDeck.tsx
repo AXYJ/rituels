@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card } from "../../types/game";
+import { useGame } from "../../context/GameContext";
 
 type PlayerDeckProps = {
   me: any;
@@ -17,9 +18,10 @@ export default function PlayerDeck({
   deck,
   handleCardClick,
 }: PlayerDeckProps) {
+  const { playerTurn, players } = useGame();
   return (
     <div
-      className={`relative col-start-2 col-end-3 row-start-3 row-end-4 grid grid-cols-3 items-start gap-2 px-4 lg:gap-4 ${isMyTurn ? "" : "pointer-events-none grayscale-80"}`}
+      className={`relative col-start-2 col-end-3 row-start-3 row-end-4 grid grid-cols-3 items-start gap-2 px-4 lg:gap-4 ${isMyTurn ? "" : "pointer-events-none grayscale-90"}`}
     >
       <div className="absolute top-0 left-1/2 flex -translate-x-1/2 -translate-y-[110%] items-center gap-8">
         <span className="text-5xl">{me?.name}</span>
@@ -47,7 +49,7 @@ export default function PlayerDeck({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 1 }}
             transition={{ type: "spring", stiffness: 200, damping: 20 }}
-            className="flex items-center justify-center"
+            className={`flex items-center justify-center ${isMyTurn ? "" : "opacity-50"}`}
           >
             <Image
               src={`/cards/${card.symbol}-${card.color}.png`}
@@ -60,6 +62,15 @@ export default function PlayerDeck({
           </motion.div>
         ))}
       </AnimatePresence>
+
+      {!isMyTurn && (
+        <div className="pointer-events-none absolute top-1/2 left-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center gap-8">
+          <h3 className="whitespace-nowrap">
+            Au tour de :{" "}
+            {players.find((p) => p.id === playerTurn)?.name || playerTurn}
+          </h3>
+        </div>
+      )}
     </div>
   );
 }

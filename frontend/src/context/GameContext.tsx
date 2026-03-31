@@ -176,7 +176,14 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     });
 
     // Démarrage de la partie
-    newSocket.on("game_started", (playerStart, playerOrder) => {
+    newSocket.on("game_started", (playerStart, playerOrder, newRules) => {
+      // Reset de sécurité pour tout le monde au lancement
+      setHistory([]);
+      setWinner(null);
+      setPropositions({ symbolRules: {}, colorRules: {} });
+      setLastEffect(null);
+      if (newRules) setRules(newRules);
+
       setView("game");
       setPlayerTurn(playerStart);
       setPlayerOrder(playerOrder);
@@ -249,14 +256,16 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     });
 
     // Partie réinitialisée (Rejouer)
-    newSocket.on("game_reset", (rules, players, threshold) => {
-      setRules(rules);
+    newSocket.on("game_reset", (rules, players, socketId) => {
       setPlayers(players);
-      setHistory([]);
-      setWinner(null);
-      setPropositions({ symbolRules: {}, colorRules: {} });
-      setPlayerNumber(0);
-      setView("lobby");
+      if (socketId === newSocket.id) {
+        setView("lobby");
+        setRules(rules);
+        setHistory([]);
+        setWinner(null);
+        setPropositions({ symbolRules: {}, colorRules: {} });
+        setPlayerNumber(0);
+      }
     });
 
     newSocket.on("deck_updated", (idPlayer, deck) => {
@@ -417,7 +426,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   // Reset le jeu
   const resetGame = useCallback(() => {
     if (socket) {
-      socket.emit("reset_game");
+      socket.emit("reset_game", socket.id);
     }
   }, [socket]);
 

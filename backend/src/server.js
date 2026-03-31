@@ -234,7 +234,7 @@ io.on("connection", (socket) => {
                 const playerTurn = playerOrder[0];
                 room.players.forEach(player => player.score = 0);
                 room.threshold = threshold;
-                io.to(code).emit("game_started", playerTurn, playerOrder);
+                io.to(code).emit("game_started", playerTurn, playerOrder, room.rules);
                 break;
             }
         }
@@ -287,7 +287,7 @@ io.on("connection", (socket) => {
     });
 
     // Rejouer la partie
-    socket.on("reset_game", () => {
+    socket.on("reset_game", (socketId) => {
         for (const code in rooms) {
             const room = rooms[code];
             const player = room.players.find(p => p.id === socket.id);
@@ -309,7 +309,7 @@ io.on("connection", (socket) => {
                 });
 
                 // On met à jour tout le monde !
-                io.to(code).emit("game_reset", room.rules, room.players);
+                io.to(code).emit("game_reset", room.rules, room.players, socketId);
                 break;
             }
         }

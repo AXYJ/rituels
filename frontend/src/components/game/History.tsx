@@ -68,7 +68,7 @@ export default function History() {
                   {Math.abs(h.points ?? 0) > 1 ? "graines" : "graine"}
                 </>
               )}
-            </div>  
+            </div>
           );
         })}
       </div>
