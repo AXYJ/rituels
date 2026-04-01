@@ -5,8 +5,14 @@ import { useGame } from "../../context/GameContext";
 import { useState } from "react";
 import Image from "next/image";
 
-export default function RulesModal({ onClose }: { onClose: () => void }) {
-  const { volume, setVolume, sfxVolume, setSfxVolume, quitLobby } = useGame();
+export default function RulesModal({
+  onClose,
+  onQuit,
+}: {
+  onClose: () => void;
+  onQuit?: () => void;
+}) {
+  const { volume, setVolume, sfxVolume, setSfxVolume } = useGame();
 
   const [settings, setSettings] = useState(true);
   const [rules, setRules] = useState(false);
@@ -20,7 +26,7 @@ export default function RulesModal({ onClose }: { onClose: () => void }) {
       setRules(true);
       setSettings(false);
     } else if (id === "quit-btn") {
-      quitLobby();
+      onQuit?.();
     }
   };
 

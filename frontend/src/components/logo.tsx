@@ -5,14 +5,24 @@ import Image from "next/image";
 export default function Logo({
   className,
   setView,
+  onClick,
 }: {
   className?: string;
   setView?: (view: any) => void;
+  onClick?: () => void;
 }) {
+  const handleClick = () => {
+    if (onClick) {
+      onClick();
+    } else if (setView) {
+      setView("home");
+    }
+  };
+
   return (
     <div
-      className={`flex items-center justify-center ${setView ? "cursor-pointer" : ""}${className || ""}`}
-      onClick={() => setView?.("home")}
+      className={`flex items-center justify-center ${setView || onClick ? "cursor-pointer" : ""}${className || ""}`}
+      onClick={handleClick}
     >
       <Image
         src="/logo-v3.png"

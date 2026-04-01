@@ -166,7 +166,7 @@ export default function Lobby() {
           variants={itemVariants}
           className="relative flex items-center gap-4 text-3xl lg:text-5xl"
         >
-          Code : {roomCode}{" "}
+          Code : <span className="tracking-widest">{roomCode}</span>{" "}
           <button
             onClick={handleCopyCode}
             className="absolute top-1/2 -right-1/2 -translate-y-1/2 cursor-pointer"
@@ -379,7 +379,7 @@ export default function Lobby() {
                 className="pointer-events-none absolute inset-0 z-0 h-full w-full object-fill select-none"
               />
               <span
-                className={`relative z-50 text-2xl ${players.filter((p) => p.isHost || p.isReady).length === players.length ? "text-black" : "text-white"}`}
+                className={`relative z-50 text-2xl ${players.filter((p) => p.isHost || p.isReady).length === players.length && players.length !== 1 ? "text-black" : "text-white"}`}
               >
                 Lancer la partie (
                 {players.filter((p) => p.isHost || p.isReady).length}/

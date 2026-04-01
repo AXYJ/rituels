@@ -14,10 +14,12 @@ import History from "../game/History";
 import PlayerDeck from "../game/PlayerDeck";
 import OpponentDecks from "../game/OpponentDecks";
 import RulesModal from "../header/RulesModal";
+import QuitModal from "../game/QuitModal";
 import Logo from "../logo";
 
 export default function Game() {
   const [showRules, setShowRules] = useState(false);
+  const [showQuit, setShowQuit] = useState(false);
   const {
     quitLobby,
     rules,
@@ -127,7 +129,10 @@ export default function Game() {
   return (
     <section className="min-h-[100.1dvh] overflow-x-hidden bg-[radial-gradient(ellipse_31.48%_48.47%_at_51.72%_50.00%,#464441_0%,#191918_100%)] lg:min-h-dvh">
       <div className="grid h-dvh w-full grid-cols-3 grid-rows-[25%_50%_25%] gap-2 overflow-hidden p-4">
-        <Logo className="absolute top-4 left-4 h-16 w-40" setView={quitLobby} />
+        <Logo
+          className="absolute top-4 left-4 h-16 w-40"
+          onClick={() => setShowQuit(true)}
+        />
 
         <button
           onClick={() => {
@@ -150,7 +155,7 @@ export default function Game() {
         {/* Zone de jeu */}
 
         <div className="relative col-start-2 col-end-3 row-start-2 row-end-3 flex items-start justify-center p-0 lg:p-8">
-          <span className="absolute -top-10 text-center text-5xl">
+          <span className="absolute -top-10 hidden text-center text-3xl lg:flex lg:text-5xl">
             Au tour de :{" "}
             {players.find((p) => p.id === playerTurn)?.name || playerTurn}
           </span>
@@ -207,7 +212,7 @@ export default function Game() {
                   }}
                   exit={{ opacity: 0, scale: 0.5 }}
                   transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                  className="absolute h-24 w-16 drop-shadow-sm lg:h-56 lg:w-40"
+                  className="absolute h-32 w-24 drop-shadow-sm lg:h-56 lg:w-40"
                 >
                   <Image
                     src={`/cards/${played.symbol}-${played.color}.png`}
@@ -245,7 +250,20 @@ export default function Game() {
 
         {/* Rules Modal */}
         <AnimatePresence>
-          {showRules && <RulesModal onClose={() => setShowRules(false)} />}
+          {showRules && (
+            <RulesModal
+              onClose={() => setShowRules(false)}
+              onQuit={() => {
+                setShowRules(false);
+                setShowQuit(true);
+              }}
+            />
+          )}
+        </AnimatePresence>
+
+        {/* Quit Modal */}
+        <AnimatePresence>
+          {showQuit && <QuitModal onClose={() => setShowQuit(false)} />}
         </AnimatePresence>
       </div>
     </section>
