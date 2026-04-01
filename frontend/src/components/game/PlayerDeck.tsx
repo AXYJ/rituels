@@ -83,8 +83,6 @@ export default function PlayerDeck({
               height={600}
               className={`relative z-10 max-h-full object-contain transition-all duration-300 lg:group-hover:brightness-50 lg:group-hover:grayscale ${isMyTurn ? "cursor-pointer" : "cursor-default"}`}
               onClick={() => isMyTurn && handleCardClick(card)}
-              onMouseEnter={() => hoverCard(card)}
-              onMouseLeave={() => hoverCard(null)}
             />
           </motion.div>
         ))}
