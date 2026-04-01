@@ -18,10 +18,13 @@ export default function PlayerDeck({
   deck,
   handleCardClick,
 }: PlayerDeckProps) {
-  const { playerTurn, players } = useGame();
+  const { playerTurn, players, propositions } = useGame();
+
+  const hoverCard = (card: Card) => {};
+
   return (
     <div
-      className={`relative col-start-2 col-end-3 row-start-3 row-end-4 grid grid-cols-3 items-start gap-2 px-4 lg:gap-4 ${isMyTurn ? "" : "pointer-events-none grayscale-90"}`}
+      className={`relative col-start-2 col-end-3 row-start-3 row-end-4 grid grid-cols-3 items-start gap-2 px-4 lg:gap-4 ${isMyTurn ? "" : "grayscale-90"}`}
     >
       <div className="absolute top-0 left-1/2 flex -translate-x-1/2 -translate-y-[110%] items-center gap-8">
         <span className="text-3xl lg:text-5xl">{me?.name}</span>
@@ -47,17 +50,41 @@ export default function PlayerDeck({
             key={card.id || index}
             initial={{ opacity: 0, y: 200, scale: 0.8 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 1 }}
+            exit={{ opacity: 0, scale: 0.8, transition: { duration: 0.2 } }}
+            whileHover={{ y: -64 }}
             transition={{ type: "spring", stiffness: 200, damping: 20 }}
-            className={`flex items-center justify-center ${isMyTurn ? "" : "opacity-50"}`}
+            className={`group relative flex items-center justify-center overflow-hidden rounded-xl lg:after:pointer-events-none lg:after:absolute lg:after:inset-0 lg:after:bg-black/60 lg:after:opacity-0 lg:after:transition-opacity lg:after:duration-300 lg:group-hover:after:opacity-100 ${isMyTurn ? "" : "opacity-50"}`}
           >
+            <div className="pointer-events-none absolute inset-0 z-20 hidden flex-col items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100 lg:flex">
+              {propositions &&
+                (propositions.symbolRules[card.symbol] ||
+                  propositions.colorRules[card.color]) && (
+                  <div className="flex flex-col items-center gap-1 p-4 text-center">
+                    <span className="text-xl tracking-widest text-white uppercase">
+                      Selon vous :
+                    </span>
+                    {propositions.symbolRules[card.symbol] && (
+                      <span className="text-2xl text-white drop-shadow-md">
+                        {propositions.symbolRules[card.symbol]}
+                      </span>
+                    )}
+                    {propositions.colorRules[card.color] && (
+                      <span className="text-2xl text-white drop-shadow-md">
+                        {propositions.colorRules[card.color]}
+                      </span>
+                    )}
+                  </div>
+                )}
+            </div>
             <Image
               src={`/cards/${card.symbol}-${card.color}.png`}
               alt="card"
               width={400}
               height={600}
-              className="max-h-full cursor-pointer object-contain transition-transform duration-300 hover:-translate-y-10"
-              onClick={() => handleCardClick(card)}
+              className={`relative z-10 max-h-full object-contain transition-all duration-300 lg:group-hover:brightness-50 lg:group-hover:grayscale ${isMyTurn ? "cursor-pointer" : "cursor-default"}`}
+              onClick={() => isMyTurn && handleCardClick(card)}
+              onMouseEnter={() => hoverCard(card)}
+              onMouseLeave={() => hoverCard(null)}
             />
           </motion.div>
         ))}
