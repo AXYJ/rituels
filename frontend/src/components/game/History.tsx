@@ -27,7 +27,7 @@ export default function History() {
   };
 
   return (
-    <div className="relative z-10 col-start-1 col-end-2 row-start-3 row-end-4 mr-4 mb-2 lg:mb-6 flex h-[33vh] flex-col justify-center self-end lg:h-full">
+    <div className="relative z-10 col-start-1 col-end-2 row-start-3 row-end-4 mr-4 mb-2 flex h-[33vh] flex-col justify-center self-end lg:mb-6 lg:h-full">
       <Image
         src="/assets/historique.png"
         alt=""
@@ -57,7 +57,14 @@ export default function History() {
               <span>{playerName}</span>
               {" a joué "}
               <span className="italic">{h.card?.symbol}</span>
-              <span style={{ color: `var(--color-card-${h.card?.color?.toLowerCase()})` }}> {h.card?.color}</span>
+              <span
+                style={{
+                  color: `var(--color-card-${h.card?.color?.toLowerCase()})`,
+                }}
+              >
+                {" "}
+                {h.card?.color}
+              </span>
               {h.points === 0 ? (
                 " et n'a rien gagné"
               ) : (

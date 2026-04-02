@@ -22,6 +22,8 @@ import {
   Card,
   HistoryItem,
 } from "../types/game";
+import { useSocketListeners } from "../hooks/useSocketListeners";
+import { calculateCardPoints } from "../utils/gameLogic";
 
 // Création du contexte
 const GameContext = createContext<GameContextType | undefined>(undefined);
@@ -66,228 +68,33 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       transports: ["websocket", "polling"],
     });
 
-    queueMicrotask(() => setSocket(newSocket));
+    setSocket(newSocket);
+    setIsConnected(true);
 
-    // ----------------
-    // Écouteurs de base (réponse du serveur)
-    // ----------------
-
-    // Keep-alive HTTP pour empêcher les serveurs gratuits (comme Render) de se mettre en veille
-    // Render endort le serveur après 15 min sans trafic HTTP (le trafic WebSocket ne compte pas)
-    const keepAliveInterval = setInterval(
-      () => {
-        fetch(socketUrl).catch((err) =>
-          console.error("Erreur keep-alive", err)
-        );
-      },
-      5 * 60 * 1000
-    ); // Toutes les 5 minutes
-
-    // Connexion
-    newSocket.on("connect", () => {
-      setIsConnected(true);
-      console.log("Connecté au serveur ! ID:", newSocket.id);
-    });
-
-    // Erreurs de connexion
-    newSocket.on("connect_error", (err) => {
-      console.error("Erreur de connexion socket:", err);
-      setError("Erreur de connexion serveur");
-    });
-
-    // Déconnexion
-    newSocket.on("disconnect", (reason) => {
-      setIsConnected(false);
-      console.log("Socket déconnecté:", reason);
-      setView("home");
-      setError("Vous avez été déconnecté du serveur.");
-      setRoomCode("");
-      setPlayers([]);
-      setRules(null);
-      setPlayerNumber(0);
-      setHistory([]);
-      setPropositions({ symbolRules: {}, colorRules: {} });
-    });
-
-    // ----------------
-    // Écouteurs de jeu (réponse du serveur)
-    // ----------------
-
-    // Création d'un lobby
-    newSocket.on(
-      "room_created",
-      (code, rules, serverPlayers, playerNumber, threshold) => {
-        setRoomCode(code);
-        setRules(rules);
-        if (threshold !== undefined) setThreshold(threshold);
-        // Initialisation de l'état des joueurs
-        setPlayers(
-          serverPlayers.map((p: Player) => ({
-            ...p,
-            deck: p.deck ?? { cards: null },
-            score: p.score ?? 0,
-          }))
-        );
-        setPlayerNumber(playerNumber);
-        setView("lobby");
-      }
-    );
-
-    // Rejoindre une partie
-    newSocket.on(
-      "join_game_success",
-      (code, rules, players, playerNumber, threshold) => {
-        setRoomCode(code);
-        setRules(rules);
-        if (threshold !== undefined) setThreshold(threshold);
-        setPlayers(players);
-        setPlayerNumber(playerNumber);
-        setView("lobby");
-      }
-    );
-
-    // Erreurs de connexion
-    newSocket.on("room_full", () => {
-      setError("La partie est pleine !");
-    });
-    newSocket.on("room_not_found", () => {
-      setError("Partie introuvable !");
-    });
-    newSocket.on("game_already_started", () => {
-      setError("La partie a déjà commencé !");
-    });
-
-    // Mise à jour du lobby
-    newSocket.on("room_updated", (room) => {
-      if (!room || !room.players) return;
-      // Récupère les informations des joueurs
-      setPlayers((prevPlayers) => {
-        return room.players.map((serverPlayer: Player) => {
-          // Check chaque joueur
-          const localPlayer = prevPlayers.find((p) => p.id === serverPlayer.id);
-          return {
-            // Met à jour les informations du joueur
-            ...serverPlayer,
-            deck: serverPlayer.deck ?? localPlayer?.deck ?? { cards: null },
-            score: serverPlayer.score ?? localPlayer?.score ?? 0,
-          };
-        });
-      });
-    });
-
-    // Démarrage de la partie
-    newSocket.on("game_started", (playerStart, playerOrder, newRules) => {
-      // Reset de sécurité pour tout le monde au lancement
-      setHistory([]);
-      setWinner(null);
-      setPropositions({ symbolRules: {}, colorRules: {} });
-      setLastEffect(null);
-      if (newRules) setRules(newRules);
-
-      setView("game");
-      setPlayerTurn(playerStart);
-      setPlayerOrder(playerOrder);
-      const myOrder = playerOrder.findIndex((p: string) => p === newSocket.id);
-
-      let newDisplayOrder: string[] = [];
-      if (myOrder !== -1) {
-        newDisplayOrder = [
-          ...playerOrder.slice(myOrder),
-          ...playerOrder.slice(0, myOrder),
-        ];
-      } else {
-        newDisplayOrder = [...playerOrder];
-      }
-
-      setDisplayOrder(newDisplayOrder);
-    });
-
-    // Carte jouée
-    newSocket.on(
-      "card_played",
-      (card, idPlayer, newOrder, newScore, pointsGained, effectiveEffect) => {
-        setHistory((prev) => [
-          ...prev,
-          {
-            type: "card",
-            card,
-            player: idPlayer,
-            score: newScore,
-            points: pointsGained,
-          },
-        ]);
-        setLastEffect(effectiveEffect);
-        setPlayerTurn(newOrder[0]);
-        setPlayerOrder(newOrder);
-        // Met à jour le score du joueur
-        if (sfxVolumeRef.current > 0) {
-          const sound = new Audio("/sfx/flipcard.mp3");
-          sound.volume = sfxVolumeRef.current;
-          sound.play().catch((e) => console.error("Erreur lecture audio :", e));
-        }
-        setPlayers((prev) =>
-          prev.map((p) => (p.id === idPlayer ? { ...p, score: newScore } : p))
-        );
-      }
-    );
-
-    // Message reçu
-    newSocket.on("message_received", (idPlayer, message) => {
-      setHistory((prev) => [
-        ...prev,
-        { type: "message", player: idPlayer, message },
-      ]);
-      if (sfxVolumeRef.current > 0) {
-        const sound = new Audio("/sfx/notification.mp3");
-        sound.volume = sfxVolumeRef.current;
-        sound.play().catch((e) => console.error("Erreur lecture audio :", e));
-      }
-    });
-
-    // Partie gagnée
-    newSocket.on("game_won", (idPlayer) => {
-      setWinner(idPlayer);
-    });
-
-    // Mise à jour du tour de jeu (ex: déconnexion)
-    newSocket.on("turn_updated", (newOrder) => {
-      setPlayerTurn(newOrder[0]);
-      setPlayerOrder(newOrder);
-    });
-
-    // Partie réinitialisée (Rejouer)
-    newSocket.on("game_reset", (rules, players, socketId) => {
-      setPlayers(players);
-      if (socketId === newSocket.id) {
-        setView("lobby");
-        setRules(rules);
-        setHistory([]);
-        setWinner(null);
-        setPropositions({ symbolRules: {}, colorRules: {} });
-        setPlayerNumber(0);
-      }
-    });
-
-    newSocket.on("deck_updated", (idPlayer, deck) => {
-      // Ignorer ses propres mises à jour pour éviter de sur-écrire l'état local optimiste
-      if (idPlayer === newSocket.id) return;
-
-      setPlayers((prev) =>
-        prev.map((p) => (p.id === idPlayer ? { ...p, deck } : p))
-      );
-    });
-
-    newSocket.on("threshold_updated", (newThreshold) => {
-      setThreshold(newThreshold);
-    });
-
-    // Nettoyage automatique
     return () => {
-      clearInterval(keepAliveInterval);
-      newSocket.removeAllListeners();
       newSocket.disconnect();
     };
   }, []);
+
+  // Utilisation du hook personnalisé pour gérer les écouteurs Socket
+  useSocketListeners({
+    socket,
+    setView,
+    setError,
+    setRoomCode,
+    setRules,
+    setPlayers,
+    setPlayerNumber,
+    setThreshold,
+    setHistory,
+    setWinner,
+    setPlayerTurn,
+    setPlayerOrder,
+    setDisplayOrder,
+    setLastEffect,
+    setPropositions,
+    sfxVolumeRef,
+  });
 
   // ----------------
   // Actions de jeu (envoi au serveur)
@@ -377,36 +184,12 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   // Jouer une carte
   const cardPlayed = useCallback(
     (card: Card) => {
-      if (socket) {
-        let points = 0;
-        let effect = "";
-        let effectiveEffect = "";
-
-        if (rules) {
-          points = rules.symbolRules[card.symbol] || 0;
-          effect = rules.colorRules[card.color];
-          effectiveEffect =
-            effect === "Répétition" ? lastEffect || "Neutre" : effect;
-
-          // Effets rémanents (qui s'appliquent au tour actuel à cause du joueur précédent)
-          if (lastEffect === "Gel") {
-            points = 0;
-          }
-
-          // Effets immédiat (qui modifient les points de la carte que je pose)
-          switch (effectiveEffect) {
-            case "Inversion":
-              points *= -1;
-              break;
-            case "Gel":
-              // N'altère pas mes points actuels, mais `effectiveEffect` sera enregistré pour le gel du prochain tour !
-              break;
-            case "Neutre":
-            default:
-              break;
-          }
-        }
-
+      if (socket && rules) {
+        const { points, effectiveEffect } = calculateCardPoints(
+          card,
+          rules,
+          lastEffect
+        );
         socket.emit("card_played", socket.id, points, card, effectiveEffect);
       }
     },
@@ -444,7 +227,6 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   // Valeurs du contexte
   // ----------------
 
-  // Permet d'éviter de re-render tout les composants à chaque fois si pas de modifications des valeurs ci-dessous
   const value = useMemo(
     () => ({
       socket,
@@ -500,45 +282,31 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       isConnected,
       error,
       roomCode,
-      setRoomCode,
       players,
-      setPlayers,
       createGame,
       joinGame,
       changeName,
       rules,
-      setRules,
       playerNumber,
-      setPlayerNumber,
       beReady,
       quitLobby,
       startGame,
       playerTurn,
-      setPlayerTurn,
       cardPlayed,
       playerOrder,
-      setPlayerOrder,
       setLocalPlayerDeck,
       history,
-      setHistory,
       lastEffect,
-      setLastEffect,
       sendMessage,
       winner,
-      setWinner,
       displayOrder,
-      setDisplayOrder,
       resetGame,
       updateDeck,
       volume,
-      setVolume,
       sfxVolume,
-      setSfxVolume,
       threshold,
       updateThreshold,
-      setThreshold,
       propositions,
-      setPropositions,
     ]
   );
 

@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card } from "../../types/game";
 import { useGame } from "../../context/GameContext";
@@ -18,7 +19,43 @@ export default function PlayerDeck({
   deck,
   handleCardClick,
 }: PlayerDeckProps) {
+  const [selectedCardIndex, setSelectedCardIndex] = useState<number | null>(
+    null
+  );
+
+  useEffect(() => {
+    const handleGlobalClick = () => {
+      setSelectedCardIndex(null);
+    };
+
+    if (selectedCardIndex !== null) {
+      window.addEventListener("click", handleGlobalClick);
+    }
+
+    return () => {
+      window.removeEventListener("click", handleGlobalClick);
+    };
+  }, [selectedCardIndex]);
+
   const { playerTurn, players, propositions } = useGame();
+
+  const handleClick = (e: React.MouseEvent, card: Card, index: number) => {
+    e.stopPropagation();
+    // On utilise innerWidth pour la détection mobile (< 1024px)
+    if (typeof window !== "undefined" && window.innerWidth < 1024) {
+      if (selectedCardIndex === index) {
+        // Deuxième clic sur la même carte : on la joue
+        handleCardClick(card);
+        setSelectedCardIndex(null);
+      } else {
+        // Premier clic : on sélectionne la carte (soulève + propositions)
+        setSelectedCardIndex(index);
+      }
+    } else {
+      // Comportement Desktop : clic direct pour jouer
+      handleCardClick(card);
+    }
+  };
 
   return (
     <div
@@ -47,27 +84,37 @@ export default function PlayerDeck({
             layoutId={`card-${card.id || card.symbol + card.color}`}
             key={card.id || index}
             initial={{ opacity: 0, y: 200, scale: 0.8 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
+            animate={
+              selectedCardIndex === index
+                ? { opacity: 1, y: -64, scale: 1 }
+                : { opacity: 1, y: 0, scale: 1 }
+            }
             exit={{ opacity: 0, scale: 0.8, transition: { duration: 0.2 } }}
-            whileHover={{ y: -64 }}
+            whileHover={
+              typeof window !== "undefined" && window.innerWidth >= 1024
+                ? { y: -64 }
+                : {}
+            }
             transition={{ type: "spring", stiffness: 200, damping: 20 }}
-            className={`group relative flex items-center justify-center overflow-hidden rounded-xl lg:after:pointer-events-none lg:after:absolute lg:after:inset-0 lg:after:bg-black/60 lg:after:opacity-0 lg:after:transition-opacity lg:after:duration-300 ${propositions && (propositions.symbolRules[card.symbol] || propositions.colorRules[card.color]) && isMyTurn ? "lg:group-hover:after:opacity-100" : ""} ${isMyTurn ? "" : "pointer-events-none"}`}
+            className={`group relative flex items-center justify-center overflow-hidden rounded-xl lg:after:pointer-events-none lg:after:absolute lg:after:inset-0 lg:after:bg-black/60 lg:after:opacity-0 lg:after:transition-opacity lg:after:duration-300 ${propositions && (propositions.symbolRules[card.symbol] || propositions.colorRules[card.color]) && isMyTurn ? "lg:group-hover:after:opacity-100" : ""} ${isMyTurn ? "" : "pointer-events-none"} ${selectedCardIndex === index ? "after:pointer-events-none after:absolute after:inset-0 after:bg-black/60 after:opacity-100" : ""}`}
           >
-            <div className="pointer-events-none absolute inset-0 z-20 hidden flex-col items-center justify-start pt-8 opacity-0 transition-opacity duration-300 group-hover:opacity-100 lg:flex">
+            <div
+              className={`pointer-events-none absolute inset-0 z-20 flex-col items-center justify-start transition-opacity duration-300 lg:flex lg:pt-8 lg:opacity-0 lg:group-hover:opacity-100 ${selectedCardIndex === index ? "flex opacity-100" : "hidden opacity-0"}`}
+            >
               {propositions &&
                 (propositions.symbolRules[card.symbol] ||
                   propositions.colorRules[card.color]) && (
-                  <div className="flex flex-col items-center gap-1 p-4 text-center">
-                    <span className="text-xl tracking-widest text-white uppercase">
+                  <div className="flex flex-col items-center p-2 text-center lg:p-4">
+                    <span className="text-sm tracking-widest text-white uppercase lg:text-xl">
                       Selon vous :
                     </span>
                     {propositions.symbolRules[card.symbol] && (
-                      <span className="text-2xl text-white drop-shadow-md">
+                      <span className="text-lg text-white drop-shadow-md lg:text-2xl">
                         {propositions.symbolRules[card.symbol]}
                       </span>
                     )}
                     {propositions.colorRules[card.color] && (
-                      <span className="text-2xl text-white drop-shadow-md">
+                      <span className="text-lg text-white drop-shadow-md lg:text-2xl">
                         {propositions.colorRules[card.color]}
                       </span>
                     )}
@@ -79,15 +126,15 @@ export default function PlayerDeck({
               alt="card"
               width={400}
               height={600}
-              className={`relative z-10 max-h-full object-contain transition-all duration-300 ${propositions && (propositions.symbolRules[card.symbol] || propositions.colorRules[card.color]) && isMyTurn ? "lg:group-hover:brightness-50 lg:group-hover:grayscale" : ""} ${isMyTurn ? "cursor-pointer" : "cursor-default"}`}
-              onClick={() => isMyTurn && handleCardClick(card)}
+              className={`relative z-10 max-h-full object-contain transition-all duration-300 ${propositions && (propositions.symbolRules[card.symbol] || propositions.colorRules[card.color]) && isMyTurn ? "lg:group-hover:brightness-50 lg:group-hover:grayscale" : ""} ${isMyTurn ? "cursor-pointer" : "cursor-default"} ${(selectedCardIndex === index && propositions.symbolRules[card.symbol]) || propositions.colorRules[card.color] ? "brightness-50 grayscale" : ""}`}
+              onClick={(e) => handleClick(e, card, index)}
             />
           </motion.div>
         ))}
       </AnimatePresence>
 
       {!isMyTurn && (
-        <div className="pointer-events-none absolute z-15 top-1/2 left-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center gap-8">
+        <div className="pointer-events-none absolute top-1/2 left-1/2 z-15 flex -translate-x-1/2 -translate-y-1/2 items-center gap-8">
           <h3 className="whitespace-nowrap">
             Au tour de :{" "}
             {players.find((p) => p.id === playerTurn)?.name || playerTurn}

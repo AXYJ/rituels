@@ -58,7 +58,7 @@ export default function OpponentDecks() {
           className={`relative ${getOpponentPlacementClass(index, opponents.length)}`}
         >
           <div
-            className={`absolute z-30 flex flex-col lg:flex-row items-center gap-0 lg:gap-8 whitespace-nowrap ${getOpponentNamePlacementClass(index, opponents.length)}`}
+            className={`absolute z-30 flex flex-col items-center gap-0 whitespace-nowrap lg:flex-row lg:gap-8 ${getOpponentNamePlacementClass(index, opponents.length)}`}
           >
             <h3>{opponent?.name}</h3>
             <div className="flex w-full items-center gap-0 lg:gap-2">
@@ -67,9 +67,9 @@ export default function OpponentDecks() {
                 alt="card"
                 width={1000}
                 height={1000}
-                className="z-10 h-8 w-8 lg:h-12 lg:w-12 object-contain"
+                className="z-10 h-8 w-8 object-contain lg:h-12 lg:w-12"
               />
-              <span className="pointer-events-none z-10 -ml-2 w-full px-3 py-1 text-2xl lg:text-4xl whitespace-nowrap">
+              <span className="pointer-events-none z-10 -ml-2 w-full px-3 py-1 text-2xl whitespace-nowrap lg:text-4xl">
                 {opponent?.score}{" "}
                 {Math.abs(opponent?.score) > 1 ? "graines" : "graine"}
               </span>

@@ -105,14 +105,15 @@ io.on("connection", (socket) => {
         // Algorithme généré par IA
         const roomCode = Math.random().toString(36).substring(2, 8).toUpperCase();
         rooms[roomCode] = {
-            players: [{ id: idPlayer, name: "Host", isHost: true, isReady: false, score: 0, deck: { cards: null } }]
+            players: [{ id: idPlayer, name: "Host", isHost: true, isReady: false, score: 0, deck: { cards: null } }],
+            threshold: 15
         };
         socket.join(roomCode);
         const rules = generateRules();
         rooms[roomCode].rules = rules;
         const playerNumber = rooms[roomCode].players.length;
         const players = rooms[roomCode].players;
-        socket.emit("room_created", roomCode, rules, players, playerNumber);
+        socket.emit("room_created", roomCode, rules, players, playerNumber, rooms[roomCode].threshold);
     });
 
     // Rejoindre une partie
@@ -120,13 +121,13 @@ io.on("connection", (socket) => {
         if (rooms[roomCode]) {
             if (rooms[roomCode].playerOrder && rooms[roomCode].playerOrder.length > 0) {
                 socket.emit("game_already_started");
-            } else if (rooms[roomCode].players.length <= 4) {
+            } else if (rooms[roomCode].players.length < 4) {
                 rooms[roomCode].players.push({ id: socket.id, name: "Player", isHost: false, isReady: false, score: 0, deck: { cards: null } });
                 socket.join(roomCode);
                 const players = rooms[roomCode].players;
                 io.to(roomCode).emit("room_updated", { players: players });
                 const playerNumber = rooms[roomCode].players.length;
-                socket.emit("join_game_success", roomCode, rooms[roomCode].rules, players, playerNumber);
+                socket.emit("join_game_success", roomCode, rooms[roomCode].rules, players, playerNumber, rooms[roomCode].threshold);
             } else {
                 socket.emit("room_full");
             }
