@@ -20,8 +20,6 @@ export default function PlayerDeck({
 }: PlayerDeckProps) {
   const { playerTurn, players, propositions } = useGame();
 
-  const hoverCard = (card: Card) => {};
-
   return (
     <div
       className={`relative col-start-2 col-end-3 row-start-3 row-end-4 grid grid-cols-3 items-start gap-2 px-4 lg:gap-4 ${isMyTurn ? "" : "grayscale-90"}`}
@@ -53,9 +51,9 @@ export default function PlayerDeck({
             exit={{ opacity: 0, scale: 0.8, transition: { duration: 0.2 } }}
             whileHover={{ y: -64 }}
             transition={{ type: "spring", stiffness: 200, damping: 20 }}
-            className={`group relative flex items-center justify-center overflow-hidden rounded-xl lg:after:pointer-events-none lg:after:absolute lg:after:inset-0 lg:after:bg-black/60 lg:after:opacity-0 lg:after:transition-opacity lg:after:duration-300 lg:group-hover:after:opacity-100 ${isMyTurn ? "" : "opacity-50"}`}
+            className={`group relative flex items-center justify-center overflow-hidden rounded-xl lg:after:pointer-events-none lg:after:absolute lg:after:inset-0 lg:after:bg-black/60 lg:after:opacity-0 lg:after:transition-opacity lg:after:duration-300 lg:group-hover:after:opacity-100 ${isMyTurn ? "" : "pointer-events-none opacity-0"}`}
           >
-            <div className="pointer-events-none absolute inset-0 z-20 hidden flex-col items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100 lg:flex">
+            <div className="pointer-events-none absolute inset-0 z-20 hidden flex-col items-center justify-start pt-8 opacity-0 transition-opacity duration-300 group-hover:opacity-100 lg:flex">
               {propositions &&
                 (propositions.symbolRules[card.symbol] ||
                   propositions.colorRules[card.color]) && (
@@ -81,7 +79,7 @@ export default function PlayerDeck({
               alt="card"
               width={400}
               height={600}
-              className={`relative z-10 max-h-full object-contain transition-all duration-300 lg:group-hover:brightness-50 lg:group-hover:grayscale ${isMyTurn ? "cursor-pointer" : "cursor-default"}`}
+              className={`relative z-10 max-h-full object-contain transition-all duration-300 lg:group-hover:brightness-50 lg:group-hover:grayscale ${isMyTurn ? "cursor-pointer" : "cursor-default opacity-50"}`}
               onClick={() => isMyTurn && handleCardClick(card)}
             />
           </motion.div>
@@ -89,7 +87,7 @@ export default function PlayerDeck({
       </AnimatePresence>
 
       {!isMyTurn && (
-        <div className="pointer-events-none absolute top-1/2 left-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center gap-8">
+        <div className="pointer-events-none absolute z-15 top-1/2 left-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center gap-8">
           <h3 className="whitespace-nowrap">
             Au tour de :{" "}
             {players.find((p) => p.id === playerTurn)?.name || playerTurn}

@@ -5,10 +5,23 @@
   src: url("../fonts/sweet_and_salty.woff2") format("woff2");
 }
 
+:root {
+  --color-card-rouge: #b24038;
+  --color-card-vert: #9adb8c;
+  --color-card-bleu: #88aada;
+  --color-card-jaune: #c5ab46;
+  --color-card-rose: #cb5cc5;
+}
+
 @theme {
   --font-family-sweet-and-salty: "Sweet and Salty";
   --color-red: #bc2e24;
   --color-green: #62c74d;
+  --color-card-rouge: var(--color-card-rouge);
+  --color-card-vert: var(--color-card-vert);
+  --color-card-bleu: var(--color-card-bleu);
+  --color-card-jaune: var(--color-card-jaune);
+  --color-card-rose: var(--color-card-rose);
 }
 
 html {

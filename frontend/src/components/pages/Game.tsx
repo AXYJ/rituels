@@ -130,7 +130,7 @@ export default function Game() {
     <section className="min-h-[100.1dvh] overflow-x-hidden bg-[radial-gradient(ellipse_31.48%_48.47%_at_51.72%_50.00%,#464441_0%,#191918_100%)] lg:min-h-dvh">
       <div className="grid h-dvh w-full grid-cols-3 grid-rows-[25%_50%_25%] gap-2 overflow-hidden p-4">
         <Logo
-          className="absolute top-4 left-4 h-16 w-40"
+          className="absolute top-0 left-0 h-16 w-40"
           onClick={() => setShowQuit(true)}
         />
 

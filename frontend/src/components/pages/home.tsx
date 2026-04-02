@@ -271,7 +271,17 @@ export default function Home() {
           id="rules"
         >
           <h2>
-            Séquence de test <span className="text-4xl text-white">n° 458</span>
+            Séquence de test{" "}
+            <span className="relative text-3xl text-white lg:text-6xl">
+              n° 666
+              <Image
+                src="/assets/line.png"
+                alt=""
+                width={800}
+                height={100}
+                className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-0 w-full"
+              />
+            </span>
           </h2>
           <div className="flex w-8/10 max-w-[1024px] flex-col gap-4 text-white lg:w-1/2">
             <motion.p
