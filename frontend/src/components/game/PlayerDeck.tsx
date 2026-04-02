@@ -51,7 +51,7 @@ export default function PlayerDeck({
             exit={{ opacity: 0, scale: 0.8, transition: { duration: 0.2 } }}
             whileHover={{ y: -64 }}
             transition={{ type: "spring", stiffness: 200, damping: 20 }}
-            className={`group relative flex items-center justify-center overflow-hidden rounded-xl lg:after:pointer-events-none lg:after:absolute lg:after:inset-0 lg:after:bg-black/60 lg:after:opacity-0 lg:after:transition-opacity lg:after:duration-300 lg:group-hover:after:opacity-100 ${isMyTurn ? "" : "pointer-events-none opacity-0"}`}
+            className={`group relative flex items-center justify-center overflow-hidden rounded-xl lg:after:pointer-events-none lg:after:absolute lg:after:inset-0 lg:after:bg-black/60 lg:after:opacity-0 lg:after:transition-opacity lg:after:duration-300 ${propositions && (propositions.symbolRules[card.symbol] || propositions.colorRules[card.color]) && isMyTurn ? "lg:group-hover:after:opacity-100" : ""} ${isMyTurn ? "" : "pointer-events-none"}`}
           >
             <div className="pointer-events-none absolute inset-0 z-20 hidden flex-col items-center justify-start pt-8 opacity-0 transition-opacity duration-300 group-hover:opacity-100 lg:flex">
               {propositions &&
@@ -79,7 +79,7 @@ export default function PlayerDeck({
               alt="card"
               width={400}
               height={600}
-              className={`relative z-10 max-h-full object-contain transition-all duration-300 lg:group-hover:brightness-50 lg:group-hover:grayscale ${isMyTurn ? "cursor-pointer" : "cursor-default opacity-50"}`}
+              className={`relative z-10 max-h-full object-contain transition-all duration-300 ${propositions && (propositions.symbolRules[card.symbol] || propositions.colorRules[card.color]) && isMyTurn ? "lg:group-hover:brightness-50 lg:group-hover:grayscale" : ""} ${isMyTurn ? "cursor-pointer" : "cursor-default"}`}
               onClick={() => isMyTurn && handleCardClick(card)}
             />
           </motion.div>

@@ -156,22 +156,17 @@ export default function RulesModal({
                   premier à atteindre le score défini (seuil de victoire).
                 </p>
                 <p>Les pouvoirs possibles sont les suivants :</p>
-                <ul className="flex flex-col gap-2">
-                  <li className="ml-5 list-disc text-2xl">
-                    Inversion : inverse la valeur du symbole de la carte que
-                    vous jouez (un 2 devient -2) ;
-                  </li>
-                  <li className="ml-5 list-disc text-2xl">
-                    Gel : le prochain joueur ne reçoit aucun point ;
-                  </li>
-                  <li className="ml-5 list-disc text-2xl">
-                    Répétition : la carte copie le pouvoir de la carte
-                    précédemment jouée;
-                  </li>
-                  <li className="ml-5 list-disc text-2xl">
-                    Neutre : la valeur du symbole est appliquée sans
-                    modification.
-                  </li>
+                <ul className="ml-4 list-inside list-disc text-2xl">
+                  <li>
+                Inversion (Action Immédiate) : Ce pouvoir agit sur votre carte actuelle. Il inverse la valeur de votre symbole. (un 2 devient -2) ;
+              </li>
+              <li>Gel (Effet sur le joueur suivant) : Ce pouvoir n'affecte pas votre score, mais celui du sujet suivant. Le système forcera son prochain résultat à 0, peu importe son symbole ;</li>
+              <li>
+                Répétition (Effet de la carte précédente) : Cette couleur n'a pas de pouvoir propre. Elle duplique le pouvoir de la dernière carte jouée ;
+              </li>
+              <li>
+                Neutre : la valeur du symbole est appliquée sans modification.
+              </li>
                 </ul>
                 <p>
                   Note : chaque symbole possède une valeur unique. Pour les
