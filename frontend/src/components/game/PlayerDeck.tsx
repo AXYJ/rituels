@@ -126,7 +126,7 @@ export default function PlayerDeck({
               alt="card"
               width={400}
               height={600}
-              className={`relative z-10 max-h-full object-contain transition-all duration-300 ${propositions && (propositions.symbolRules[card.symbol] || propositions.colorRules[card.color]) && isMyTurn ? "lg:group-hover:brightness-50 lg:group-hover:grayscale" : ""} ${isMyTurn ? "cursor-pointer" : "cursor-default"} ${(selectedCardIndex === index && propositions.symbolRules[card.symbol]) || propositions.colorRules[card.color] ? "brightness-50 grayscale" : ""}`}
+              className={`relative z-10 max-h-full object-contain transition-all duration-300 ${propositions && (propositions.symbolRules[card.symbol] || propositions.colorRules[card.color]) && isMyTurn ? "lg:group-hover:brightness-50 lg:group-hover:grayscale" : ""} ${isMyTurn ? "cursor-pointer" : "cursor-default"} ${selectedCardIndex === index && (propositions.symbolRules[card.symbol] || propositions.colorRules[card.color]) ? "brightness-50 grayscale" : ""}`}
               onClick={(e) => handleClick(e, card, index)}
             />
           </motion.div>
