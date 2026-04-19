@@ -14,7 +14,8 @@ export function calculateCardPoints(
 ): { points: number; effectiveEffect: string } {
   let points = rules.symbolRules[card.symbol] || 0;
   const effect = rules.colorRules[card.color];
-  const effectiveEffect = effect === "Répétition" ? lastEffect || "Neutre" : effect;
+  const effectiveEffect =
+    effect === "Répétition" ? lastEffect || "Neutre" : effect;
 
   // Effets rémanents (qui s'appliquent au tour actuel à cause du joueur précédent)
   if (lastEffect === "Gel") {

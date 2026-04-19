@@ -88,6 +88,14 @@ export default function Home() {
   // Gestion des états
   const [inputCode, setInputCode] = useState("");
   const [btnDisabled, setBtnDisabled] = useState(false);
+  const [savedCode, setSavedCode] = useState<string | null>(null);
+
+  // Charger le code sauvegardé après le montage (côté client uniquement)
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setSavedCode(localStorage.getItem("rituels_room_code"));
+    }
+  }, []);
 
   // ----------------
   // Gestion des événements
@@ -207,11 +215,17 @@ export default function Home() {
                 <div className="need-border relative w-full">
                   <input
                     type="text"
+                    name="room-code"
                     placeholder="Code de la partie"
                     value={inputCode}
                     onChange={(e) => setInputCode(e.target.value.toUpperCase())}
                     className="relative z-20 w-full bg-transparent p-2 px-6 py-4 text-4xl text-white outline-none"
+                    list="room-codes-list"
+                    autoComplete="on"
                   />
+                  <datalist id="room-codes-list">
+                    {savedCode && <option value={savedCode} />}
+                  </datalist>
                 </div>
                 <motion.button
                   whileHover={{ y: -8 }}

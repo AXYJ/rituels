@@ -126,18 +126,22 @@ export default function PlayerDeck({
               alt="card"
               width={400}
               height={600}
-              className={`relative z-10 max-h-full object-contain transition-all duration-300 ${isMyTurn ? "cursor-pointer" : "cursor-default"
-                } ${propositions &&
-                  (propositions.symbolRules[card.symbol] || propositions.colorRules[card.color]) &&
-                  isMyTurn
+              className={`relative z-10 max-h-full object-contain transition-all duration-300 ${
+                isMyTurn ? "cursor-pointer" : "cursor-default"
+              } ${
+                propositions &&
+                (propositions.symbolRules[card.symbol] ||
+                  propositions.colorRules[card.color]) &&
+                isMyTurn
                   ? "lg:group-hover:brightness-50 lg:group-hover:grayscale"
                   : ""
-                } ${selectedCardIndex === index &&
-                  (propositions.symbolRules[card.symbol] || propositions.colorRules[card.color])
+              } ${
+                selectedCardIndex === index &&
+                (propositions.symbolRules[card.symbol] ||
+                  propositions.colorRules[card.color])
                   ? "brightness-50 grayscale"
                   : ""
-                }`}
-
+              }`}
               onClick={(e) => handleClick(e, card, index)}
             />
           </motion.div>

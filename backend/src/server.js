@@ -2,6 +2,12 @@ import express from "express";
 import http from "http";
 import { Server } from "socket.io";
 import cors from "cors";
+import { 
+    generateRules, 
+    whoStart, 
+    getNextPlayerOrder, 
+    checkWin 
+} from "./gameLogic.js";
 
 // Initialisation
 const app = express();
@@ -15,79 +21,17 @@ app.get("/", (req, res) => {
 const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
-        origin: "*",
+        origin: ["http://localhost:3000", "http://127.0.0.1:3000"],
         methods: ["GET", "POST"],
         credentials: true
     },
-    pingInterval: 25000,   // Un ping toutes les 25 secondes
-    pingTimeout: 60000     // 60 secondes pour répondre avant d'être déconnecté
+    pingInterval: 25000,
+    pingTimeout: 60000
 });
 
 // Stockage des parties
+// Clé: roomCode, Valeur: { players, rules, threshold, history, playerOrder }
 const rooms = {};
-
-
-// ----------------
-// Génération des règles aléatoires pour une nouvelle partie
-// ----------------
-
-// Algorithme de Fisher-Yates pour un mélange parfait
-// Algorithme permettant de mélanger un tableau de manière aléatoire avec probabilité égale pour chaque élément
-// Algorithme généré par IA
-// Pour chaque élément, on l'échange avec un élément choisi aléatoirement parmi les éléments restants
-// https://fr.wikipedia.org/wiki/Mélange_de_Fisher-Yates
-function shuffle(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
-}
-
-function generateRules() {
-    const symbols = ["cercle", "croix", "carre", "triangle", "vague"];
-    const colors = ["rouge", "bleu", "vert", "jaune", "rose"];
-
-    const values = shuffle([3, 2, 1, 0, -1]);
-    const symbolRules = {};
-    symbols.forEach((sym, i) => {
-        symbolRules[sym] = values[i];
-    });
-
-    const effects = shuffle(["Inversion", "Gel", "Répétition", "Neutre", "Neutre"]);
-    const colorRules = {};
-    colors.forEach((col, i) => {
-        colorRules[col] = effects[i];
-    });
-
-    return { symbolRules, colorRules };
-}
-
-function whoStart(roomCode) {
-    const room = rooms[roomCode];
-    const playerOrder = shuffle([...room.players]).map(p => p.id);
-    room.playerOrder = playerOrder;
-    return playerOrder;
-}
-
-function nextPlayer(roomCode) {
-    const room = rooms[roomCode];
-    const playerOrder = room.playerOrder;
-    if (playerOrder && playerOrder.length > 0) {
-        const pId = playerOrder.shift();
-        playerOrder.push(pId);
-    }
-    return playerOrder;
-}
-
-function win(player, points, room) {
-    player.score += points;
-    if (player.score >= room.threshold) {
-        return true;
-    }
-    return false;
-}
-
 
 // ----------------
 // Gestion des connexions
@@ -101,38 +45,87 @@ io.on("connection", (socket) => {
 
     // Création d'une partie
     socket.on("create_game", (idPlayer) => {
-        // Algorithme de génération d'un code de salle aléatoire
-        // Algorithme généré par IA
         const roomCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+        
         rooms[roomCode] = {
-            players: [{ id: idPlayer, name: "Host", isHost: true, isReady: false, score: 0, deck: { cards: null } }],
-            threshold: 15
+            players: [{ 
+                id: idPlayer, 
+                name: "Host", 
+                sessionId: idPlayer, 
+                isHost: true, 
+                isReady: false, 
+                score: 0, 
+                deck: { cards: null },
+                leavedPlayer: false
+            }],
+            threshold: 15,
+            history: []
         };
         socket.join(roomCode);
         const rules = generateRules();
         rooms[roomCode].rules = rules;
-        const playerNumber = rooms[roomCode].players.length;
-        const players = rooms[roomCode].players;
-        socket.emit("room_created", roomCode, rules, players, playerNumber, rooms[roomCode].threshold);
+        
+        const room = rooms[roomCode];
+        socket.emit("room_created", roomCode, rules, room.players, room.players.length, room.threshold);
     });
 
     // Rejoindre une partie
-    socket.on("join_game", (roomCode) => {
-        if (rooms[roomCode]) {
-            if (rooms[roomCode].playerOrder && rooms[roomCode].playerOrder.length > 0) {
-                socket.emit("game_already_started");
-            } else if (rooms[roomCode].players.length < 4) {
-                rooms[roomCode].players.push({ id: socket.id, name: "Player", isHost: false, isReady: false, score: 0, deck: { cards: null } });
-                socket.join(roomCode);
-                const players = rooms[roomCode].players;
-                io.to(roomCode).emit("room_updated", { players: players });
-                const playerNumber = rooms[roomCode].players.length;
-                socket.emit("join_game_success", roomCode, rooms[roomCode].rules, players, playerNumber, rooms[roomCode].threshold);
-            } else {
-                socket.emit("room_full");
-            }
-        } else {
+    socket.on("join_game", (roomCode, sessionId) => {
+        if (!rooms[roomCode]) {
             socket.emit("room_not_found");
+            return;
+        }
+
+        const room = rooms[roomCode];
+        const existingPlayer = room.players.find(p => p.sessionId === sessionId);
+
+        if (existingPlayer) {
+            console.log(`Player reconnected: ${existingPlayer.name}`);
+            const oldId = existingPlayer.id;
+            existingPlayer.id = socket.id;
+            existingPlayer.leavedPlayer = false;
+            socket.join(roomCode);
+            
+            if (room.playerOrder) {
+                room.playerOrder = room.playerOrder.map(id => id === oldId ? socket.id : id);
+            }
+            
+            socket.emit("reconnected", {
+                roomCode,
+                rules: room.rules,
+                players: room.players,
+                playerNumber: room.players.length,
+                threshold: room.threshold,
+                playerOrder: room.playerOrder,
+                playerTurn: room.playerOrder ? room.playerOrder[0] : null,
+                history: room.history || []
+            });
+            
+            io.to(roomCode).emit("room_updated", { 
+                players: room.players,
+                playerOrder: room.playerOrder
+            });
+        } else if(room.playerOrder && room.playerOrder.length > 0) {
+            socket.emit("game_already_started");
+        } else if (room.players.length < 4) {
+            console.log("New player joining");
+            const player = { 
+                id: socket.id, 
+                name: "Sujet #" + (room.players.length + 1), 
+                sessionId, 
+                isHost: false, 
+                isReady: false, 
+                score: 0, 
+                deck: { cards: null },
+                leavedPlayer: false
+            };
+            room.players.push(player);
+            socket.join(roomCode);
+            
+            io.to(roomCode).emit("room_updated", { players: room.players });
+            socket.emit("join_game_success", roomCode, room.rules, room.players, room.players.length, room.threshold);
+        } else {
+            socket.emit("room_full");
         }
     });
 
@@ -148,8 +141,7 @@ io.on("connection", (socket) => {
             const player = room.players.find(p => p.id === socket.id);
             if (player) {
                 player.name = name;
-                const players = room.players;
-                io.to(code).emit("room_updated", { players: players });
+                io.to(code).emit("room_updated", { players: room.players });
                 break;
             }
         }
@@ -162,8 +154,7 @@ io.on("connection", (socket) => {
             const player = room.players.find(p => p.id === idPlayer);
             if (player) {
                 player.isReady = isReady;
-                const players = room.players;
-                io.to(code).emit("room_updated", { players: players });
+                io.to(code).emit("room_updated", { players: room.players });
                 break;
             }
         }
@@ -175,42 +166,42 @@ io.on("connection", (socket) => {
             const room = rooms[code];
             const host = room.players.find(p => p.id === socket.id && p.isHost);
             if (host) {
-                room.threshold = newThreshold;
-                io.to(code).emit("threshold_updated", newThreshold);
+                room.threshold = Math.min(Math.max(newThreshold, 5), 30);
+                io.to(code).emit("threshold_updated", room.threshold);
                 break;
             }
         }
     });
 
-    // Fonction utilitaire pour gérer le départ d'un joueur
+    // Gestion du départ d'un joueur
     const handlePlayerLeave = (idPlayer) => {
         for (const code in rooms) {
             const room = rooms[code];
-            const player = room.players.find(p => p.id === idPlayer);
-            if (player) {
-                // On retire le joueur de la salle
+            const playerIndex = room.players.findIndex(p => p.id === idPlayer);
+            
+            if (playerIndex !== -1) {
+                const player = room.players[playerIndex];
                 socket.leave(code);
-                room.players = room.players.filter(p => p.id !== idPlayer);
+                player.leavedPlayer = true;
 
-                if (room.players.length === 0) {
+                const activePlayers = room.players.filter(p => !p.leavedPlayer);
+                
+                if (activePlayers.length === 0) {
                     delete rooms[code];
                 } else {
-                    // Si l'hôte part, on donne le rôle d'hôte au premier joueur restant
                     if (player.isHost) {
-                        room.players[0].isHost = true;
+                        player.isHost = false;
+                        activePlayers[0].isHost = true;
                     }
-                    io.to(code).emit("room_updated", { players: room.players });
+                    
+                    io.to(code).emit("room_updated", { 
+                        players: room.players,
+                        playerOrder: room.playerOrder
+                    });
 
-                    // Si on était en jeu, on met à jour l'ordre de jeu et on passe le tour si c'était à lui
-                    if (room.playerOrder && room.playerOrder.includes(idPlayer)) {
-                        room.playerOrder = room.playerOrder.filter(id => id !== idPlayer);
-                        // On notifie les joueurs restants du nouveau tour de jeu
-                        if (room.playerOrder.length > 0) {
-                            io.to(code).emit("turn_updated", room.playerOrder);
-                        } else {
-                            // Si plus de joueur pour jouer, la partie peut se terminer (ou simplement être vide)
-                            delete rooms[code];
-                        }
+                    if (room.playerOrder && room.playerOrder[0] === idPlayer) {
+                        room.playerOrder = getNextPlayerOrder(room.playerOrder, room.players);
+                        io.to(code).emit("turn_updated", room.playerOrder);
                     }
                 }
                 break;
@@ -225,19 +216,13 @@ io.on("connection", (socket) => {
 
     // Démarrer la partie
     socket.on("start_game", (roomCode, threshold) => {
-        for (const code in rooms) {
-            if (code !== roomCode) continue;
-            const room = rooms[code];
-            const host = room.players.find(p => p.id === socket.id);
-
-            if (host) {
-                const playerOrder = whoStart(roomCode);
-                const playerTurn = playerOrder[0];
-                room.players.forEach(player => player.score = 0);
-                room.threshold = threshold;
-                io.to(code).emit("game_started", playerTurn, playerOrder, room.rules);
-                break;
-            }
+        const room = rooms[roomCode];
+        if (room && room.players.find(p => p.id === socket.id && p.isHost)) {
+            room.playerOrder = whoStart(room.players);
+            room.players.forEach(p => p.score = 0);
+            room.threshold = threshold;
+            room.history = [];
+            io.to(roomCode).emit("game_started", room.playerOrder[0], room.playerOrder, room.rules);
         }
     });
 
@@ -245,7 +230,7 @@ io.on("connection", (socket) => {
     // ----- GAME -----
     // ----------------
 
-    // Création de carte
+    // Mise à jour du deck (pour la synchronisation visuelle)
     socket.on("update_deck", (idPlayer, deck) => {
         for (const code in rooms) {
             const room = rooms[code];
@@ -264,9 +249,20 @@ io.on("connection", (socket) => {
             const room = rooms[code];
             const player = room.players.find(p => p.id === idPlayer);
             if (player) {
-                const isWin = win(player, points, room);
-                const newOrder = nextPlayer(code);
-                io.to(code).emit("card_played", card, idPlayer, newOrder, player.score, points, effectiveEffect);
+                const isWin = checkWin(player, points, room.threshold);
+                room.playerOrder = getNextPlayerOrder(room.playerOrder, room.players);
+                
+                const historyItem = {
+                    type: "card",
+                    card,
+                    player: idPlayer,
+                    score: player.score,
+                    points: points,
+                    effectiveEffect
+                };
+                room.history.push(historyItem);
+                
+                io.to(code).emit("card_played", card, idPlayer, room.playerOrder, player.score, points, effectiveEffect);
 
                 if (isWin) {
                     io.to(code).emit("game_won", player.id);
@@ -276,11 +272,13 @@ io.on("connection", (socket) => {
         }
     });
 
-    // Message
+    // Message chat
     socket.on("send_message", (message) => {
         for (const code in rooms) {
             const player = rooms[code].players.find(p => p.id === socket.id);
             if (player) {
+                const historyItem = { type: "message", player: player.name, message };
+                rooms[code].history.push(historyItem);
                 io.to(code).emit("message_received", player.name, message);
                 break;
             }
@@ -288,29 +286,23 @@ io.on("connection", (socket) => {
     });
 
     // Rejouer la partie
-    socket.on("reset_game", (socketId) => {
+    socket.on("reset_game", (triggerId) => {
         for (const code in rooms) {
             const room = rooms[code];
             const player = room.players.find(p => p.id === socket.id);
             if (player) {
-                // Générer de nouvelles règles
                 room.rules = generateRules();
                 delete room.playerOrder;
                 room.threshold = 15;
+                room.history = [];
 
-                // Remise à zéro des joueurs
                 room.players.forEach(p => {
                     p.score = 0;
-                    if (p.isHost) {
-                        p.isReady = true;
-                    } else {
-                        p.isReady = false;
-                    }
+                    p.isReady = p.isHost;
                     p.deck = { cards: null };
                 });
 
-                // On met à jour tout le monde !
-                io.to(code).emit("game_reset", room.rules, room.players, socketId);
+                io.to(code).emit("game_reset", room.rules, room.players, triggerId);
                 break;
             }
         }
@@ -322,7 +314,6 @@ io.on("connection", (socket) => {
         console.log(`[${new Date().toISOString()}] User disconnected: ${socket.id} (Reason: ${reason})`);
     });
 });
-
 
 // ----------------
 // Démarrage du serveur

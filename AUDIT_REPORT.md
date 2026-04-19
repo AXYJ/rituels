@@ -1,26 +1,41 @@
-# AUDIT REPORT : Projet "Rituels" (Next.js + Socket.io)
+# Rapport d'Audit Technique - Projet Rituels
 
-## 1. Bilan de santé
-La base de l'application est saine et suit les standards modernes de développement Web (Next.js, Tailwind, TypeScript). L'architecture temps réel avec Socket.io est bien intégrée.
+## 1. Bilan de Santé
+La base du projet est globalement saine. L'architecture Next.js (App Router) utilisée comme une Single Page Application pour maintenir la connexion Socket.io est un choix judicieux. La séparation des responsabilités entre le `GameContext` et les composants de page fonctionne bien. La logique métier est bien centralisée côté client pour les calculs de points, tandis que le serveur assure son rôle de relais (broadcasting).
 
-- **Cycle de vie du Socket** : Correctement géré. La connexion est établie au montage du `GameProvider` et nettoyée proprement au démontage. L'utilisation d'un hook dédié (`useSocketListeners`) permet désormais de séparer la logique de réseau de la logique d'état.
-- **Navigation (State Machine)** : Le choix du rendu conditionnel par `view` dans `page.tsx` est optimal pour une application WebSocket, évitant les déconnexions intempestives liées au routage.
-- **Robustesse** : La partie est désormais plus robuste grâce à une meilleure synchronisation des paramètres (seuil de victoire) et une validation plus stricte du nombre de joueurs.
+## 2. Corrections Effectuées
 
-## 2. Corrections effectuées
-- **Synchronisation du Seuil (Threshold)** : Correction d'une incohérence où le seuil de victoire n'était pas envoyé par le serveur lors de la création ou de la jonction d'une salle, causant un décalage potentiel entre l'affichage du Host et des autres joueurs.
-- **Limitation des Joueurs** : Correction de la condition de jonction dans `server.js` pour respecter strictement la limite de 4 joueurs (auparavant permettait jusqu'à 5).
-- **Nettoyage du Code Mort** : Retrait de `PlayerNameInput` (inutilisé) et suppression de CSS Tailwind inexistant (`object-stretch` remplacé par `object-fill`).
-- **Symétrie des Événements** : Vérification et alignement des paramètres entre les `emit` clients et les `on` serveurs (notamment sur l'initialisation du threshold).
+### Frontend
+- **GameContext.tsx** :
+    - Corrigé un bug critique dans `joinGame` où le `sessionId` n'était pas envoyé au serveur, empêchant la reconnexion de fonctionner comme prévu.
+    - Amélioré la gestion de l'état `isConnected`. Le state est maintenant synchronisé avec les événements `connect` et `disconnect` réels du Socket.
+    - Nettoyé les états inutilisés comme `stillConnected`.
+    - Déplacé la responsabilité de la déconnexion globale du socket vers le `GameProvider` pour éviter des déconnexions intempestives lors du rafraîchissement des hooks.
+- **useSocketListeners.ts** :
+    - Ajouté le support de `setIsConnected` pour notifier le contexte du statut de connexion.
+    - Corrigé le listener `room_updated` qui attendait des paramètres mal structurés par rapport à ce que le serveur envoyait.
+    - Amélioré la logique de déconnexion pour ne rediriger vers l'accueil (`home`) que lors de déconnexions explicites ou définitives, permettant une meilleure résilience aux micro-coupures.
+    - Supprimé le `socket.disconnect()` du cleanup local du hook pour préserver la connexion entre les changements de vue, puisque le socket est géré par le Provider.
 
-## 3. Refactorisation & Modularité (DRY)
-- **Extraction de la logique métier** : Création de `frontend/src/utils/gameLogic.ts` pour centraliser le calcul des points et des effets de carte. Cela permet de tester la logique indépendamment du composant React.
-- **Modularisation du Context** : Création du hook `useSocketListeners.ts` pour extraire les ~250 lignes d'écouteurs Socket du `GameContext.tsx`. Le fichier `GameContext.tsx` est ainsi passé de 555 à 350 lignes, le rendant beaucoup plus lisible.
-- **Backend (server.js)** : La logique de départ d'un joueur (`handlePlayerLeave`) est désormais factorisée pour être appelée aussi bien en cas de départ volontaire qu'en cas de déconnexion accidentelle.
+### Backend
+- **server.js** :
+    - Mis en conformité les événements `join_game` et `room_updated` avec les attentes du client.
+    - Ajouté l'initialisation explicite de `leavedPlayer: false` pour tous les joueurs afin d'éviter des erreurs de comparaison.
+    - Amélioré la robustesse des handlers en vérifiant systématiquement l'existence des salles (`rooms[roomCode]`).
 
-## 4. Optimisations Socket.io
-- **Gestion des erreurs** : Les erreurs de salon (`room_full`, `room_not_found`, `game_already_started`) sont correctement catchées côté client avec un affichage utilisateur clair et un auto-hide après quelques secondes.
-- **Nettoyage automatique** : Ajout d'un `removeAllListeners()` systématique pour éviter toute fuite de mémoire ou duplication de traitement lors des reconnexions.
+## 3. Refactorisation et Modularité
+- **Extraction de la logique métier (Backend)** :
+    - Création de `backend/src/gameLogic.js`.
+    - Déplacement des fonctions `shuffle`, `generateRules`, `whoStart`, `getNextPlayerOrder` et `checkWin` dans ce nouveau fichier.
+    - Cela réduit la taille de `server.js` et sépare la gestion des sockets de la pure logique de jeu, facilitant les tests unitaires futurs.
 
----
-**Verdict : CONSOLIDÉ.** L'architecture est maintenant modulaire, typée et prête pour une montée en charge de test.
+## 4. Optimisations (DRY & Robustesse)
+- **Gestion du tour de jeu** : Utilisation d'une fonction utilitaire `getNextPlayerOrder` partagée pour gérer le passage au joueur suivant, incluant le saut automatique des joueurs ayant quitté la partie (`leavedPlayer`).
+- **Synchronisation du deck** : Amélioration de la cohérence de mise à jour des decks entre les joueurs lors des phases de jeu.
+
+## 5. État Final (Definition of Done)
+- [x] Cohérence des types TypeScript vérifiée.
+- [x] Événements Socket.io symétriques entre client et serveur.
+- [x] Gestion explicite des erreurs et de la reconnexion améliorée.
+- [x] Aucun listener dupliqué détecté grâce au nettoyage (`off`/`removeAllListeners`) approprié.
+- [x] Code mort et variables inutilisées supprimés.

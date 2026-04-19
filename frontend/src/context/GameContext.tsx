@@ -13,6 +13,9 @@ import {
 } from "react";
 import { io, Socket } from "socket.io-client";
 
+// Clé pour le localStorage
+const PLAYER_NAME_KEY = "rituels_player_name";
+
 // Import des types
 import {
   View,
@@ -61,6 +64,13 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   }, [sfxVolume]);
 
   useEffect(() => {
+    // Création d'un ID de session pour pouvoir se reconnecter
+    const sessionId = localStorage.getItem("rituels_session_id");
+    if (!sessionId) {
+      const newSessionId = crypto.randomUUID();
+      localStorage.setItem("rituels_session_id", newSessionId);
+    }
+
     // Initialisation de la connexion
     const socketUrl =
       process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:4000";
@@ -69,7 +79,10 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     });
 
     setSocket(newSocket);
-    setIsConnected(true);
+    setIsConnected(newSocket.connected);
+
+    newSocket.on("connect", () => setIsConnected(true));
+    newSocket.on("disconnect", () => setIsConnected(false));
 
     return () => {
       newSocket.disconnect();
@@ -94,6 +107,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     setLastEffect,
     setPropositions,
     sfxVolumeRef,
+    setIsConnected,
   });
 
   // ----------------
@@ -104,6 +118,14 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   const createGame = useCallback(() => {
     if (socket) {
       socket.emit("create_game", socket.id);
+
+      // Restaurer le nom si présent dans le localStorage
+      if (typeof window !== "undefined") {
+        const savedName = localStorage.getItem(PLAYER_NAME_KEY);
+        if (savedName) {
+          socket.emit("change_name", savedName);
+        }
+      }
     }
   }, [socket]);
 
@@ -112,7 +134,16 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     (code: string) => {
       if (socket) {
         setRoomCode(code);
-        socket.emit("join_game", code);
+        const sessionId = localStorage.getItem("rituels_session_id");
+        socket.emit("join_game", code, sessionId);
+
+        // Restaurer le nom si présent dans le localStorage
+        if (typeof window !== "undefined") {
+          const savedName = localStorage.getItem(PLAYER_NAME_KEY);
+          if (savedName) {
+            socket.emit("change_name", savedName);
+          }
+        }
       }
     },
     [socket]
@@ -123,6 +154,9 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     (name: string) => {
       if (socket) {
         socket.emit("change_name", name);
+        if (typeof window !== "undefined") {
+          localStorage.setItem(PLAYER_NAME_KEY, name);
+        }
       }
     },
     [socket]

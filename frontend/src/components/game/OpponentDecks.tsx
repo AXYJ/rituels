@@ -15,8 +15,6 @@ export default function OpponentDecks() {
     : [];
 
   const getOpponentPlacementClass = (index: number, total: number) => {
-    // Note: Tailwindcss n'accepte pas les strings dynamiques ex: `col-start-${x}`
-    // On doit écrire en entier la classe pour qu'elle soit compilée !
     if (total === 1)
       return "col-start-2 col-end-3 row-start-1 row-end-2 flex -translate-y-1/2 items-center justify-center gap-0 lg:gap-4";
     if (total === 2) {
@@ -55,13 +53,13 @@ export default function OpponentDecks() {
       {opponents.map((opponent, index) => (
         <div
           key={opponent?.id || index}
-          className={`relative ${getOpponentPlacementClass(index, opponents.length)}`}
+          className={`relative ${getOpponentPlacementClass(index, opponents.length)} ${opponent?.leavedPlayer ? "opacity-10" : ""}`}
         >
           <div
             className={`absolute z-30 flex flex-col items-center gap-0 whitespace-nowrap lg:flex-row lg:gap-8 ${getOpponentNamePlacementClass(index, opponents.length)}`}
           >
             <h3>{opponent?.name}</h3>
-            <div className="flex w-full items-center gap-0 lg:gap-2">
+            <div className="pointer-events-none flex w-full items-center gap-0 lg:gap-2">
               <Image
                 src={`/cards/Seed.png`}
                 alt="card"

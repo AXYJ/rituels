@@ -69,6 +69,7 @@ export interface GameContextType {
   setWinner: React.Dispatch<React.SetStateAction<string | null>>;
   displayOrder: string[] | null;
   setDisplayOrder: React.Dispatch<React.SetStateAction<string[] | null>>;
+
   // Volume
   volume: number;
   setVolume: (volume: number) => void;
@@ -105,4 +106,6 @@ export interface Player {
   isReady: boolean;
   deck: { cards: Card[] | null };
   score: number;
+  leavedPlayer: boolean;
+  sessionId: string;
 }

@@ -30,6 +30,7 @@ export default function Logo({
         width={500}
         height={500}
         className="pointer-events-none w-1/2 lg:w-full"
+        loading="eager"
       />
     </div>
   );
