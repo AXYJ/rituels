@@ -3,17 +3,24 @@
 import { useGame } from "../../context/GameContext";
 
 export default function WinnerScreen() {
-  const { winner, rules, players, resetGame, threshold, propositions } =
+  const { winner, rules, players, resetGame, threshold, propositions, socket } =
     useGame();
 
   const playerWin = players.find((p) => p.id === winner);
   return (
     <div className="fixed top-0 left-0 z-60 flex h-full w-full justify-center overflow-y-auto bg-black/50 lg:overflow-hidden">
       <div className="flex w-full max-w-[1024px] flex-col items-center overflow-y-auto rounded-lg bg-black p-6 lg:justify-center lg:gap-8 lg:overflow-hidden">
-        <h2 className="mb-8 text-center font-bold">
-          Bravo {playerWin?.name} ! <br />
-          Vous êtes le premier à avoir atteint {threshold} graines
-        </h2>
+        {winner === socket?.id ? (
+          <h2 className="mb-8 text-center font-bold">
+            Bravo {playerWin?.name} ! <br />
+            Vous êtes le premier à avoir atteint {threshold} graines
+          </h2>
+        ) : (
+          <h2 className="mb-8 text-center font-bold">
+            Dommage, le/la gagnant(e) est {playerWin?.name} ! <br />
+            Il/Elle a atteint {threshold} graines avant toi.
+          </h2>
+        )}
         <div className="flex gap-18">
           <div>
             <h3 className="mb-4 text-center">

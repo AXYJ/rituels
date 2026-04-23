@@ -407,7 +407,7 @@ export default function Lobby() {
               <span
                 className={`relative z-50 text-2xl ${isReady ? "text-white" : "text-black"} `}
               >
-                {isReady ? "Annuler" : "Prêt"}
+                {isReady ? "Pas prêt" : "Prêt"}
               </span>
             </motion.button>
           )}

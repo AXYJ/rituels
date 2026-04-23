@@ -6,7 +6,6 @@ import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 import { useGame } from "../../context/GameContext";
-import { createCard } from "../../hooks/createCard";
 import { Card } from "../../types/game";
 import WinnerScreen from "../game/WinnerScreen";
 import Helper from "../game/Helper";
@@ -78,29 +77,13 @@ export default function Game() {
         const newCards = [...me.deck.cards];
         newCards.splice(cardIndex, 1);
         setLocalPlayerDeck(newCards);
-        updateDeck({ cards: newCards });
         setPendingCard(card);
       }
     }
     cardPlayed(card);
   };
 
-  useEffect(() => {
-    if (!rules) return;
 
-    // Création de cartes si le joueur n'en a pas assez
-    const currentCards = deck?.cards ? [...deck.cards] : [];
-
-    if (currentCards.length < 3) {
-      const timeoutId = setTimeout(() => {
-        currentCards.push(createCard(rules));
-        setLocalPlayerDeck(currentCards);
-        updateDeck({ cards: currentCards });
-      }, 200);
-
-      return () => clearTimeout(timeoutId);
-    }
-  }, [deck?.cards, rules, setLocalPlayerDeck, updateDeck]);
 
   useEffect(() => {
     // Tentative de masquer la barre d'adresse sur mobile au chargement

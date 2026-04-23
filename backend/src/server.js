@@ -6,7 +6,11 @@ import {
     generateRules, 
     whoStart, 
     getNextPlayerOrder, 
-    checkWin 
+    checkWin,
+    calculateCardPoints,
+    createCard,
+    moderatePseudo,
+    moderateMessage
 } from "./gameLogic.js";
 
 // Initialisation
@@ -80,7 +84,6 @@ io.on("connection", (socket) => {
         const existingPlayer = room.players.find(p => p.sessionId === sessionId);
 
         if (existingPlayer) {
-            console.log(`Player reconnected: ${existingPlayer.name}`);
             const oldId = existingPlayer.id;
             existingPlayer.id = socket.id;
             existingPlayer.leavedPlayer = false;
@@ -99,6 +102,7 @@ io.on("connection", (socket) => {
                 playerOrder: room.playerOrder,
                 playerTurn: room.playerOrder ? room.playerOrder[0] : null,
                 history: room.history || []
+                
             });
             
             io.to(roomCode).emit("room_updated", { 
@@ -135,13 +139,18 @@ io.on("connection", (socket) => {
     // -----------------
 
     // Changement du nom
-    socket.on("change_name", (name) => {
+    socket.on("change_name", async (name) => {
         for (const code in rooms) {
             const room = rooms[code];
             const player = room.players.find(p => p.id === socket.id);
             if (player) {
-                player.name = name;
-                io.to(code).emit("room_updated", { players: room.players });
+                const status = await moderatePseudo(name);
+                if (status === "NON") {
+                    socket.emit("name_rejected");
+                } else {
+                    player.name = name;
+                    io.to(code).emit("room_updated", { players: room.players });
+                }
                 break;
             }
         }
@@ -219,10 +228,21 @@ io.on("connection", (socket) => {
         const room = rooms[roomCode];
         if (room && room.players.find(p => p.id === socket.id && p.isHost)) {
             room.playerOrder = whoStart(room.players);
-            room.players.forEach(p => p.score = 0);
+            room.players.forEach(p => {
+                p.score = 0;
+                // Génération sécurisée du deck initial (3 cartes)
+                p.deck = { 
+                    cards: [
+                        createCard(room.rules),
+                        createCard(room.rules),
+                        createCard(room.rules)
+                    ]
+                };
+            });
             room.threshold = threshold;
             room.history = [];
-            io.to(roomCode).emit("game_started", room.playerOrder[0], room.playerOrder, room.rules);
+            room.lastEffect = null;
+            io.to(roomCode).emit("game_started", room.playerOrder[0], room.playerOrder, room.rules, room.players);
         }
     });
 
@@ -244,12 +264,18 @@ io.on("connection", (socket) => {
     });
 
     // Carte jouée
-    socket.on("card_played", (idPlayer, points, card, effectiveEffect) => {
+    socket.on("card_played", (idPlayer, card) => {
         for (const code in rooms) {
             const room = rooms[code];
             const player = room.players.find(p => p.id === idPlayer);
             if (player) {
+                const { points, effectiveEffect } = calculateCardPoints(card, room.rules, room.lastEffect);
                 const isWin = checkWin(player, points, room.threshold);
+
+                if (isWin) {
+                   return io.to(code).emit("game_won", player.id);
+                }
+                
                 room.playerOrder = getNextPlayerOrder(room.playerOrder, room.players);
                 
                 const historyItem = {
@@ -261,25 +287,40 @@ io.on("connection", (socket) => {
                     effectiveEffect
                 };
                 room.history.push(historyItem);
-                
-                io.to(code).emit("card_played", card, idPlayer, room.playerOrder, player.score, points, effectiveEffect);
 
-                if (isWin) {
-                    io.to(code).emit("game_won", player.id);
+                room.lastEffect = effectiveEffect;
+                room.currentCard = card;
+
+                const newCard = createCard(room.rules);
+                // Retirer la carte jouée du deck sur le serveur
+                if (player.deck.cards) {
+                    player.deck.cards = player.deck.cards.filter(c => c.id !== card.id);
                 }
+                player.deck.cards.push(newCard);
+                
+                io.to(code).emit("card_played", card, idPlayer, room.playerOrder, player.score, points, newCard);
+
+                
                 break;
             }
         }
     });
 
     // Message chat
-    socket.on("send_message", (message) => {
+    socket.on("send_message", async (message) => {
         for (const code in rooms) {
             const player = rooms[code].players.find(p => p.id === socket.id);
             if (player) {
-                const historyItem = { type: "message", player: player.name, message };
-                rooms[code].history.push(historyItem);
-                io.to(code).emit("message_received", player.name, message);
+                const status = await moderateMessage(message);
+                if (status === "OK") {
+                    const historyItem = { type: "message", player: player.name, message };
+                    rooms[code].history.push(historyItem);
+                    io.to(code).emit("message_received", player.name, message);
+                } else {
+                    const historyItem = { type: "message", player: player.name, message: status };
+                    rooms[code].history.push(historyItem);
+                    io.to(code).emit("message_received", player.name, status);
+                }
                 break;
             }
         }
@@ -295,6 +336,7 @@ io.on("connection", (socket) => {
                 delete room.playerOrder;
                 room.threshold = 15;
                 room.history = [];
+                room.lastEffect = null;
 
                 room.players.forEach(p => {
                     p.score = 0;

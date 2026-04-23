@@ -26,7 +26,6 @@ import {
   HistoryItem,
 } from "../types/game";
 import { useSocketListeners } from "../hooks/useSocketListeners";
-import { calculateCardPoints } from "../utils/gameLogic";
 
 // Création du contexte
 const GameContext = createContext<GameContextType | undefined>(undefined);
@@ -44,7 +43,6 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   const [playerTurn, setPlayerTurn] = useState("");
   const [playerOrder, setPlayerOrder] = useState<string[]>([]);
   const [history, setHistory] = useState<HistoryItem[]>([]);
-  const [lastEffect, setLastEffect] = useState<string | null>(null);
   const [winner, setWinner] = useState<string | null>(null);
   const [displayOrder, setDisplayOrder] = useState<string[] | null>(null);
   const [volume, setVolume] = useState(0.5);
@@ -104,7 +102,6 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     setPlayerTurn,
     setPlayerOrder,
     setDisplayOrder,
-    setLastEffect,
     setPropositions,
     sfxVolumeRef,
     setIsConnected,
@@ -182,7 +179,6 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     setPlayers([]);
     setRules(null);
     setHistory([]);
-    setLastEffect(null);
     setDisplayOrder(null);
     setPlayerNumber(0);
   }, [socket]);
@@ -218,16 +214,11 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   // Jouer une carte
   const cardPlayed = useCallback(
     (card: Card) => {
-      if (socket && rules) {
-        const { points, effectiveEffect } = calculateCardPoints(
-          card,
-          rules,
-          lastEffect
-        );
-        socket.emit("card_played", socket.id, points, card, effectiveEffect);
+      if (socket) {
+        socket.emit("card_played", socket.id, card);
       }
     },
-    [socket, rules, lastEffect]
+    [socket]
   );
 
   // Envoyer un message
@@ -291,8 +282,6 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       setLocalPlayerDeck,
       history,
       setHistory,
-      lastEffect,
-      setLastEffect,
       sendMessage,
       winner,
       setWinner,
@@ -330,7 +319,6 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       playerOrder,
       setLocalPlayerDeck,
       history,
-      lastEffect,
       sendMessage,
       winner,
       displayOrder,

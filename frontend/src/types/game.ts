@@ -63,8 +63,6 @@ export interface GameContextType {
   setPlayerOrder: React.Dispatch<React.SetStateAction<string[]>>;
   history: HistoryItem[];
   setHistory: React.Dispatch<React.SetStateAction<HistoryItem[]>>;
-  lastEffect: string | null;
-  setLastEffect: React.Dispatch<React.SetStateAction<string | null>>;
   winner: string | null;
   setWinner: React.Dispatch<React.SetStateAction<string | null>>;
   displayOrder: string[] | null;

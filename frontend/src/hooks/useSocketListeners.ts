@@ -21,7 +21,6 @@ interface SocketListenersProps {
   setPlayerTurn: (turn: string) => void;
   setPlayerOrder: (order: string[]) => void;
   setDisplayOrder: (order: string[] | null) => void;
-  setLastEffect: (effect: string | null) => void;
   setPropositions: (props: any) => void;
   setIsConnected: (connected: boolean) => void;
   sfxVolumeRef: MutableRefObject<number>;
@@ -42,7 +41,6 @@ export const useSocketListeners = (props: SocketListenersProps) => {
     setPlayerTurn,
     setPlayerOrder,
     setDisplayOrder,
-    setLastEffect,
     setPropositions,
     setIsConnected,
     sfxVolumeRef,
@@ -130,6 +128,7 @@ export const useSocketListeners = (props: SocketListenersProps) => {
     socket.on("game_already_started", () =>
       setError("La partie a déjà commencé !")
     );
+    socket.on("name_rejected", () => setError("Pseudo refusé !"));
 
     // Mise à jour du lobby
     socket.on("room_updated", (data) => {
@@ -215,13 +214,15 @@ export const useSocketListeners = (props: SocketListenersProps) => {
     });
 
     // Démarrage de la partie
-    socket.on("game_started", (playerStart, playerOrder, newRules) => {
-      setHistory([]);
-      setWinner(null);
-      setPropositions({ symbolRules: {}, colorRules: {} });
-      setLastEffect(null);
-      if (newRules) setRules(newRules);
-      setView("game");
+    socket.on(
+      "game_started",
+      (playerStart, playerOrder, newRules, serverPlayers) => {
+        setHistory([]);
+        setWinner(null);
+        setPropositions({ symbolRules: {}, colorRules: {} });
+        if (newRules) setRules(newRules);
+        if (serverPlayers) setPlayers(serverPlayers);
+        setView("game");
       setPlayerTurn(playerStart);
       setPlayerOrder(playerOrder);
 
@@ -241,7 +242,7 @@ export const useSocketListeners = (props: SocketListenersProps) => {
     // Carte jouée
     socket.on(
       "card_played",
-      (card, idPlayer, newOrder, newScore, pointsGained, effectiveEffect) => {
+      (card, idPlayer, newOrder, newScore, pointsGained, newCard) => {
         setHistory((prev) => [
           ...prev,
           {
@@ -252,7 +253,6 @@ export const useSocketListeners = (props: SocketListenersProps) => {
             points: pointsGained,
           },
         ]);
-        setLastEffect(effectiveEffect);
         setPlayerTurn(newOrder[0]);
         setPlayerOrder(newOrder);
 
@@ -262,7 +262,21 @@ export const useSocketListeners = (props: SocketListenersProps) => {
           sound.play().catch((e) => console.error("Erreur lecture audio :", e));
         }
         setPlayers((prev) =>
-          prev.map((p) => (p.id === idPlayer ? { ...p, score: newScore } : p))
+          prev.map((p) => {
+            if (p.id === idPlayer) {
+              const updatedPlayer = { ...p, score: newScore };
+              // Si c'est le joueur local, on met à jour son deck
+              if (p.id === socket?.id && p.deck.cards) {
+                // On retire la carte jouée par son ID unique
+                const newCards = p.deck.cards.filter((c) => c.id !== card.id);
+                // On ajoute la nouvelle carte générée par le serveur
+                newCards.push(newCard);
+                updatedPlayer.deck = { cards: newCards };
+              }
+              return updatedPlayer;
+            }
+            return p;
+          })
         );
       }
     );
@@ -328,7 +342,6 @@ export const useSocketListeners = (props: SocketListenersProps) => {
     setPlayerTurn,
     setPlayerOrder,
     setDisplayOrder,
-    setLastEffect,
     setPropositions,
     setIsConnected,
     sfxVolumeRef,

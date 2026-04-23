@@ -240,7 +240,7 @@ export default function Home() {
                     className="pointer-events-none absolute inset-0 z-0 h-full w-full object-fill select-none"
                   />
                   <span className="relative z-50 text-4xl text-nowrap text-black">
-                    Entrez le code
+                    Rejoindre
                   </span>
                 </motion.button>
               </motion.div>
