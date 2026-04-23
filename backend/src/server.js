@@ -25,7 +25,11 @@ app.get("/", (req, res) => {
 const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
-        origin: ["http://localhost:3000", "http://127.0.0.1:3000"],
+        origin: [
+            "http://localhost:3000", 
+            "http://127.0.0.1:3000",
+            process.env.NEXT_PUBLIC_SOCKET_URL // Permet d'ajouter l'URL Vercel via les variables d'env Render
+        ].filter(Boolean),
         methods: ["GET", "POST"],
         credentials: true
     },
@@ -361,7 +365,7 @@ io.on("connection", (socket) => {
 // Démarrage du serveur
 // ----------------
 
-const PORT = 4000;
+const PORT = process.env.PORT || 4000;
 server.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });

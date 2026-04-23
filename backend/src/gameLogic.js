@@ -128,8 +128,13 @@ export function checkWin(player, points, threshold) {
 
 import { Groq } from 'groq-sdk';
 
-if (typeof process.loadEnvFile === 'function') {
-  process.loadEnvFile();
+try {
+  if (typeof process.loadEnvFile === 'function') {
+    process.loadEnvFile();
+  }
+} catch (error) {
+  // Si le fichier .env n'existe pas (par exemple sur Render), on ignore l'erreur
+  // car les variables d'environnement sont déjà injectées.
 }
 
 const apiKey = process.env.GROQ_API_KEY;
