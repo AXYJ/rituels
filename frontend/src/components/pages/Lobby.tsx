@@ -6,6 +6,8 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 
+import Logo from "../logo";
+
 // Variants pour l'animation d'entrée
 const frameVariants = {
   hidden: {
@@ -136,6 +138,10 @@ export default function Lobby() {
 
   return (
     <section className="bg-[radial-gradient(ellipse_31.48%_48.47%_at_51.72%_50.00%,_#464441_0%,_#191918_100%)] py-16 lg:py-0">
+      <Logo
+        className="absolute top-0 left-0 h-16 w-40 lg:top-4 lg:left-4"
+        onClick={() => handleQuit()}
+      />
       <AnimatePresence>
         {error && (
           <motion.div

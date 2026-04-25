@@ -128,6 +128,7 @@ export default function Game() {
             alt="rules"
             width={50}
             height={50}
+            className="h-8 w-8 lg:h-16 lg:w-16"
           />
         </button>
 

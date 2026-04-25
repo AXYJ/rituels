@@ -4,6 +4,7 @@ import { Player, Card, GameRules, View, HistoryItem } from "../types/game";
 
 // Clé pour le localStorage
 const ROOM_CODE_KEY = "rituels_room_code";
+const PLAYER_NAME_KEY = "rituels_player_name";
 
 interface SocketListenersProps {
   socket: Socket | null;
@@ -95,6 +96,15 @@ export const useSocketListeners = (props: SocketListenersProps) => {
         setRoomCode(code);
         setRules(rules);
         localStorage.setItem(ROOM_CODE_KEY, code);
+
+        // Sauvegarder le nom validé
+        if (typeof window !== "undefined" && serverPlayers) {
+          const me = serverPlayers.find((p: Player) => p.id === socket?.id);
+          if (me?.name) {
+            localStorage.setItem(PLAYER_NAME_KEY, me.name);
+          }
+        }
+
         if (threshold !== undefined) setThreshold(threshold);
         setPlayers(
           (serverPlayers || []).map((p: Player) => ({
@@ -115,6 +125,15 @@ export const useSocketListeners = (props: SocketListenersProps) => {
         localStorage.setItem(ROOM_CODE_KEY, code);
         setRoomCode(code);
         setRules(rules);
+
+        // Sauvegarder le nom validé
+        if (typeof window !== "undefined" && players) {
+          const me = players.find((p: Player) => p.id === socket?.id);
+          if (me?.name) {
+            localStorage.setItem(PLAYER_NAME_KEY, me.name);
+          }
+        }
+
         if (threshold !== undefined) setThreshold(threshold);
         setPlayers(players || []);
         setPlayerNumber(playerNumber);
@@ -133,6 +152,14 @@ export const useSocketListeners = (props: SocketListenersProps) => {
     // Mise à jour du lobby
     socket.on("room_updated", (data) => {
       if (!data || !data.players) return;
+
+      // Sauvegarder le nom validé par le serveur dans le localStorage
+      if (typeof window !== "undefined") {
+        const me = data.players.find((p: Player) => p.id === socket?.id);
+        if (me?.name) {
+          localStorage.setItem(PLAYER_NAME_KEY, me.name);
+        }
+      }
 
       const { players: serverPlayers, playerOrder: serverPlayerOrder } = data;
 

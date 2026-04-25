@@ -3,77 +3,11 @@
 // Importations des modules
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import React from "react";
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
-// On définit les variants à l'extérieur pour éviter de les recréer à chaque rendu (performance)
-// et pour faciliter la lecture du composant principal.
-const frameVariants = {
-  hidden: {
-    opacity: 0,
-  },
-  visible: {
-    opacity: 1,
-    transition: {
-      duration: 2,
-      // staggerChildren définit le délai entre l'apparition de chaque enfant 'motion'
-      staggerChildren: 0.3,
-      // Utilisation du type "spring" pour l'effet rebond (bounce)
-      type: "spring",
-      bounce: 0.6,
-      delay: 0.5,
-    } as any,
-  },
-};
+// Les variants sont maintenant définis à l'intérieur du composant pour gérer les délais dynamiques.
 
-const itemVariants = {
-  hidden: {
-    opacity: 0,
-    y: 50,
-  },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 1,
-      type: "spring",
-      bounce: 0.6,
-      delay: 0.5,
-    } as any,
-  },
-};
-
-const itemVariants2 = {
-  hidden: {
-    opacity: 0,
-    y: 50,
-  },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 1,
-      type: "spring",
-      bounce: 0.6,
-      delay: 1,
-    } as any,
-  },
-};
-
-const itemVariants3 = {
-  hidden: {
-    opacity: 0,
-    y: 50,
-  },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 1,
-      type: "spring",
-      bounce: 0.6,
-      delay: 1.5,
-    } as any,
-  },
-};
 
 import { useGame } from "../../context/GameContext";
 import Image from "next/image";
@@ -89,13 +23,99 @@ export default function Home() {
   const [inputCode, setInputCode] = useState("");
   const [btnDisabled, setBtnDisabled] = useState(false);
   const [savedCode, setSavedCode] = useState<string | null>(null);
+  const [isFirstVisit, setIsFirstVisit] = useState(true);
+  const [hasCheckedVisit, setHasCheckedVisit] = useState(false);
 
-  // Charger le code sauvegardé après le montage (côté client uniquement)
+  // Charger le code sauvegardé et vérifier la première visite après le montage (côté client uniquement)
   useEffect(() => {
     if (typeof window !== "undefined") {
       setSavedCode(localStorage.getItem("rituels_room_code"));
+      
+      const visited = sessionStorage.getItem("rituels_visited");
+      if (visited) {
+        setIsFirstVisit(false);
+      } else {
+        setIsFirstVisit(true);
+        sessionStorage.setItem("rituels_visited", "true");
+      }
+      setHasCheckedVisit(true);
     }
   }, []);
+
+  // ----------------
+  // Variants d'animation
+  // ----------------
+  // Si c'est la première visite, on attend la fin de l'animation Lottie (env. 9.5s)
+  // Sinon, on affiche les éléments immédiatement.
+  const baseDelay = isFirstVisit ? 9.5 : 0.5;
+
+  const frameVariants = {
+    hidden: {
+      opacity: 0,
+    },
+    visible: {
+      opacity: 1,
+      transition: {
+        duration: 2,
+        staggerChildren: 0.3,
+        type: "spring",
+        bounce: 0.6,
+        delay: baseDelay,
+      } as any,
+    },
+  };
+
+  const itemVariants = {
+    hidden: {
+      opacity: 0,
+      y: 50,
+    },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 1,
+        type: "spring",
+        bounce: 0.6,
+        delay: baseDelay,
+      } as any,
+    },
+  };
+
+  const itemVariants2 = {
+    hidden: {
+      opacity: 0,
+      y: 50,
+    },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 1,
+        type: "spring",
+        bounce: 0.6,
+        delay: baseDelay + 0.5,
+      } as any,
+    },
+  };
+
+  const itemVariants3 = {
+    hidden: {
+      opacity: 0,
+      y: 50,
+    },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 1,
+        type: "spring",
+        bounce: 0.6,
+        delay: baseDelay + 0.5,
+      } as any,
+    },
+  };
+
 
   // ----------------
   // Gestion des événements
@@ -158,8 +178,21 @@ export default function Home() {
                 type: "spring",
                 bounce: 0.6,
               }}
+              className="flex w-1/2 flex-col items-center lg:w-full"
             >
-              <Logo />
+              {hasCheckedVisit ? (
+                isFirstVisit ? (
+                  <DotLottieReact
+                    src="/final.json"
+                    className="pointer-events-none max-w-[480px] w-full h-auto"
+                    autoplay
+                  />
+                ) : (
+                  <Logo className="max-w-[480px] w-full h-auto" />
+                )
+              ) : (
+                <div className="max-w-[480px] w-full h-auto aspect-[2780/1042]" />
+              )}
             </motion.div>
 
             <AnimatePresence>
@@ -186,7 +219,7 @@ export default function Home() {
               key="launch-container"
               variants={frameVariants}
               initial="hidden"
-              animate="visible"
+              animate={hasCheckedVisit ? "visible" : "hidden"}
               className="launch-btn flex w-8/10 max-w-[1024px] flex-col items-center gap-4 lg:gap-12"
             >
               <motion.button
@@ -252,15 +285,22 @@ export default function Home() {
                 opacity: 0,
                 y: 20,
               }}
-              animate={{
-                opacity: 1,
-                y: 0,
-              }}
+              animate={
+                hasCheckedVisit
+                  ? {
+                      opacity: 1,
+                      y: 0,
+                    }
+                  : {
+                      opacity: 0,
+                      y: 20,
+                    }
+              }
               transition={{
                 duration: 1,
                 type: "spring",
                 bounce: 0.6,
-                delay: 0.5,
+                delay: baseDelay + 1,
               }}
               className="flex items-center"
             >

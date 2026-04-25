@@ -151,9 +151,6 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     (name: string) => {
       if (socket) {
         socket.emit("change_name", name);
-        if (typeof window !== "undefined") {
-          localStorage.setItem(PLAYER_NAME_KEY, name);
-        }
       }
     },
     [socket]

@@ -25,11 +25,11 @@ export default function Logo({
       onClick={handleClick}
     >
       <Image
-        src="/logo-v3.png"
+        src="/logo-v4.png"
         alt="Logo"
-        width={500}
-        height={500}
-        className="pointer-events-none w-1/2 lg:w-full"
+        width={2780}
+        height={1042}
+        className="pointer-events-none w-full h-auto object-contain"
         loading="eager"
       />
     </div>
