@@ -323,7 +323,18 @@ export const useSocketListeners = (props: SocketListenersProps) => {
     });
 
     // Fin de partie / Reset
-    socket.on("game_won", (idPlayer) => setWinner(idPlayer));
+    socket.on("game_won", (idPlayer, finalScore) => {
+      setPlayers((prev) =>
+        prev.map((p) => {
+          if (p.id === idPlayer) {
+            return { ...p, score: finalScore };
+          }
+          return p;
+        })
+      );
+      setWinner(idPlayer);
+    });
+
     socket.on("turn_updated", (newOrder) => {
       setPlayerTurn(newOrder[0]);
       setPlayerOrder(newOrder);

@@ -83,6 +83,17 @@ export default function PlayerDeck({
             layout
             layoutId={`card-${card.id || card.symbol + card.color}`}
             key={card.id || index}
+            drag={isMyTurn ? "y" : false}
+            dragConstraints={{ top: 0, bottom: 0 }}
+            dragElastic={0.4}
+            onDragEnd={(e, info) => {
+              if (info.offset.y < -50 || info.velocity.y < -400) {
+                handleCardClick(card);
+                setSelectedCardIndex(null);
+              } else if (info.offset.y > 50 || info.velocity.y > 400) {
+                setSelectedCardIndex(null);
+              }
+            }}
             initial={{ opacity: 0, y: 200, scale: 0.8 }}
             animate={
               selectedCardIndex === index
@@ -96,7 +107,7 @@ export default function PlayerDeck({
                 : {}
             }
             transition={{ type: "spring", stiffness: 200, damping: 20 }}
-            className={`group relative flex items-center justify-center overflow-hidden rounded-xl lg:after:pointer-events-none lg:after:absolute lg:after:inset-0 lg:after:bg-black/60 lg:after:opacity-0 lg:after:transition-opacity lg:after:duration-300 ${propositions && (propositions.symbolRules[card.symbol] || propositions.colorRules[card.color]) && isMyTurn ? "lg:group-hover:after:opacity-100" : ""} ${isMyTurn ? "" : "pointer-events-none"} ${selectedCardIndex === index ? "after:pointer-events-none after:absolute after:inset-0 after:bg-black/60 after:opacity-100" : ""}`}
+            className={`group relative flex aspect-[2/3] items-center justify-center overflow-hidden rounded-xl lg:after:pointer-events-none lg:after:absolute lg:after:inset-0 lg:after:bg-black/60 lg:after:opacity-0 lg:after:transition-opacity lg:after:duration-300 ${propositions && (propositions.symbolRules[card.symbol] || propositions.colorRules[card.color]) && isMyTurn ? "lg:group-hover:after:opacity-100" : ""} ${isMyTurn ? "" : "pointer-events-none"} ${selectedCardIndex === index ? "after:pointer-events-none after:absolute after:inset-0 after:bg-black/60 after:opacity-100" : ""}`}
           >
             <div
               className={`pointer-events-none absolute inset-0 z-20 flex-col items-center justify-start transition-opacity duration-300 lg:flex lg:pt-8 lg:opacity-0 lg:group-hover:opacity-100 ${selectedCardIndex === index ? "flex opacity-100" : "hidden opacity-0"}`}
@@ -126,6 +137,7 @@ export default function PlayerDeck({
               alt="card"
               width={400}
               height={600}
+              draggable={false}
               className={`relative z-10 max-h-full object-contain transition-all duration-300 ${
                 isMyTurn ? "cursor-pointer" : "cursor-default"
               } ${

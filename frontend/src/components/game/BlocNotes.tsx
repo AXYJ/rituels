@@ -27,15 +27,6 @@ export default function Helper() {
         className={`pointer-events-none fixed right-0 bottom-0 left-0 flex w-full flex-col justify-end transition-colors duration-300 lg:pointer-events-auto lg:static lg:col-start-3 lg:col-end-4 lg:row-start-2 lg:row-end-4 lg:w-auto lg:items-center lg:justify-end lg:gap-4 ${isEditing ? "z-40 bg-linear-to-t from-[#191918] via-[#191918]/95 to-transparent" : "z-10"} `}
       >
         <div className="flex w-full flex-col items-end justify-end">
-          <Image
-            src={`/assets/edit.png`}
-            alt="card"
-            width={1000}
-            height={1000}
-            className="pointer-events-auto relative z-50 mr-4 mb-2 ml-auto h-12 w-12 cursor-pointer object-contain drop-shadow-lg lg:hidden"
-            onClick={() => setIsEditing(!isEditing)}
-          />
-
           <motion.div
             drag="y"
             dragConstraints={{ top: 0, bottom: 0 }}
@@ -45,12 +36,18 @@ export default function Helper() {
                 setIsEditing(false);
               }
             }}
-            className={`pointer-events-auto grid w-full transition-[grid-template-rows,padding] duration-300 ease-in-out lg:grid-rows-[1fr] lg:pt-4 lg:pb-4 ${
-              isEditing
-                ? "grid-rows-[1fr] pt-4 pb-6"
-                : "grid-rows-[0fr] pt-0 pb-0"
+            className={`pointer-events-auto grid w-full transition-all duration-300 ease-in-out lg:grid-rows-[1fr] lg:pb-4 ${
+              isEditing ? "grid-rows-[1fr] pb-6" : "grid-rows-[0fr] pb-0"
             }`}
           >
+            <Image
+              src={`/assets/edit.png`}
+              alt="card"
+              width={1000}
+              height={1000}
+              className={`pointer-events-auto absolute top-0 right-4 z-50 mr-4 ml-auto h-12 w-12 cursor-pointer object-contain drop-shadow-lg transition-all duration-300 ease-in-out lg:hidden ${isEditing ? "-translate-y-1/2" : "-translate-y-[20vh]"}`}
+              onClick={() => setIsEditing(!isEditing)}
+            />
             <div className="overflow-hidden">
               <h3 className="mb-4 w-full text-center">Bloc-note</h3>
               <div className="grid w-full grid-cols-2 gap-8 px-4">
@@ -62,10 +59,16 @@ export default function Helper() {
                         className="flex items-center justify-between gap-2"
                       >
                         <label
-                          className="w-24 text-xl lg:text-2xl"
+                          className="flex w-24 items-center text-xl lg:text-2xl"
                           htmlFor={symbol}
                         >
-                          {symbol}
+                          <Image
+                            src={`/assets/${symbol}.png`}
+                            alt={symbol}
+                            width={500}
+                            height={500}
+                            className="pointer-events-auto relative z-50 mr-4 ml-auto h-4 w-4 object-contain lg:h-6 lg:w-6"
+                          />
                         </label>
                         <select
                           name={symbol}
@@ -100,7 +103,10 @@ export default function Helper() {
                       className="flex items-center justify-between gap-2"
                     >
                       <label
-                        className="w-24 text-xl lg:text-2xl"
+                        className={`w-24 text-xl lg:text-2xl`}
+                        style={{
+                          color: `var(--color-card-${color.toLowerCase()})`,
+                        }}
                         htmlFor={color}
                       >
                         {color}

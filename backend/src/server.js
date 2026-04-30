@@ -276,9 +276,7 @@ io.on("connection", (socket) => {
                 const { points, effectiveEffect } = calculateCardPoints(card, room.rules, room.lastEffect);
                 const isWin = checkWin(player, points, room.threshold);
 
-                if (isWin) {
-                   return io.to(code).emit("game_won", player.id);
-                }
+               
                 
                 room.playerOrder = getNextPlayerOrder(room.playerOrder, room.players);
                 
@@ -291,6 +289,11 @@ io.on("connection", (socket) => {
                     effectiveEffect
                 };
                 room.history.push(historyItem);
+                
+                if (isWin) {
+                   // Ensure the score is updated with the winning points if checkWin modifies player object we just use player.score but since checkWin modifies it indeed
+                   return io.to(code).emit("game_won", player.id, player.score);
+                }
 
                 room.lastEffect = effectiveEffect;
                 room.currentCard = card;

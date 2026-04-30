@@ -8,8 +8,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useGame } from "../../context/GameContext";
 import { Card } from "../../types/game";
 import WinnerScreen from "../game/WinnerScreen";
-import Helper from "../game/Helper";
-import History from "../game/History";
+import Helper from "../game/BlocNotes";
+import History from "../game/Chat";
 import PlayerDeck from "../game/PlayerDeck";
 import OpponentDecks from "../game/OpponentDecks";
 import RulesModal from "../header/RulesModal";
@@ -199,7 +199,7 @@ export default function Game() {
                   }}
                   exit={{ opacity: 0, scale: 0.5 }}
                   transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                  className="absolute h-32 w-24 drop-shadow-sm lg:h-56 lg:w-40"
+                  className="absolute h-36 w-24 drop-shadow-sm lg:h-60 lg:w-40"
                 >
                   <Image
                     src={`/cards/${played.symbol}-${played.color}.png`}
