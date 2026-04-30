@@ -4,10 +4,9 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import React from "react";
-import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 
 // Les variants sont maintenant définis à l'intérieur du composant pour gérer les délais dynamiques.
-
 
 import { useGame } from "../../context/GameContext";
 import Image from "next/image";
@@ -23,20 +22,20 @@ export default function Home() {
   const [inputCode, setInputCode] = useState("");
   const [btnDisabled, setBtnDisabled] = useState(false);
   const [savedCode, setSavedCode] = useState<string | null>(null);
-  const [isFirstVisit, setIsFirstVisit] = useState(true);
+  const [isFirstVisit, setIsFirstVisit] = useState(false);
   const [hasCheckedVisit, setHasCheckedVisit] = useState(false);
 
   // Charger le code sauvegardé et vérifier la première visite après le montage (côté client uniquement)
   useEffect(() => {
     if (typeof window !== "undefined") {
       setSavedCode(localStorage.getItem("rituels_room_code"));
-      
-      const visited = sessionStorage.getItem("rituels_visited");
+
+      const visited = localStorage.getItem("rituels_visited");
       if (visited) {
         setIsFirstVisit(false);
       } else {
         setIsFirstVisit(true);
-        sessionStorage.setItem("rituels_visited", "true");
+        localStorage.setItem("rituels_visited", "true");
       }
       setHasCheckedVisit(true);
     }
@@ -116,7 +115,6 @@ export default function Home() {
     },
   };
 
-
   // ----------------
   // Gestion des événements
   // ----------------
@@ -156,12 +154,58 @@ export default function Home() {
 
   return (
     <>
+      <header className="absolute top-4 left-1/2 z-10 w-fit -translate-x-1/2 bg-transparent lg:top-8">
+        <ul className="flex gap-4 lg:gap-16">
+          <li className="relative transition-all duration-300 hover:-translate-y-2 hover:shadow-lg">
+            <img
+              src="assets/button-short.png"
+              alt=""
+              className="header-btn-bg pointer-events-none absolute inset-0 z-0 h-full w-full object-fill select-none"
+            />
+            <a
+              href="#"
+              className="relative z-10 rounded-lg px-8 py-4 text-xl whitespace-nowrap text-white transition-all duration-300 hover:cursor-pointer hover:text-black lg:text-2xl"
+              onClick={() => {
+                startGame();
+              }}
+            >
+              Jouer au jeu
+            </a>
+          </li>
+          <li className="relative transition-all duration-300 hover:-translate-y-2 hover:shadow-lg">
+            <img
+              src="assets/button-short.png"
+              alt=""
+              className="header-btn-bg pointer-events-none absolute inset-0 z-0 h-full w-full object-fill select-none"
+            />
+            <a
+              href="#univers"
+              className="relative z-10 rounded-lg px-8 py-4 text-xl whitespace-nowrap text-white transition-all duration-300 hover:cursor-pointer hover:text-black lg:text-2xl"
+            >
+              Univers
+            </a>
+          </li>
+          <li className="relative transition-all duration-300 hover:-translate-y-2 hover:shadow-lg">
+            <img
+              src="assets/button-short.png"
+              alt=""
+              className="header-btn-bg pointer-events-none absolute inset-0 z-0 h-full w-full object-fill select-none"
+            />
+            <a
+              href="#rules"
+              className="relative z-10 rounded-lg px-8 py-4 text-xl whitespace-nowrap text-white transition-all duration-300 hover:cursor-pointer hover:text-black lg:text-2xl"
+            >
+              Règles
+            </a>
+          </li>
+        </ul>
+      </header>
       {/* // Animation au chargement */}
       <section
         className="bg-[radial-gradient(ellipse_31.48%_48.47%_at_51.72%_50.00%,_#464441_0%,_#191918_100%)] pb-32"
         id="launch-btn"
       >
-        <div className="flex min-h-screen flex-col items-center gap-2 pt-8 lg:justify-center lg:gap-8 lg:pt-0">
+        <div className="relative flex min-h-screen flex-col items-center gap-2 overflow-hidden pt-12 lg:justify-center lg:gap-8 lg:pt-0">
           <AnimatePresence>
             <motion.div
               key="title"
@@ -184,14 +228,14 @@ export default function Home() {
                 isFirstVisit ? (
                   <DotLottieReact
                     src="/final.json"
-                    className="pointer-events-none max-w-[480px] w-full h-auto"
+                    className="pointer-events-none h-auto w-full max-w-[480px]"
                     autoplay
                   />
                 ) : (
-                  <Logo className="max-w-[480px] w-full h-auto" />
+                  <Logo className="h-auto w-full max-w-[480px]" />
                 )
               ) : (
-                <div className="max-w-[480px] w-full h-auto aspect-[2780/1042]" />
+                <div className="aspect-[2780/1042] h-auto w-full max-w-[480px]" />
               )}
             </motion.div>
 
@@ -236,6 +280,7 @@ export default function Home() {
                   height={100}
                   className="pointer-events-none absolute inset-0 z-0 h-full w-full object-fill select-none"
                 />
+
                 <span className="relative z-50 text-4xl text-black">
                   Créer une nouvelle partie
                 </span>
@@ -302,7 +347,7 @@ export default function Home() {
                 bounce: 0.6,
                 delay: baseDelay + 1,
               }}
-              className="flex items-center"
+              className="flex items-center pt-8"
             >
               <a href="#rules" className="flex flex-col items-center">
                 <span className="text-3xl text-white">Règles du jeu</span>
@@ -316,13 +361,33 @@ export default function Home() {
               </a>
             </motion.div>
           </AnimatePresence>
+          <motion.img
+            src="/assets/bg/path.png"
+            alt=""
+            width={517}
+            height={69}
+            className="pointer-events-none absolute top-2/3 z-0 hidden w-80 select-none lg:left-9/12 lg:block lg:w-128"
+            whileInView={hasCheckedVisit ? { opacity: 1 } : { opacity: 0 }}
+            initial={{ opacity: 0 }}
+            transition={{
+              duration: 1,
+              type: "spring",
+              bounce: 0.6,
+              delay: baseDelay + 1.5,
+              repeat: 0,
+            }}
+            viewport={{ once: true }}
+          />
         </div>
       </section>
 
-      <section className="min-h-[70dvh] bg-[#191918] pb-64">
+      <section
+        className="relative min-h-[70dvh] bg-[#191918] pb-64"
+        id="univers"
+      >
         <div
           className="flex flex-col items-center justify-center gap-8"
-          id="rules"
+          id="explication"
         >
           <h2>
             Séquence de test{" "}
@@ -337,7 +402,7 @@ export default function Home() {
               />
             </span>
           </h2>
-          <div className="flex w-8/10 max-w-[1024px] flex-col gap-4 text-white lg:w-1/2">
+          <div className="relative flex w-8/10 max-w-[1024px] flex-col gap-4 text-white lg:w-1/2">
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -405,11 +470,196 @@ export default function Home() {
               déduisez la logique du système pour atteindre le seuil de
               victoire.
             </motion.p>
+
+            <Image
+              src="/assets/bg/cards-1.png"
+              alt=""
+              width={517}
+              height={69}
+              className="pointer-events-none absolute -top-2/3 -left-1/3 z-0 w-48 select-none"
+            ></Image>
+          </div>
+        </div>
+
+        <motion.img
+          src="/assets/bg/path-2.png"
+          alt=""
+          width={517}
+          height={69}
+          className="height-fit pointer-events-none absolute bottom-24 left-1/2 z-0 w-[50vw] select-none lg:bottom-16"
+        />
+      </section>
+
+      <section className="min-h-[70dvh] bg-[#191918] pb-64" id="rules">
+        <div className="flex flex-col items-center justify-center gap-8">
+          <h2>Protocole de jeu (règles)</h2>
+          <div className="flex w-8/10 max-w-[1024px] flex-col gap-4 text-white lg:w-1/2">
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{
+                duration: 1,
+                type: "spring",
+                bounce: 0.6,
+                delay: 0.2,
+                repeat: 0,
+              }}
+              className="overflow-hidden"
+            >
+              Rituels est un jeu de cartes expérimental pour 2 à 4 joueurs.
+            </motion.p>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{
+                duration: 1,
+                type: "spring",
+                bounce: 0.6,
+                delay: 0.4,
+                repeat: 0,
+              }}
+              className="overflow-hidden"
+            >
+              Les cartes sont composées de 2 éléments : un symbole et une
+              couleur. Chaque symbole possède une valeur fixe (de -1 à 3),
+              tandis que chaque couleur possède un pouvoir.
+            </motion.p>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{
+                duration: 1,
+                type: "spring",
+                bounce: 0.6,
+                delay: 0.6,
+                repeat: 0,
+              }}
+              className="overflow-hidden"
+            >
+              Au lancement de chaque partie, le système distribue aléatoirement
+              les valeurs et les pouvoirs. Votre but est d'identifier ces
+              variables avant vos adversaires et être le premier à atteindre le
+              score défini (quota).
+            </motion.p>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{
+                duration: 1,
+                type: "spring",
+                bounce: 0.6,
+                delay: 0.8,
+                repeat: 0,
+              }}
+              className="overflow-hidden"
+            >
+              Les pouvoirs possibles sont les suivants :
+            </motion.p>
+            <motion.ul
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{
+                duration: 1,
+                type: "spring",
+                bounce: 0.6,
+                delay: 1,
+                repeat: 0,
+              }}
+              className="ml-4 list-inside list-disc text-2xl"
+            >
+              <li>
+                Inversion (Action Immédiate) : Ce pouvoir agit sur votre carte
+                actuelle. Il inverse la valeur de votre symbole. (un 2 devient
+                -2) ;
+              </li>
+              <li>
+                Gel (Effet sur le joueur suivant) : Ce pouvoir n'affecte pas
+                votre score, mais celui du sujet suivant. Le système forcera son
+                prochain résultat à 0, peu importe son symbole ;
+              </li>
+              <li>
+                Répétition (Effet de la carte précédente) : Cette couleur n'a
+                pas de pouvoir propre. Elle duplique le pouvoir de la dernière
+                carte jouée ;
+              </li>
+              <li>
+                Neutre : la valeur du symbole est appliquée sans modification.
+              </li>
+            </motion.ul>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{
+                duration: 1,
+                type: "spring",
+                bounce: 0.6,
+                delay: 1.2,
+                repeat: 0,
+              }}
+              className="overflow-hidden"
+            >
+              Note : chaque symbole possède une valeur unique. Pour les
+              couleurs, deux d'entre elles sont systématiquement "Neutres", les
+              autres se partagent les pouvoirs restants.
+            </motion.p>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{
+                duration: 1,
+                type: "spring",
+                bounce: 0.6,
+                delay: 1.4,
+                repeat: 0,
+              }}
+              className="overflow-hidden"
+            >
+              À votre tour, vous devez jouer une carte de votre main.
+            </motion.p>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{
+                duration: 1,
+                type: "spring",
+                bounce: 0.6,
+                delay: 1.6,
+                repeat: 0,
+              }}
+              className="overflow-hidden"
+            >
+              Le joueur dont le score atteint ou dépasse le quota défini en
+              premier remporte la partie.
+            </motion.p>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{
+                duration: 1,
+                type: "spring",
+                bounce: 0.6,
+                delay: 1.8,
+                repeat: 0,
+              }}
+              className="overflow-hidden"
+            >
+              Pour vous aider, vous pouvez utiliser le bloc-notes pour noter vos
+              découvertes.
+            </motion.p>
           </div>
         </div>
       </section>
 
-      <section className="min-h-[70dvh] bg-[#191918] pb-64">
+      <section className="min-h-[70dvh] bg-[#191918] pb-32">
         <div className="flex flex-col items-center justify-center gap-8">
           <h2>Fonctionnement du système</h2>
           <div className="flex w-8/10 max-w-[1024px] flex-col gap-4 text-white lg:w-1/2">
@@ -517,174 +767,7 @@ export default function Home() {
           </div>
         </div>
       </section>
-      <section className="min-h-[70dvh] bg-[#191918] pb-64">
-        <div className="flex flex-col items-center justify-center gap-8">
-          <h2>Protocole de jeu (explication du jeu)</h2>
-          <div className="flex w-8/10 max-w-[1024px] flex-col gap-4 text-white lg:w-1/2">
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{
-                duration: 1,
-                type: "spring",
-                bounce: 0.6,
-                delay: 0.2,
-                repeat: 0,
-              }}
-              className="overflow-hidden"
-            >
-              Rituels est un jeu de cartes expérimental pour 2 à 4 joueurs.
-            </motion.p>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{
-                duration: 1,
-                type: "spring",
-                bounce: 0.6,
-                delay: 0.4,
-                repeat: 0,
-              }}
-              className="overflow-hidden"
-            >
-              Les cartes sont composées de 2 éléments : un symbole et une
-              couleur. Chaque symbole possède une valeur fixe (de -1 à 3),
-              tandis que chaque couleur possède un pouvoir.
-            </motion.p>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{
-                duration: 1,
-                type: "spring",
-                bounce: 0.6,
-                delay: 0.6,
-                repeat: 0,
-              }}
-              className="overflow-hidden"
-            >
-              Au lancement de chaque partie, le système distribue aléatoirement
-              les valeurs et les pouvoirs. Votre but est d'identifier ces
-              variables avant vos adversaires et être le premier à atteindre le
-              score défini (seuil de victoire).
-            </motion.p>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{
-                duration: 1,
-                type: "spring",
-                bounce: 0.6,
-                delay: 0.8,
-                repeat: 0,
-              }}
-              className="overflow-hidden"
-            >
-              Les pouvoirs possibles sont les suivants :
-            </motion.p>
-            <motion.ul
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{
-                duration: 1,
-                type: "spring",
-                bounce: 0.6,
-                delay: 1,
-                repeat: 0,
-              }}
-              className="ml-4 list-inside list-disc text-2xl"
-            >
-              <li>
-                Inversion (Action Immédiate) : Ce pouvoir agit sur votre carte
-                actuelle. Il inverse la valeur de votre symbole. (un 2 devient
-                -2) ;
-              </li>
-              <li>
-                Gel (Effet sur le joueur suivant) : Ce pouvoir n'affecte pas
-                votre score, mais celui du sujet suivant. Le système forcera son
-                prochain résultat à 0, peu importe son symbole ;
-              </li>
-              <li>
-                Répétition (Effet de la carte précédente) : Cette couleur n'a
-                pas de pouvoir propre. Elle duplique le pouvoir de la dernière
-                carte jouée ;
-              </li>
-              <li>
-                Neutre : la valeur du symbole est appliquée sans modification.
-              </li>
-            </motion.ul>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{
-                duration: 1,
-                type: "spring",
-                bounce: 0.6,
-                delay: 1.2,
-                repeat: 0,
-              }}
-              className="overflow-hidden"
-            >
-              Note : chaque symbole possède une valeur unique. Pour les
-              couleurs, deux d'entre elles sont systématiquement "Neutres", les
-              autres se partagent les pouvoirs restants.
-            </motion.p>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{
-                duration: 1,
-                type: "spring",
-                bounce: 0.6,
-                delay: 1.4,
-                repeat: 0,
-              }}
-              className="overflow-hidden"
-            >
-              À votre tour, vous devez jouer une carte de votre main.
-            </motion.p>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{
-                duration: 1,
-                type: "spring",
-                bounce: 0.6,
-                delay: 1.6,
-                repeat: 0,
-              }}
-              className="overflow-hidden"
-            >
-              Le joueur dont le score atteint ou dépasse le seuil défini en
-              premier remporte la partie.
-            </motion.p>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{
-                duration: 1,
-                type: "spring",
-                bounce: 0.6,
-                delay: 1.8,
-                repeat: 0,
-              }}
-              className="overflow-hidden"
-            >
-              Pour vous aider, vous pouvez utiliser le bloc-notes pour noter vos
-              découvertes.
-            </motion.p>
-          </div>
-        </div>
-      </section>
+
       <section className="bg-[#191918] pb-32">
         <div className="flex items-center justify-center">
           <motion.a
@@ -705,6 +788,7 @@ export default function Home() {
           </motion.a>
         </div>
       </section>
+
       <footer className="bg-[#191918] py-8 text-center text-white">
         <p>Rituels - 2026 | HEFF</p>
         <p>Créé par : Alex Xiao 3TIWeb</p>

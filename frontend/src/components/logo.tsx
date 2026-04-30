@@ -21,7 +21,7 @@ export default function Logo({
 
   return (
     <div
-      className={`flex items-center justify-center ${setView || onClick ? "cursor-pointer" : ""} ${className || ""}`}
+      className={`z-100 flex items-center justify-center ${setView || onClick ? "cursor-pointer" : ""} ${className || ""}`}
       onClick={handleClick}
     >
       <Image
@@ -29,7 +29,7 @@ export default function Logo({
         alt="Logo"
         width={2780}
         height={1042}
-        className="pointer-events-none w-full h-auto object-contain"
+        className="pointer-events-none h-auto w-full object-contain"
         loading="eager"
       />
     </div>

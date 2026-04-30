@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 
 import Logo from "../logo";
+import RulesModal from "../header/RulesModal";
 
 // Variants pour l'animation d'entrée
 const frameVariants = {
@@ -41,6 +42,8 @@ const itemVariants = {
 };
 
 export default function Lobby() {
+  const [showRules, setShowRules] = useState(false);
+
   // Appel du contexte
   const {
     players,
@@ -142,6 +145,30 @@ export default function Lobby() {
         className="absolute top-0 left-0 h-16 w-40 lg:top-4 lg:left-4"
         onClick={() => handleQuit()}
       />
+
+      <button
+        className="fixed top-4 right-4 flex items-center gap-4 px-12 py-2"
+        onClick={() => {
+          setShowRules(true);
+        }}
+      >
+        <Image
+          src="/assets/button-short.png"
+          alt="Règles"
+          width={320}
+          height={320}
+          className="pointer-events-none absolute inset-0 z-0 h-full w-full object-fill select-none"
+        ></Image>
+        <Image
+          src="/assets/setting-wheel.png"
+          alt="settings"
+          width={24}
+          height={24}
+          className="relative"
+        />
+        <p className="relative text-black">Réglages / Règles</p>
+      </button>
+
       <AnimatePresence>
         {error && (
           <motion.div
@@ -173,10 +200,7 @@ export default function Lobby() {
           className="relative flex items-center gap-4 text-3xl lg:text-5xl"
         >
           Code : <span className="tracking-widest">{roomCode}</span>{" "}
-          <button
-            onClick={handleCopyCode}
-            className="absolute top-1/2 -right-1/2 -translate-y-1/2 cursor-pointer"
-          >
+          <button onClick={handleCopyCode} className="cursor-pointer">
             <Image
               src="/assets/copy.png"
               alt="Copier"
@@ -192,7 +216,7 @@ export default function Lobby() {
             variants={itemVariants}
             className="flex flex-col items-center gap-4"
           >
-            <h3>Seuil de victoire</h3>
+            <h3>Quota à atteindre</h3>
             <div className="flex items-center gap-4">
               <button
                 onClick={handleClick}
@@ -266,7 +290,7 @@ export default function Lobby() {
                       <input
                         autoFocus
                         type="text"
-                        className={`relative z-50 w-1/2 border-b-2 bg-transparent text-center text-4xl uppercase outline-none ${player.isHost || player.isReady ? "border-black text-black" : "border-white text-white"}`}
+                        className={`relative z-15 w-1/2 border-b-2 bg-transparent text-center text-4xl uppercase outline-none ${player.isHost || player.isReady ? "border-black text-black" : "border-white text-white"}`}
                         value={editName}
                         onChange={(e) => setEditName(e.target.value)}
                         onBlur={() => {
@@ -293,7 +317,7 @@ export default function Lobby() {
                       />
                     ) : (
                       <span
-                        className={`relative z-50 text-4xl ${player.isHost || player.isReady ? "text-black" : "text-white"}`}
+                        className={`relative z-15 text-4xl ${player.isHost || player.isReady ? "text-black" : "text-white"}`}
                       >
                         {player.name}{" "}
                         {(player.isHost || player.isReady) && "(Prêt)"}
@@ -328,7 +352,7 @@ export default function Lobby() {
                     height={100}
                     className="pointer-events-none absolute inset-0 z-0 h-full w-full object-fill select-none"
                   />
-                  <span className="relative z-50 text-4xl text-white">
+                  <span className="relative z-15 text-4xl text-white">
                     En attente de joueurs...
                   </span>
                 </li>
@@ -354,7 +378,7 @@ export default function Lobby() {
               height={100}
               className="pointer-events-none absolute inset-0 z-0 h-full w-full object-fill select-none"
             />
-            <span className="relative z-50 text-2xl text-white">Quitter</span>
+            <span className="relative z-15 text-2xl text-white">Quitter</span>
           </motion.button>
 
           {isHost && (
@@ -385,7 +409,7 @@ export default function Lobby() {
                 className="pointer-events-none absolute inset-0 z-0 h-full w-full object-fill select-none"
               />
               <span
-                className={`relative z-50 text-2xl ${players.filter((p) => p.isHost || p.isReady).length === players.length && players.length !== 1 ? "text-black" : "text-white"}`}
+                className={`relative z-15 text-2xl ${players.filter((p) => p.isHost || p.isReady).length === players.length && players.length !== 1 ? "text-black" : "text-white"}`}
               >
                 Lancer la partie (
                 {players.filter((p) => p.isHost || p.isReady).length}/
@@ -411,7 +435,7 @@ export default function Lobby() {
                 className="pointer-events-none absolute inset-0 z-0 h-full w-full object-fill select-none"
               />
               <span
-                className={`relative z-50 text-2xl ${isReady ? "text-white" : "text-black"} `}
+                className={`relative z-15 text-2xl ${isReady ? "text-white" : "text-black"} `}
               >
                 {isReady ? "Pas prêt" : "Prêt"}
               </span>
@@ -434,6 +458,10 @@ export default function Lobby() {
           )}
         </AnimatePresence>
       </motion.div>
+
+      <AnimatePresence>
+        {showRules && <RulesModal onClose={() => setShowRules(false)} />}
+      </AnimatePresence>
     </section>
   );
 }

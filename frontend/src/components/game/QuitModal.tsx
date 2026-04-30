@@ -10,9 +10,6 @@ export default function QuitModal({ onClose }: { onClose: () => void }) {
         <h2 className="mb-8 text-center">
           Voulez-vous vraiment quitter la partie ?
         </h2>
-        <p className="mb-8 text-center text-2xl">
-          Vous ne pourrez pas revenir dans la partie.
-        </p>
         <div className="flex gap-18">
           <button
             onClick={onClose}

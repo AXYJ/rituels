@@ -45,7 +45,7 @@ export default function Helper() {
                 setIsEditing(false);
               }
             }}
-            className={`pointer-events-auto grid w-full transition-[grid-template-rows,padding] duration-300 ease-in-out lg:grid-rows-[1fr] lg:pt-4 lg:pb-6 ${
+            className={`pointer-events-auto grid w-full transition-[grid-template-rows,padding] duration-300 ease-in-out lg:grid-rows-[1fr] lg:pt-4 lg:pb-4 ${
               isEditing
                 ? "grid-rows-[1fr] pt-4 pb-6"
                 : "grid-rows-[0fr] pt-0 pb-0"

@@ -250,21 +250,22 @@ export const useSocketListeners = (props: SocketListenersProps) => {
         if (newRules) setRules(newRules);
         if (serverPlayers) setPlayers(serverPlayers);
         setView("game");
-      setPlayerTurn(playerStart);
-      setPlayerOrder(playerOrder);
+        setPlayerTurn(playerStart);
+        setPlayerOrder(playerOrder);
 
-      const myOrder = playerOrder.findIndex((p: string) => p === socket.id);
-      let newDisplayOrder: string[] = [];
-      if (myOrder !== -1) {
-        newDisplayOrder = [
-          ...playerOrder.slice(myOrder),
-          ...playerOrder.slice(0, myOrder),
-        ];
-      } else {
-        newDisplayOrder = [...playerOrder];
+        const myOrder = playerOrder.findIndex((p: string) => p === socket.id);
+        let newDisplayOrder: string[] = [];
+        if (myOrder !== -1) {
+          newDisplayOrder = [
+            ...playerOrder.slice(myOrder),
+            ...playerOrder.slice(0, myOrder),
+          ];
+        } else {
+          newDisplayOrder = [...playerOrder];
+        }
+        setDisplayOrder(newDisplayOrder);
       }
-      setDisplayOrder(newDisplayOrder);
-    });
+    );
 
     // Carte jouée
     socket.on(

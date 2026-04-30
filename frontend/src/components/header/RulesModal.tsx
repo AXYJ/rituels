@@ -153,7 +153,7 @@ export default function RulesModal({
                   Au lancement de chaque partie, le système distribue
                   aléatoirement les valeurs et les pouvoirs. Votre but est
                   d'identifier ces variables avant vos adversaires et être le
-                  premier à atteindre le score défini (seuil de victoire).
+                  premier à atteindre le score défini (quota).
                 </p>
                 <p>Les pouvoirs possibles sont les suivants :</p>
                 <ul className="ml-4 list-inside list-disc text-2xl">
@@ -184,7 +184,7 @@ export default function RulesModal({
                 </p>
                 <p>À votre tour, vous devez jouer une carte de votre main.</p>
                 <p>
-                  Le joueur dont le score atteint ou dépasse le seuil défini en
+                  Le joueur dont le score atteint ou dépasse le quota défini en
                   premier remporte la partie.
                 </p>
                 <p>

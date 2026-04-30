@@ -94,3 +94,14 @@ button {
     top: anchor(--settings top, 80%);
   }
 }
+
+.header-btn-bg {
+  transition:
+    opacity 0.3s ease-in-out,
+    transform 0.3s ease-in-out;
+  opacity: 0;
+}
+
+.relative:hover .header-btn-bg {
+  opacity: 1;
+}

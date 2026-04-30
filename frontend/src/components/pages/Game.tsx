@@ -32,6 +32,7 @@ export default function Game() {
     updateDeck,
     playerNumber,
     setView,
+    threshold,
   } = useGame();
 
   const me = players.find((p) => p.id === socket?.id);
@@ -83,8 +84,6 @@ export default function Game() {
     cardPlayed(card);
   };
 
-
-
   useEffect(() => {
     // Tentative de masquer la barre d'adresse sur mobile au chargement
     const hideAddressBar = () => {
@@ -117,20 +116,24 @@ export default function Game() {
           onClick={() => setShowQuit(true)}
         />
 
-        <button
-          onClick={() => {
-            setShowRules(true);
-          }}
-          className="z-10 col-start-3 col-end-4 h-fit w-fit cursor-pointer justify-self-end rounded-full px-6 py-2 font-bold transition-transform duration-300 hover:scale-110"
-        >
-          <Image
-            src="/assets/settings.png"
-            alt="rules"
-            width={50}
-            height={50}
-            className="h-8 w-8 lg:h-16 lg:w-16"
-          />
-        </button>
+        <div className="z-10 col-start-3 col-end-4 flex h-fit w-fit cursor-pointer items-center gap-4 justify-self-end rounded-full px-6 py-2">
+          <span className="text-lg lg:text-4xl">Quota : {threshold}</span>
+
+          <button
+            onClick={() => {
+              setShowRules(true);
+            }}
+            className="transition-transform duration-300 hover:scale-110"
+          >
+            <Image
+              src="/assets/settings.png"
+              alt="rules"
+              width={50}
+              height={50}
+              className="h-8 w-8 lg:h-16 lg:w-16"
+            />
+          </button>
+        </div>
 
         {/* Historique des actions */}
 
