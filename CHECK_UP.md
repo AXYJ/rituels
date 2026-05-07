@@ -15,7 +15,6 @@ Effectue un check-up complet des dossiers `/frontend` et `/backend` pour vérifi
 - **Conservation :** Ne modifie PAS les commentaires existants si le bloc de code associé reste le même.
 - **Minimalisme :** Ne crée PAS de nouvelles fonctionnalités (ex: pas de nouveaux effets de carte ou de systèmes de classement). Limite-toi à rendre ce qui existe robuste.
 - **Modularité & Lisibilité :** Si un fichier devient trop long ou complexe, segmente le code en fichiers séparés (sous-composants, fonctions utilitaires ou types exportés). Priorise la clarté et l'organisation modulaire pour faciliter la compréhension et la maintenance.
-- **Logique métier :** Assure-toi que la logique de calcul reste bien côté client comme prévu, mais que le serveur joue correctement son rôle de relais (broadcasting).
 
 ## 3. Livrables Attendus
 Ne modifie pas directement les fichiers sans explication. Produis un rapport dans un nouveau fichier nommé `AUDIT_REPORT.md` qui contient :
