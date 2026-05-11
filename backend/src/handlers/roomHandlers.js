@@ -2,7 +2,7 @@ import { generateRules, moderatePseudo } from "../gameLogic.js";
 
 export const registerRoomHandlers = (io, socket, rooms) => {
   // Création d'une partie
-  socket.on("create_game", (idPlayer) => {
+  socket.on("create_game", (idPlayer, sessionId) => {
     const roomCode = Math.random().toString(36).substring(2, 8).toUpperCase();
 
     rooms[roomCode] = {
@@ -10,7 +10,7 @@ export const registerRoomHandlers = (io, socket, rooms) => {
         {
           id: idPlayer,
           name: "Host",
-          sessionId: idPlayer,
+          sessionId: sessionId || idPlayer,
           isHost: true,
           isReady: false,
           score: 0,
