@@ -391,7 +391,7 @@ export default function Lobby() {
                 players.filter((p) => p.isHost || p.isReady).length !==
                   players.length || players.length === 1
               }
-              className={`relative w-full cursor-pointer rounded-full px-6 py-2 text-white shadow-black transition-shadow duration-300 ${players.filter((p) => p.isHost || p.isReady).length === players.length ? "hover:shadow-lg" : "cursor-not-allowed opacity-50"}`}
+              className={`relative w-full cursor-pointer rounded-full px-6 py-2 text-white shadow-black transition-shadow duration-300 ${players.filter((p) => p.isHost || p.isReady).length === players.length ? "hover:shadow-lg" : "cursor-not-allowed opacity-50"} ${players.length === 1 ? "pointer-events-none cursor-not-allowed opacity-50" : "cursor-pointer"}`}
             >
               <Image
                 src={

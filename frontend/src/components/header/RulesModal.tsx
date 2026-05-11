@@ -247,7 +247,7 @@ export default function RulesModal({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
             transition={{ duration: 0.3 }}
-            className="fixed bottom-8 left-1/2 -translate-x-1/2 text-4xl rounded bg-green-500 px-4 py-2 text-white z-100"
+            className="fixed bottom-8 left-1/2 z-100 -translate-x-1/2 rounded bg-green-500 px-4 py-2 text-4xl text-white"
           >
             Code copié !
           </motion.div>

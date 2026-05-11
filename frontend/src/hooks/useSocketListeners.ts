@@ -57,11 +57,14 @@ export const useSocketListeners = (props: SocketListenersProps) => {
     // Keep-alive pour éviter que le serveur (ex: Render) ne mette le socket en veille
     const socketUrl =
       process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:4000";
-    const keepAliveInterval = setInterval(() => {
-      fetch(socketUrl).catch((err) =>
-        console.error("Erreur keep-alive", err)
-      );
-    }, 5 * 60 * 1000);
+    const keepAliveInterval = setInterval(
+      () => {
+        fetch(socketUrl).catch((err) =>
+          console.error("Erreur keep-alive", err)
+        );
+      },
+      5 * 60 * 1000
+    );
 
     // ----------------
     // Connexion & Cycle de vie
@@ -125,87 +128,106 @@ export const useSocketListeners = (props: SocketListenersProps) => {
     // ----------------
 
     // Mise à jour du lobby / salle
-    socket.on("room_updated", (data: { players: Player[]; playerOrder?: string[] }) => {
-      if (!data || !data.players) return;
+    socket.on(
+      "room_updated",
+      (data: { players: Player[]; playerOrder?: string[] }) => {
+        if (!data || !data.players) return;
 
-      // Persistance du pseudo validé
-      if (typeof window !== "undefined") {
-        const me = data.players.find((p: Player) => p.id === socket.id);
-        if (me?.name) {
-          localStorage.setItem(PLAYER_NAME_KEY, me.name);
+        // Persistance du pseudo validé
+        if (typeof window !== "undefined") {
+          const me = data.players.find((p: Player) => p.id === socket.id);
+          if (me?.name) {
+            localStorage.setItem(PLAYER_NAME_KEY, me.name);
+          }
         }
-      }
 
-      const { players: serverPlayers, playerOrder: serverPlayerOrder } = data;
+        const { players: serverPlayers, playerOrder: serverPlayerOrder } = data;
 
-      if (serverPlayerOrder) {
-        setPlayerOrder(serverPlayerOrder);
-        setPlayerTurn(serverPlayerOrder[0]);
+        if (serverPlayerOrder) {
+          setPlayerOrder(serverPlayerOrder);
+          setPlayerTurn(serverPlayerOrder[0]);
 
-        const myOrder = serverPlayerOrder.findIndex((p: string) => p === socket.id);
-        if (myOrder !== -1) {
-          const newDisplayOrder = [
-            ...serverPlayerOrder.slice(myOrder),
-            ...serverPlayerOrder.slice(0, myOrder),
-          ];
-          setDisplayOrder(newDisplayOrder);
+          const myOrder = serverPlayerOrder.findIndex(
+            (p: string) => p === socket.id
+          );
+          if (myOrder !== -1) {
+            const newDisplayOrder = [
+              ...serverPlayerOrder.slice(myOrder),
+              ...serverPlayerOrder.slice(0, myOrder),
+            ];
+            setDisplayOrder(newDisplayOrder);
+          }
         }
-      }
 
-      setPlayers((prevPlayers) => {
-        const safePrevPlayers = prevPlayers || [];
-        return serverPlayers.map((serverPlayer: Player) => {
-          const localPlayer =
-            safePrevPlayers.find((p) => p.id === serverPlayer.id) ||
-            safePrevPlayers.find((p) => p.sessionId === serverPlayer.sessionId);
-          return {
-            ...serverPlayer,
-            deck: serverPlayer.deck?.cards
-              ? serverPlayer.deck
-              : (localPlayer?.deck ?? { cards: null }),
-            score: serverPlayer.score ?? localPlayer?.score ?? 0,
-          };
+        setPlayers((prevPlayers) => {
+          const safePrevPlayers = prevPlayers || [];
+          return serverPlayers.map((serverPlayer: Player) => {
+            const localPlayer =
+              safePrevPlayers.find((p) => p.id === serverPlayer.id) ||
+              safePrevPlayers.find(
+                (p) => p.sessionId === serverPlayer.sessionId
+              );
+            return {
+              ...serverPlayer,
+              deck: serverPlayer.deck?.cards
+                ? serverPlayer.deck
+                : (localPlayer?.deck ?? { cards: null }),
+              score: serverPlayer.score ?? localPlayer?.score ?? 0,
+            };
+          });
         });
-      });
-    });
+      }
+    );
 
     // Gestion de la reconnexion
-    socket.on("reconnected", (data: {
-      roomCode: string;
-      rules: GameRules;
-      players: Player[];
-      playerNumber: number;
-      threshold: number;
-      playerOrder: string[];
-      playerTurn: string;
-      history: HistoryItem[];
-    }) => {
-      const { roomCode, rules, players, playerNumber, threshold, playerOrder, playerTurn, history } = data;
+    socket.on(
+      "reconnected",
+      (data: {
+        roomCode: string;
+        rules: GameRules;
+        players: Player[];
+        playerNumber: number;
+        threshold: number;
+        playerOrder: string[];
+        playerTurn: string;
+        history: HistoryItem[];
+      }) => {
+        const {
+          roomCode,
+          rules,
+          players,
+          playerNumber,
+          threshold,
+          playerOrder,
+          playerTurn,
+          history,
+        } = data;
 
-      setRoomCode(roomCode);
-      setRules(rules);
-      if (threshold !== undefined) setThreshold(threshold);
-      setPlayers(players || []);
-      setPlayerNumber(playerNumber);
+        setRoomCode(roomCode);
+        setRules(rules);
+        if (threshold !== undefined) setThreshold(threshold);
+        setPlayers(players || []);
+        setPlayerNumber(playerNumber);
 
-      if (playerOrder && playerOrder.length > 0) {
-        setPlayerOrder(playerOrder);
-        setPlayerTurn(playerTurn);
-        setHistory(history || []);
+        if (playerOrder && playerOrder.length > 0) {
+          setPlayerOrder(playerOrder);
+          setPlayerTurn(playerTurn);
+          setHistory(history || []);
 
-        const myOrder = playerOrder.findIndex((p: string) => p === socket.id);
-        if (myOrder !== -1) {
-          const newDisplayOrder = [
-            ...playerOrder.slice(myOrder),
-            ...playerOrder.slice(0, myOrder),
-          ];
-          setDisplayOrder(newDisplayOrder);
+          const myOrder = playerOrder.findIndex((p: string) => p === socket.id);
+          if (myOrder !== -1) {
+            const newDisplayOrder = [
+              ...playerOrder.slice(myOrder),
+              ...playerOrder.slice(0, myOrder),
+            ];
+            setDisplayOrder(newDisplayOrder);
+          }
+          setView("game");
+        } else {
+          setView("lobby");
         }
-        setView("game");
-      } else {
-        setView("lobby");
       }
-    });
+    );
 
     // ----------------
     // Cleanup
