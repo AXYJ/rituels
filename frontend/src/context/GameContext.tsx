@@ -79,9 +79,6 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     setSocket(newSocket);
     setIsConnected(newSocket.connected);
 
-    newSocket.on("connect", () => setIsConnected(true));
-    newSocket.on("disconnect", () => setIsConnected(false));
-
     return () => {
       newSocket.disconnect();
     };

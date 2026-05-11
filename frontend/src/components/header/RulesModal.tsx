@@ -1,9 +1,11 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useGame } from "../../context/GameContext";
 import { useState } from "react";
 import Image from "next/image";
+
+import CopyCodeRoom from "../../hooks/CopyCodeRoom";
 
 export default function RulesModal({
   onClose,
@@ -12,10 +14,16 @@ export default function RulesModal({
   onClose: () => void;
   onQuit?: () => void;
 }) {
-  const { volume, setVolume, sfxVolume, setSfxVolume } = useGame();
+  const { volume, setVolume, sfxVolume, setSfxVolume, roomCode } = useGame();
 
   const [settings, setSettings] = useState(true);
   const [rules, setRules] = useState(false);
+
+  const [copySuccess, setCopySuccess] = useState(false);
+
+  const handleCopyCode = () => {
+    CopyCodeRoom({ roomCode, setCopySuccess });
+  };
 
   const handleClick = (e: React.MouseEvent) => {
     const id = e.currentTarget.id;
@@ -59,6 +67,17 @@ export default function RulesModal({
           <div id="settings" className={settings ? "block" : "hidden"}>
             <h2 className="text-center text-4xl">Réglages</h2>
             <div className="flex flex-col gap-2">
+              <h3 className="my-4 flex items-center justify-center gap-2 text-center">
+                Code : {roomCode}{" "}
+                <Image
+                  src="/assets/copy.png"
+                  alt="Copier"
+                  width={32}
+                  height={32}
+                  className="h-4 w-4 cursor-pointer transition-transform duration-300 ease-in-out hover:scale-110 lg:h-8 lg:w-8"
+                  onClick={handleCopyCode}
+                />
+              </h3>
               <div className="grid grid-cols-5 items-center gap-2">
                 <label htmlFor="sfx" className="col-span-1 text-2xl">
                   Effets sonores
@@ -219,6 +238,21 @@ export default function RulesModal({
           </div>
         </div>
       </div>
+
+      <AnimatePresence>
+        {copySuccess && (
+          <motion.div
+            key="copy-success"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            transition={{ duration: 0.3 }}
+            className="fixed bottom-8 left-1/2 -translate-x-1/2 text-4xl rounded bg-green-500 px-4 py-2 text-white z-100"
+          >
+            Code copié !
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }

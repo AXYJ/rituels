@@ -8,6 +8,7 @@ import Image from "next/image";
 
 import Logo from "../logo";
 import RulesModal from "../header/RulesModal";
+import CopyCodeRoom from "../../hooks/CopyCodeRoom";
 
 // Variants pour l'animation d'entrée
 const frameVariants = {
@@ -69,11 +70,7 @@ export default function Lobby() {
   const [editName, setEditName] = useState("");
 
   const handleCopyCode = () => {
-    if (typeof navigator !== "undefined") {
-      navigator.clipboard.writeText(roomCode);
-      setCopySuccess(true);
-      setTimeout(() => setCopySuccess(false), 2000);
-    }
+    CopyCodeRoom({ roomCode, setCopySuccess });
   };
 
   const handleReady = () => {
@@ -392,7 +389,7 @@ export default function Lobby() {
               onClick={onGameStart}
               disabled={
                 players.filter((p) => p.isHost || p.isReady).length !==
-                  players.length || players.length === 5
+                  players.length || players.length === 1
               }
               className={`relative w-full cursor-pointer rounded-full px-6 py-2 text-white shadow-black transition-shadow duration-300 ${players.filter((p) => p.isHost || p.isReady).length === players.length ? "hover:shadow-lg" : "cursor-not-allowed opacity-50"}`}
             >

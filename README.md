@@ -1,36 +1,45 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Rituels 🔮
 
-## Getting Started
+Un jeu de cartes multijoueur en temps réel. Affrontez vos amis, jouez des cartes pour gagner des points, et interagissez via le chat intégré !
 
-First, run the development server:
+## 🚀 Fonctionnalités
 
+- **Multijoueur en temps réel** : Synchronisation fluide des parties grâce à Socket.io.
+- **Logique de jeu sécurisée** : Les calculs de score et la génération de cartes sont entièrement gérés côté serveur (anti-triche).
+- **Chat intégré** : Discutez avec les autres joueurs dans le lobby et pendant la partie (avec défilement automatique).
+- **Interface dynamique et réactive** : Animations fluides avec Framer Motion et design moderne.
+- **Système de sessions** : Sauvegarde locale de votre pseudonyme et détection automatique des nouveaux joueurs pour l'animation d'introduction.
+
+## 🛠️ Stack Technique
+
+- **Frontend** : Next.js (React), TypeScript, Tailwind CSS, Framer Motion, Socket.io-client.
+- **Backend** : Node.js, Express, Socket.io.
+
+## 💻 Installation et Lancement local
+
+### Prérequis
+- [Node.js](https://nodejs.org/) (v18 ou supérieur recommandé)
+- npm ou yarn
+
+### 1. Démarrer le Backend (Serveur)
+Ouvrez un terminal à la racine du projet :
 ```bash
+cd backend
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
+*(Le serveur se lancera sur le port défini, par défaut souvent 3001).*
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Démarrer le Frontend (Client)
+Ouvrez un nouveau terminal :
+```bash
+cd frontend
+npm install
+npm run dev
+```
+L'application frontend sera accessible sur [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🌍 Déploiement
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Frontend** : Optimisé pour un déploiement facile sur [Vercel](https://vercel.com/).
+- **Backend** : Prêt pour un déploiement sur des plateformes comme [Render](https://render.com/). *(Note : Le backend utilise directement les variables `process.env` en production).*

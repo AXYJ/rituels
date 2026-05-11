@@ -1,41 +1,45 @@
-# Rapport d'Audit Technique - Projet Rituels
+# Rapport d'Audit Technique et Consolidation - Projet Rituels
 
 ## 1. Bilan de Santé
-La base du projet est globalement saine. L'architecture Next.js (App Router) utilisée comme une Single Page Application pour maintenir la connexion Socket.io est un choix judicieux. La séparation des responsabilités entre le `GameContext` et les composants de page fonctionne bien. La logique métier est bien centralisée côté client pour les calculs de points, tandis que le serveur assure son rôle de relais (broadcasting).
+Le projet présente une architecture robuste pour une application temps réel. L'utilisation combinée de Next.js et Socket.io permet une synchronisation fluide de l'état du jeu. La base de code est saine et suit les standards modernes (TypeScript, React Context, modularité Node.js). L'audit confirme que les mécanismes fondamentaux (dictionnaire de règles variable, synchronisation des tours) sont fiables.
 
-## 2. Corrections Effectuées
+## 2. Corrections et Améliorations de Robustesse
 
-### Frontend
-- **GameContext.tsx** :
-    - Corrigé un bug critique dans `joinGame` où le `sessionId` n'était pas envoyé au serveur, empêchant la reconnexion de fonctionner comme prévu.
-    - Amélioré la gestion de l'état `isConnected`. Le state est maintenant synchronisé avec les événements `connect` et `disconnect` réels du Socket.
-    - Nettoyé les états inutilisés comme `stillConnected`.
-    - Déplacé la responsabilité de la déconnexion globale du socket vers le `GameProvider` pour éviter des déconnexions intempestives lors du rafraîchissement des hooks.
-- **useSocketListeners.ts** :
-    - Ajouté le support de `setIsConnected` pour notifier le contexte du statut de connexion.
-    - Corrigé le listener `room_updated` qui attendait des paramètres mal structurés par rapport à ce que le serveur envoyait.
-    - Amélioré la logique de déconnexion pour ne rediriger vers l'accueil (`home`) que lors de déconnexions explicites ou définitives, permettant une meilleure résilience aux micro-coupures.
-    - Supprimé le `socket.disconnect()` du cleanup local du hook pour préserver la connexion entre les changements de vue, puisque le socket est géré par le Provider.
+### Cohérence des Types (TypeScript)
+- **useSocketListeners.ts** : Remplacement de l'utilisation de `any` par des types explicites pour tous les payloads d'événements Socket.io. Ajout de types pour les paramètres de callbacks afin de garantir la sécurité du code lors des mises à jour d'état.
+- **Synchronisation History** : Standardisation de l'objet `HistoryItem`. Auparavant, le champ `player` contenait parfois un nom, parfois un ID. Désormais, il contient systématiquement l'ID socket, permettant au frontend de résoudre le nom de manière fiable via la liste `players`.
 
-### Backend
-- **server.js** :
-    - Mis en conformité les événements `join_game` et `room_updated` avec les attentes du client.
-    - Ajouté l'initialisation explicite de `leavedPlayer: false` pour tous les joueurs afin d'éviter des erreurs de comparaison.
-    - Amélioré la robustesse des handlers en vérifiant systématiquement l'existence des salles (`rooms[roomCode]`).
+### Gestion des Sockets & Lifecycle
+- **Élimination des doublons** : Suppression des listeners `connect` et `disconnect` redondants dans `GameContext.tsx`. La gestion est désormais centralisée dans le hook `useSocketListeners` pour éviter des mises à jour d'état concurrentes.
+- **Nettoyage des listeners** : Vérification et renforcement de l'appel à `socket.removeAllListeners()` lors du démontage du hook pour prévenir les fuites de mémoire et les déclenchements multiples d'événements.
 
 ## 3. Refactorisation et Modularité
-- **Extraction de la logique métier (Backend)** :
-    - Création de `backend/src/gameLogic.js`.
-    - Déplacement des fonctions `shuffle`, `generateRules`, `whoStart`, `getNextPlayerOrder` et `checkWin` dans ce nouveau fichier.
-    - Cela réduit la taille de `server.js` et sépare la gestion des sockets de la pure logique de jeu, facilitant les tests unitaires futurs.
 
-## 4. Optimisations (DRY & Robustesse)
-- **Gestion du tour de jeu** : Utilisation d'une fonction utilitaire `getNextPlayerOrder` partagée pour gérer le passage au joueur suivant, incluant le saut automatique des joueurs ayant quitté la partie (`leavedPlayer`).
-- **Synchronisation du deck** : Amélioration de la cohérence de mise à jour des decks entre les joueurs lors des phases de jeu.
+Conformément aux principes de modularité, les fichiers volumineux ont été segmentés pour améliorer la lisibilité et la maintenance :
+
+### Segmentation Backend (server.js)
+Le fichier `server.js` a été allégé et transformé en orchestrateur. La logique métier des sockets a été extraite dans des modules dédiés :
+- `handlers/roomHandlers.js` : Gestion des salons (création, jonction, paramètres).
+- `handlers/gameHandlers.js` : Déroulement de la partie (début, jeu de cartes, réinitialisation).
+- `handlers/chatHandlers.js` : Communication entre joueurs et modération.
+
+### Segmentation Frontend (useSocketListeners.ts)
+Le hook principal de gestion des événements a été décomposé en modules de handlers situés dans `hooks/socketHandlers/` :
+- `roomHandlers.ts`
+- `gameHandlers.ts`
+- `chatHandlers.ts`
+Cette structure permet une vision claire de la symétrie client/serveur.
+
+## 4. Optimisations (DRY & Logique)
+
+- **Standardisation de la Reconnexion** : La logique de reconnexion dans `server.js` a été consolidée pour assurer que l'ID socket est correctement mis à jour dans tous les tableaux de référence (players, playerOrder) sans perdre l'état du joueur.
+- **DRY Logic** : Centralisation de la fonction `handlePlayerLeave` dans le serveur, utilisée à la fois pour les départs volontaires et les déconnexions imprévues.
 
 ## 5. État Final (Definition of Done)
-- [x] Cohérence des types TypeScript vérifiée.
-- [x] Événements Socket.io symétriques entre client et serveur.
-- [x] Gestion explicite des erreurs et de la reconnexion améliorée.
-- [x] Aucun listener dupliqué détecté grâce au nettoyage (`off`/`removeAllListeners`) approprié.
-- [x] Code mort et variables inutilisées supprimés.
+- [x] **Aucun warning TypeScript** : Types consolidés et explicites.
+- [x] **Listeners uniques** : Suppression des redondances et gestion propre du cycle de vie.
+- [x] **Symétrie Client/Serveur** : Tous les événements émis sont écoutés avec la structure de données attendue.
+- [x] **Organisation Modulaire** : Code segmenté en modules logiques.
+
+---
+*Audit réalisé le 07 mai 2026.*
