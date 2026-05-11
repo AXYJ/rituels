@@ -20,8 +20,6 @@ export default function Game() {
   const [showRules, setShowRules] = useState(false);
   const [showQuit, setShowQuit] = useState(false);
   const {
-    quitLobby,
-    rules,
     playerTurn,
     cardPlayed,
     socket,
@@ -29,9 +27,6 @@ export default function Game() {
     setLocalPlayerDeck,
     history,
     winner,
-    updateDeck,
-    playerNumber,
-    setView,
     threshold,
   } = useGame();
 

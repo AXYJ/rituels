@@ -62,7 +62,7 @@ export default function PlayerDeck({
       className={`relative col-start-2 col-end-3 row-start-3 row-end-4 grid grid-cols-3 items-start gap-2 px-4 lg:gap-4 ${isMyTurn ? "" : "grayscale-90"}`}
     >
       <div className="absolute top-0 left-1/2 flex -translate-x-1/2 -translate-y-[110%] items-center gap-8">
-        <span className="text-3xl lg:text-5xl">{me?.name}</span>
+        <span className="text-3xl lg:text-5xl whitespace-nowrap" >{me?.name}</span>
         <div className="flex w-full items-center gap-2">
           <Image
             src={`/cards/Seed.png`}

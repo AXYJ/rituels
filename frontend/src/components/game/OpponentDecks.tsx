@@ -58,7 +58,7 @@ export default function OpponentDecks() {
           <div
             className={`absolute z-30 flex flex-col items-center gap-0 whitespace-nowrap lg:flex-row lg:gap-8 ${getOpponentNamePlacementClass(index, opponents.length)}`}
           >
-            <h3>{opponent?.name}</h3>
+            <h3 className="whitespace-nowrap">{opponent?.name}</h3>
             <div className="pointer-events-none flex w-full items-center gap-0 lg:gap-2">
               <Image
                 src={`/cards/Seed.png`}
