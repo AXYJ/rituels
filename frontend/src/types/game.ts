@@ -2,7 +2,7 @@ import React from "react";
 import { Socket } from "socket.io-client";
 
 // Définition des vues
-export type View = "home" | "lobby" | "game";
+export type View = "home" | "lobby" | "game" | "mentions-legales";
 
 // Type pour une carte
 export interface Card {
@@ -37,6 +37,8 @@ export interface GameContextType {
   setRoomCode: (code: string) => void;
   players: Player[];
   setPlayers: React.Dispatch<React.SetStateAction<Player[]>>;
+  noMorePlayers: boolean;
+  setNoMorePlayers: React.Dispatch<React.SetStateAction<boolean>>;
   // Actions
   createGame: () => void;
   joinGame: (code: string) => void;

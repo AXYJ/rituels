@@ -14,6 +14,7 @@ import PlayerDeck from "../game/PlayerDeck";
 import OpponentDecks from "../game/OpponentDecks";
 import RulesModal from "../header/RulesModal";
 import QuitModal from "../game/QuitModal";
+import NoMorePlayersScreen from "../game/NoMorePlayersScreen";
 import Logo from "../logo";
 
 export default function Game() {
@@ -28,6 +29,7 @@ export default function Game() {
     history,
     winner,
     threshold,
+    noMorePlayers,
   } = useGame();
 
   const me = players.find((p) => p.id === socket?.id);
@@ -229,6 +231,10 @@ export default function Game() {
         {/* Winner */}
 
         {winner && <WinnerScreen />}
+
+        {/* No More Players */}
+
+        {noMorePlayers && <NoMorePlayersScreen />}
 
         {/* Rules Modal */}
         <AnimatePresence>

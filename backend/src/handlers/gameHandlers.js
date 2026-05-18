@@ -114,7 +114,6 @@ export const registerGameHandlers = (io, socket, rooms) => {
         room.lastEffect = null;
 
         room.players.forEach((p) => {
-          p.score = 0;
           p.isReady = p.isHost;
           p.deck = { cards: null };
         });

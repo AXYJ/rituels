@@ -29,6 +29,7 @@ interface SocketListenersProps {
   setPropositions: (props: any) => void;
   setIsConnected: (connected: boolean) => void;
   sfxVolumeRef: MutableRefObject<number>;
+  setNoMorePlayers: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const useSocketListeners = (props: SocketListenersProps) => {
@@ -48,6 +49,7 @@ export const useSocketListeners = (props: SocketListenersProps) => {
     setDisplayOrder,
     setPropositions,
     setIsConnected,
+    setNoMorePlayers,
     sfxVolumeRef,
   } = props;
 
@@ -229,6 +231,10 @@ export const useSocketListeners = (props: SocketListenersProps) => {
       }
     );
 
+    socket.on("no_more_players", () => {
+      setNoMorePlayers(true);
+    });
+
     // ----------------
     // Cleanup
     // ----------------
@@ -252,6 +258,7 @@ export const useSocketListeners = (props: SocketListenersProps) => {
     setDisplayOrder,
     setPropositions,
     setIsConnected,
+    setNoMorePlayers,
     sfxVolumeRef,
   ]);
 };

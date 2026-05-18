@@ -60,8 +60,7 @@ io.on("connection", (socket) => {
                 const isGameStarted = room.playerOrder && room.playerOrder.length > 0;
 
                 if (activePlayers.length === 0 || (isGameStarted && activePlayers.length <= 1)) {
-                    io.to(code).emit("room_deleted");
-                    delete rooms[code];
+                    io.to(code).emit("no_more_players");
                 } else {
                     if (player.isHost) {
                         player.isHost = false;

@@ -68,8 +68,8 @@ export default function OpponentDecks() {
                 className="z-10 h-8 w-8 object-contain lg:h-12 lg:w-12"
               />
               <span className="pointer-events-none z-10 -ml-2 w-full px-3 py-1 text-2xl whitespace-nowrap lg:text-4xl">
-                {opponent?.score}{" "}
-                {Math.abs(opponent?.score) > 1 ? "graines" : "graine"}
+                {opponent?.score ?? 0}{" "}
+                {Math.abs(opponent?.score ?? 0) > 1 ? "graines" : "graine"}
               </span>
             </div>
           </div>

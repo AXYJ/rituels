@@ -15,7 +15,7 @@ export default function WinnerScreen() {
   const playerWin = players.find((p) => p.id === winner);
   return (
     <div className="absolute inset-0 z-60">
-      <div className="relative z-10 flex w-full flex-col items-center gap-4 overflow-y-auto rounded-lg bg-black p-6 lg:justify-center lg:gap-8 lg:overflow-hidden">
+      <div className="relative z-10 flex min-h-[100vh] w-full flex-col items-center gap-4 overflow-y-auto rounded-lg bg-black p-6 lg:justify-center lg:gap-8 lg:overflow-hidden">
         {winner === socket?.id ? (
           <h2 className="text-center font-bold">
             Bravo {playerWin?.name} ! <br />

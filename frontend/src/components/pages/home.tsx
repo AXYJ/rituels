@@ -16,7 +16,8 @@ import Logo from "../logo";
 
 export default function Home() {
   // Appel du contexte
-  const { createGame, joinGame, error, setError, isConnected } = useGame();
+  const { createGame, joinGame, error, setError, isConnected, setView } =
+    useGame();
 
   // Gestion des états
   const [inputCode, setInputCode] = useState("");
@@ -790,8 +791,18 @@ export default function Home() {
       </section>
 
       <footer className="bg-[#191918] py-8 text-center text-white">
-        <p>Rituels - 2026 | HEFF</p>
-        <p>Créé par : Alex Xiao 3TIWeb</p>
+        <div className="flex flex-col items-center justify-center gap-4">
+          <button
+            onClick={() => setView("mentions-legales")}
+            className="cursor-pointer hover:underline"
+          >
+            <p>Mentions Legales</p>
+          </button>
+          <div>
+            <p>Rituels - 2026 | HEFF</p>
+            <p>Créé par : Alex Xiao 3TIWeb</p>
+          </div>
+        </div>
       </footer>
     </>
   );

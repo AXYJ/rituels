@@ -44,6 +44,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   const [playerOrder, setPlayerOrder] = useState<string[]>([]);
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [winner, setWinner] = useState<string | null>(null);
+  const [noMorePlayers, setNoMorePlayers] = useState(false);
   const [displayOrder, setDisplayOrder] = useState<string[] | null>(null);
   const [volume, setVolume] = useState(0.5);
   const [sfxVolume, setSfxVolume] = useState(0.5);
@@ -101,8 +102,32 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     setDisplayOrder,
     setPropositions,
     sfxVolumeRef,
+    setNoMorePlayers,
     setIsConnected,
   });
+
+  // Reconnexion automatique au lobby / partie après une déconnexion
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleConnect = () => {
+      if (roomCode) {
+        const sessionId = sessionStorage.getItem("rituels_session_id");
+        socket.emit("join_game", roomCode, sessionId);
+
+        const savedName = localStorage.getItem(PLAYER_NAME_KEY);
+        if (savedName) {
+          socket.emit("change_name", savedName);
+        }
+      }
+    };
+
+    socket.on("connect", handleConnect);
+
+    return () => {
+      socket.off("connect", handleConnect);
+    };
+  }, [socket, roomCode]);
 
   // ----------------
   // Actions de jeu (envoi au serveur)
@@ -257,6 +282,8 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       setError,
       roomCode,
       setRoomCode,
+      noMorePlayers,
+      setNoMorePlayers,
       players,
       setPlayers,
       createGame,
@@ -299,6 +326,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       view,
       isConnected,
       error,
+      noMorePlayers,
       roomCode,
       players,
       createGame,

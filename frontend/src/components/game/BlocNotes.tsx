@@ -40,16 +40,24 @@ export default function Helper() {
               isEditing ? "grid-rows-[1fr] pb-6" : "grid-rows-[0fr] pb-0"
             }`}
           >
-            <Image
-              src={`/assets/edit.png`}
-              alt="card"
-              width={1000}
-              height={1000}
-              className={`pointer-events-auto absolute top-0 right-4 z-50 mr-4 ml-auto h-12 w-12 cursor-pointer object-contain drop-shadow-lg transition-all duration-300 ease-in-out lg:hidden ${isEditing ? "-translate-y-1/2" : "-translate-y-[20vh]"}`}
-              onClick={() => setIsEditing(!isEditing)}
-            />
+            <div
+              className={`absolute top-0 right-4 z-50 mr-4 ml-auto flex items-center gap-4 ${isEditing ? "-translate-y-[120%]" : "-translate-y-[20vh]"}`}
+            >
+              <h3>Bloc-notes</h3>
+              <Image
+                src={`/assets/edit.png`}
+                alt="card"
+                width={1000}
+                height={1000}
+                className={`pointer-events-auto h-12 w-12 cursor-pointer object-contain drop-shadow-lg transition-all duration-300 ease-in-out lg:hidden`}
+                onClick={() => setIsEditing(!isEditing)}
+              />
+            </div>
+
             <div className="overflow-hidden">
-              <h3 className="mb-4 w-full text-center">Bloc-note</h3>
+              <h3 className="mb-4 hidden w-full text-center lg:block">
+                Bloc-notes
+              </h3>
               <div className="grid w-full grid-cols-2 gap-8 px-4">
                 <div className="flex flex-col gap-2">
                   {Object.keys(rules?.symbolRules || {}).map(
