@@ -116,11 +116,13 @@ export default function Game() {
         <div className="z-10 col-start-3 col-end-4 flex h-fit w-fit cursor-pointer items-center gap-4 justify-self-end rounded-full px-6 py-2">
           <span className="text-lg lg:text-4xl">Quota : {threshold}</span>
 
-          <button
+          <motion.button
             onClick={() => {
               setShowRules(true);
             }}
             className="transition-transform duration-300 hover:scale-110"
+            whileTap={{ scale: 0.9 }}
+            whileHover={{ rotate: 30 }}
           >
             <Image
               src="/assets/settings.png"
@@ -129,7 +131,7 @@ export default function Game() {
               height={50}
               className="h-8 w-8 lg:h-16 lg:w-16"
             />
-          </button>
+          </motion.button>
         </div>
 
         {/* Historique des actions */}

@@ -143,7 +143,9 @@ export default function Lobby() {
         onClick={() => handleQuit()}
       />
 
-      <button
+      <motion.button
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
         className="absolute top-4 right-4 flex items-center gap-4 px-12 py-2"
         onClick={() => {
           setShowRules(true);
@@ -164,7 +166,7 @@ export default function Lobby() {
           className="relative"
         />
         <p className="relative text-black">Réglages / Règles</p>
-      </button>
+      </motion.button>
 
       <AnimatePresence>
         {error && (
@@ -215,12 +217,14 @@ export default function Lobby() {
           >
             <h3>Quota à atteindre</h3>
             <div className="flex items-center gap-4">
-              <button
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
                 onClick={handleClick}
                 className="minus cursor-pointer text-5xl"
               >
                 -
-              </button>
+              </motion.button>
               <input
                 type="number"
                 value={localThreshold}
@@ -229,12 +233,14 @@ export default function Lobby() {
                 min={5}
                 max={30}
               />
-              <button
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
                 onClick={handleClick}
                 className="plus cursor-pointer text-5xl"
               >
                 +
-              </button>
+              </motion.button>
             </div>
           </motion.div>
         )}
@@ -365,6 +371,7 @@ export default function Lobby() {
         >
           <motion.button
             whileHover={{ y: -5 }}
+            whileTap={{ scale: 0.9 }}
             onClick={handleQuit}
             className="relative w-full cursor-pointer rounded-full px-6 py-2 text-white shadow-black transition-shadow duration-300 hover:shadow-lg"
           >
@@ -386,6 +393,7 @@ export default function Lobby() {
                   ? { y: -5 }
                   : {}
               }
+              whileTap={{ scale: 0.9 }}
               onClick={onGameStart}
               disabled={
                 players.filter((p) => p.isHost || p.isReady).length !==
@@ -417,6 +425,7 @@ export default function Lobby() {
           {!isHost && (
             <motion.button
               whileHover={{ y: -5 }}
+              whileTap={{ scale: 0.9 }}
               onClick={handleReady}
               className="relative w-full cursor-pointer rounded-full px-6 py-2 text-white shadow-black transition-shadow duration-300 hover:shadow-lg"
             >

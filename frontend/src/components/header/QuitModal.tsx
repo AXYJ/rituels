@@ -1,6 +1,9 @@
 "use client";
 
 import { useGame } from "../../context/GameContext";
+import { motion } from "framer-motion";
+import Image from "next/image";
+
 export default function QuitModal({
   setQuitGame,
 }: {
@@ -13,21 +16,39 @@ export default function QuitModal({
         <h2>Cette action vous fera quitter la partie</h2>
         <p>Êtes-vous sûr de vouloir quitter ?</p>
         <div className="flex gap-4">
-          <button
-            className="rounded bg-red-500 px-4 py-2 text-white"
+          <motion.button
+            whileHover={{ y: -5 }}
+            whileTap={{ scale: 0.9 }}
+            className="relative w-full cursor-pointer rounded-full px-6 py-2 text-white shadow-black transition-shadow duration-300 hover:shadow-lg"
             onClick={() => {
               quitLobby();
               setQuitGame(false);
             }}
           >
-            Quitter
-          </button>
-          <button
-            className="rounded bg-gray-500 px-4 py-2 text-white"
+            <Image
+              src="/assets/button-mid-border.png"
+              alt="quit"
+              width={20}
+              height={20}
+              className="absolute inset-0 z-0 h-full w-full object-contain select-none"
+            />
+            <span className="relative z-10">Quitter</span>
+          </motion.button>
+          <motion.button
+            whileHover={{ y: -5 }}
+            whileTap={{ scale: 0.9 }}
+            className="relative w-full cursor-pointer rounded-full px-6 py-2 text-white shadow-black transition-shadow duration-300 hover:shadow-lg"
             onClick={() => setQuitGame(false)}
           >
+            <Image
+              src="/assets/button-mid-border.png"
+              alt="quit"
+              width={20}
+              height={20}
+              className="absolute inset-0 z-0 h-full w-full object-contain select-none"
+            />
             Annuler
-          </button>
+          </motion.button>
         </div>
       </div>
     </div>

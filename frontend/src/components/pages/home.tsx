@@ -157,7 +157,11 @@ export default function Home() {
     <>
       <header className="absolute top-4 left-1/2 z-10 w-fit -translate-x-1/2 bg-transparent lg:top-8">
         <ul className="flex gap-4 lg:gap-16">
-          <li className="relative transition-all duration-300 hover:-translate-y-2 hover:shadow-lg">
+          <motion.li
+            whileHover={{ y: -8 }}
+            whileTap={{ scale: 0.9 }}
+            className="relative transition-all duration-300 hover:-translate-y-2 hover:shadow-lg"
+          >
             <img
               src="assets/button-short.png"
               alt=""
@@ -172,8 +176,12 @@ export default function Home() {
             >
               Jouer au jeu
             </a>
-          </li>
-          <li className="relative transition-all duration-300 hover:-translate-y-2 hover:shadow-lg">
+          </motion.li>
+          <motion.li
+            whileHover={{ y: -8 }}
+            whileTap={{ scale: 0.9 }}
+            className="relative transition-all duration-300 hover:-translate-y-2 hover:shadow-lg"
+          >
             <img
               src="assets/button-short.png"
               alt=""
@@ -185,8 +193,12 @@ export default function Home() {
             >
               Univers
             </a>
-          </li>
-          <li className="relative transition-all duration-300 hover:-translate-y-2 hover:shadow-lg">
+          </motion.li>
+          <motion.li
+            whileHover={{ y: -8 }}
+            whileTap={{ scale: 0.9 }}
+            className="relative transition-all duration-300 hover:-translate-y-2 hover:shadow-lg"
+          >
             <img
               src="assets/button-short.png"
               alt=""
@@ -198,7 +210,7 @@ export default function Home() {
             >
               Règles
             </a>
-          </li>
+          </motion.li>
         </ul>
       </header>
       {/* // Animation au chargement */}
@@ -270,6 +282,7 @@ export default function Home() {
               <motion.button
                 variants={itemVariants}
                 whileHover={{ y: -8 }}
+                whileTap={{ scale: 0.9 }}
                 onClick={startGame}
                 disabled={btnDisabled}
                 className={`relative w-full cursor-pointer rounded-3xl px-12 py-4 shadow-black transition-shadow duration-300 hover:shadow-lg lg:w-1/2`}
@@ -308,6 +321,7 @@ export default function Home() {
                 </div>
                 <motion.button
                   whileHover={{ y: -8 }}
+                  whileTap={{ scale: 0.9 }}
                   onClick={handleJoinGame}
                   className="relative w-fit cursor-pointer rounded-3xl px-6 py-4 shadow-black transition-shadow duration-300 hover:shadow-lg"
                 >
@@ -352,7 +366,8 @@ export default function Home() {
             >
               <a href="#rules" className="flex flex-col items-center">
                 <span className="text-3xl text-white">Règles du jeu</span>
-                <Image
+                <motion.img
+                  whileTap={{ y: -8 }}
                   src="/assets/arrow-down.png"
                   alt=""
                   width={800}
@@ -773,6 +788,7 @@ export default function Home() {
         <div className="flex items-center justify-center">
           <motion.a
             whileHover={{ y: -8 }}
+            whileTap={{ scale: 0.9 }}
             href="#launch-btn"
             className="relative flex w-80 cursor-pointer items-center justify-center rounded-3xl px-12 py-4 shadow-black transition-all duration-300 hover:shadow-lg"
           >

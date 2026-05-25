@@ -110,7 +110,7 @@ export default function PlayerDeck({
                 : {}
             }
             transition={{ type: "spring", stiffness: 200, damping: 20 }}
-            className={`group relative flex aspect-[2/3] items-center justify-center overflow-hidden rounded-xl lg:after:pointer-events-none lg:after:absolute lg:after:inset-0 lg:after:bg-black/60 lg:after:opacity-0 lg:after:transition-opacity lg:after:duration-300 ${propositions && (propositions.symbolRules[card.symbol] || propositions.colorRules[card.color]) && isMyTurn ? "lg:group-hover:after:opacity-100" : ""} ${isMyTurn ? "" : "pointer-events-none"} ${selectedCardIndex === index ? "after:pointer-events-none after:absolute after:inset-0 after:bg-black/60 after:opacity-100" : ""}`}
+            className={`group relative flex aspect-[2/3] items-center justify-center overflow-hidden rounded-xl lg:after:pointer-events-none lg:after:absolute lg:after:inset-0 lg:after:opacity-0 lg:after:transition-opacity lg:after:duration-300 ${propositions && (propositions.symbolRules[card.symbol] || propositions.colorRules[card.color]) && isMyTurn ? "lg:group-hover:after:opacity-100" : ""} ${isMyTurn ? "" : "pointer-events-none"} ${selectedCardIndex === index ? "after:pointer-events-none after:absolute after:inset-0 after:bg-black/60 after:opacity-100" : ""}`}
           >
             <div
               className={`pointer-events-none absolute inset-0 z-20 flex-col items-center justify-start transition-opacity duration-300 lg:flex lg:pt-8 lg:opacity-0 lg:group-hover:opacity-100 ${selectedCardIndex === index ? "flex opacity-100" : "hidden opacity-0"}`}
@@ -123,12 +123,12 @@ export default function PlayerDeck({
                       Selon vous :
                     </span>
                     {propositions.symbolRules[card.symbol] && (
-                      <span className="text-lg text-white drop-shadow-md lg:text-2xl">
+                      <span className="text-lg text-white lg:text-2xl">
                         {propositions.symbolRules[card.symbol]}
                       </span>
                     )}
                     {propositions.colorRules[card.color] && (
-                      <span className="text-lg text-white drop-shadow-md lg:text-2xl">
+                      <span className="text-lg text-white lg:text-2xl">
                         {propositions.colorRules[card.color]}
                       </span>
                     )}
