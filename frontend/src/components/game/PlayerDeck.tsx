@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card } from "../../types/game";
 import { useGame } from "../../context/GameContext";
@@ -57,6 +57,47 @@ export default function PlayerDeck({
     }
   };
 
+  const seedRef = useRef<HTMLImageElement>(null);
+  const prevScoreRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (me) {
+      if (prevScoreRef.current !== null && me.score !== prevScoreRef.current) {
+        const diff = me.score - prevScoreRef.current;
+        const seed = seedRef.current;
+
+        if (seed) {
+          if (diff > 0) {
+            seed.animate(
+              [
+                { transform: "scale(1)" },
+                { transform: "scale(1.2)" },
+                { transform: "scale(1)" },
+              ],
+              {
+                duration: 300,
+                easing: "ease-in-out",
+              }
+            );
+          } else if (diff < 0) {
+            seed.animate(
+              [
+                { transform: "scale(1)" },
+                { transform: "scale(0.8)" },
+                { transform: "scale(1)" },
+              ],
+              {
+                duration: 300,
+                easing: "ease-in-out",
+              }
+            );
+          }
+        }
+      }
+      prevScoreRef.current = me.score;
+    }
+  }, [me?.score]);
+
   return (
     <div
       className={`relative col-start-2 col-end-3 row-start-3 row-end-4 grid grid-cols-3 items-start gap-2 px-4 lg:gap-4 ${isMyTurn ? "" : "grayscale-90"}`}
@@ -67,11 +108,12 @@ export default function PlayerDeck({
         </span>
         <div className="flex w-full items-center gap-2">
           <Image
+            ref={seedRef}
             src={`/cards/Seed.png`}
             alt="card"
             width={1000}
             height={1000}
-            className="z-10 h-12 w-12 object-contain"
+            className="seed z-10 h-12 w-12 object-contain"
           />
           <span className="pointer-events-none z-10 -ml-2 w-full px-3 py-1 text-3xl whitespace-nowrap lg:text-5xl">
             {me?.score ?? 0}{" "}

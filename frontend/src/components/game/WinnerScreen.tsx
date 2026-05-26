@@ -159,7 +159,7 @@ export default function WinnerScreen() {
           onClick={() => {
             resetGame();
           }}
-          className="cursor-pointer rounded bg-white px-16 py-4 text-3xl font-bold text-black transition-transform duration-300 ease-in-out hover:scale-110"
+          className="z-10 cursor-pointer rounded bg-white px-16 py-4 text-3xl font-bold text-black transition-transform duration-300 ease-in-out hover:scale-110"
         >
           Rejouer
         </button>
@@ -169,7 +169,7 @@ export default function WinnerScreen() {
           alt="bird-victory-1"
           width={1920}
           height={1080}
-          className="absolute top-1/3 left-0 z-0 h-1/3 w-auto -translate-y-1/2 object-contain"
+          className="absolute top-1/3 left-0 z-0 h-1/3 w-auto -translate-y-1/2 object-contain opacity-70"
         ></Image>
 
         <Image
@@ -177,7 +177,7 @@ export default function WinnerScreen() {
           alt="bird-victory-2"
           width={1920}
           height={1080}
-          className="absolute bottom-0 left-0 z-0 h-1/3 w-auto object-contain"
+          className="absolute bottom-0 left-0 z-0 h-1/3 w-auto object-contain opacity-70"
         ></Image>
 
         <Image
@@ -185,7 +185,7 @@ export default function WinnerScreen() {
           alt="bird-victory-3"
           width={1920}
           height={1080}
-          className="absolute right-1/10 bottom-0 z-0 h-1/4 w-auto object-contain"
+          className="absolute right-1/10 bottom-0 z-0 h-1/4 w-auto object-contain opacity-70"
         ></Image>
 
         <Image
@@ -193,7 +193,7 @@ export default function WinnerScreen() {
           alt="bird-victory-4"
           width={1920}
           height={1080}
-          className="absolute top-1/2 right-0 z-0 h-1/2 w-auto -translate-y-1/2 object-contain"
+          className="absolute top-1/2 right-0 z-0 h-1/2 w-auto -translate-y-1/2 object-contain opacity-70"
         ></Image>
       </div>
     </div>
