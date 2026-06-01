@@ -18,7 +18,7 @@ export default function MentionsLegales() {
             height={12}
             className="rotate-90 transition-transform group-hover:-translate-x-1"
           />
-          <span>Retour à l'accueil</span>
+          <span>Retour à l&apos;accueil</span>
         </button>
 
         <section className="flex flex-col gap-8">
@@ -35,10 +35,10 @@ export default function MentionsLegales() {
                 Article 1: Responsabilités
               </h2>
               <p className="text-lg text-white">
-                "Rituels" décline toute responsabilité en cas de besoin
-                irrépressible de picorer des graines au sol ou de hocher la tête
-                de manière saccadée. Dans ce cas de figure, veuillez consulter
-                un vétérinaire.
+                &quot;Rituels&quot; décline toute responsabilité en cas de
+                besoin irrépressible de picorer des graines au sol ou de hocher
+                la tête de manière saccadée. Dans ce cas de figure, veuillez
+                consulter un vétérinaire.
               </p>
             </section>
 
@@ -47,19 +47,19 @@ export default function MentionsLegales() {
                 Article 2 : Déconseillé aux profils suivants
               </h2>
               <p className="text-lg text-white">
-                L'accès au protocole Rituels est fortement déconseillé aux
+                L&apos;accès au protocole Rituels est fortement déconseillé aux
                 catégories de sujets suivantes :
               </p>
               <ul className="list-inside list-[decimal-leading-zero] space-y-2 text-lg text-white">
                 <li className="text-2xl">
-                  Les Déterministes Rigides : Les personnes croyant que "1 + 1
-                  font toujours 2". Ici, 1 + 1 peut faire -2 si la couleur est
-                  d'humeur taquine.
+                  Les Déterministes Rigides : Les personnes croyant que &quot;1
+                  + 1 font toujours 2&quot;. Ici, 1 + 1 peut faire -2 si la
+                  couleur est d&apos;humeur taquine.
                 </li>
                 <li className="text-2xl">
-                  Les Ornithophobes : Par respect pour l'inspiration de
-                  l'expérience, bien qu'aucun pigeon n'ait été maltraité
-                  (physiquement) durant le développement.
+                  Les Ornithophobes : Par respect pour l&apos;inspiration de
+                  l&apos;expérience, bien qu&apos;aucun pigeon n&apos;ait été
+                  maltraité (physiquement) durant le développement.
                 </li>
                 <li className="text-2xl">
                   Les daltoniens et les dyslexiques : La perception des couleurs
@@ -68,7 +68,7 @@ export default function MentionsLegales() {
                 <li className="text-2xl">
                   Les cartomenciens du dimanche : Toute tentative de lire dans
                   les cartes se soldera par un échec. Le système est purement
-                  mathématique, même s'il ne vous aime pas.
+                  mathématique, même s&apos;il ne vous aime pas.
                 </li>
               </ul>
             </section>
@@ -84,8 +84,8 @@ export default function MentionsLegales() {
                 bloc-notes lors de nos prochaines réunions de département.
               </p>
               <p className="text-lg text-white">
-                Le Laboratoire se réserve le droit d'utiliser vos échecs comme
-                exemples pédagogiques pour les sujets suivants.
+                Le Laboratoire se réserve le droit d&apos;utiliser vos échecs
+                comme exemples pédagogiques pour les sujets suivants.
               </p>
             </section>
 
@@ -94,7 +94,7 @@ export default function MentionsLegales() {
                 Article 4 : Litiges et Plaintes
               </h2>
               <p className="text-lg text-white">
-                En cas de désaccord avec le système, c'est le système qui a
+                En cas de désaccord avec le système, c&apos;est le système qui a
                 raison. Toute plainte doit être formulée en picorant trois fois
                 le sol et en inclinant la tête de manière saccadée.
               </p>
@@ -102,10 +102,10 @@ export default function MentionsLegales() {
 
             <section className="flex flex-col gap-4">
               <h2 className="border-b border-gray-700 pb-2 text-3xl font-bold text-white">
-                Article 5 : Conditions d'Arrêt
+                Article 5 : Conditions d&apos;Arrêt
               </h2>
               <p className="text-lg text-white">
-                Aucune condition d'arrêt n'est prévue pour le moment.
+                Aucune condition d&apos;arrêt n&apos;est prévue pour le moment.
               </p>
             </section>
           </div>

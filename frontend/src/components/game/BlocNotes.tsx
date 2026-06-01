@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState } from "react";
+import { motion } from "framer-motion";
 import Image from "next/image";
 import { useGame } from "../../context/GameContext";
+import { normalizeSymbol } from "../../utils/normalizeSymbol";
 
 export default function Helper() {
   const [isEditing, setIsEditing] = useState(false);
@@ -71,7 +72,7 @@ export default function Helper() {
                           htmlFor={symbol}
                         >
                           <Image
-                            src={`/assets/${symbol}.png`}
+                            src={`/assets/${normalizeSymbol(symbol)}.png`}
                             alt={symbol}
                             width={500}
                             height={500}

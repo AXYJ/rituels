@@ -56,7 +56,9 @@ function AudioPlayer() {
     return () => document.removeEventListener("click", handleInteraction);
   }, []);
 
-  return <audio ref={audioRef} autoPlay loop src="/music.mp3" />;
+  return (
+    <audio ref={audioRef} autoPlay loop src="/sunshine_through_feathers.mp3" />
+  );
 }
 
 export default function App() {

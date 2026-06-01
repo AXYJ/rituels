@@ -1,6 +1,6 @@
 import { Socket } from "socket.io-client";
 import { Player, Card, GameRules, View, HistoryItem } from "../../types/game";
-import { MutableRefObject } from "react";
+import { MutableRefObject, Dispatch, SetStateAction } from "react";
 
 export const registerGameHandlers = (
   socket: Socket,
@@ -14,7 +14,12 @@ export const registerGameHandlers = (
   setPlayers: (players: Player[] | ((prev: Player[]) => Player[])) => void,
   setRules: (rules: GameRules | null) => void,
   setView: (view: View) => void,
-  setPropositions: (props: any) => void,
+  setPropositions: Dispatch<
+    SetStateAction<{
+      symbolRules: Record<string, string>;
+      colorRules: Record<string, string>;
+    }>
+  >,
   setPlayerNumber: (num: number) => void,
   sfxVolumeRef: MutableRefObject<number>
 ) => {

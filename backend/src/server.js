@@ -53,18 +53,32 @@ io.on("connection", (socket) => {
             if (playerIndex !== -1) {
                 const player = room.players[playerIndex];
                 socket.leave(code);
-                player.leavedPlayer = true;
-
-                const activePlayers = room.players.filter(p => !p.leavedPlayer);
                 
                 const isGameStarted = room.playerOrder && room.playerOrder.length > 0;
 
-                if (activePlayers.length === 0 || (isGameStarted && activePlayers.length <= 1)) {
+                if (!isGameStarted) {
+                    // Si la partie n'a pas commencé, on retire complètement le joueur
+                    room.players.splice(playerIndex, 1);
+                } else {
+                    // Si elle a commencé, on le marque simplement comme déconnecté
+                    player.leavedPlayer = true;
+                }
+
+                const activePlayers = room.players.filter(p => !p.leavedPlayer);
+                
+                if (room.players.length === 0 || (isGameStarted && activePlayers.length <= 1)) {
                     io.to(code).emit("no_more_players");
+                    if (room.players.length === 0) {
+                        delete rooms[code];
+                    }
                 } else {
                     if (player.isHost) {
                         player.isHost = false;
-                        activePlayers[0].isHost = true;
+                        if (isGameStarted) {
+                            activePlayers[0].isHost = true;
+                        } else {
+                            room.players[0].isHost = true;
+                        }
                     }
                     
                     io.to(code).emit("room_updated", { 
@@ -72,7 +86,7 @@ io.on("connection", (socket) => {
                         playerOrder: room.playerOrder
                     });
 
-                    if (room.playerOrder && room.playerOrder[0] === idPlayer) {
+                    if (isGameStarted && room.playerOrder && room.playerOrder[0] === idPlayer) {
                         room.playerOrder = getNextPlayerOrder(room.playerOrder, room.players);
                         io.to(code).emit("turn_updated", room.playerOrder);
                     }

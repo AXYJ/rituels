@@ -1,8 +1,8 @@
 "use client";
 
 // Importations des modules
-import { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence, Variants } from "framer-motion";
 import React from "react";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 
@@ -29,16 +29,18 @@ export default function Home() {
   // Charger le code sauvegardé et vérifier la première visite après le montage (côté client uniquement)
   useEffect(() => {
     if (typeof window !== "undefined") {
-      setSavedCode(localStorage.getItem("rituels_room_code"));
-
+      const code = localStorage.getItem("rituels_room_code");
       const visited = localStorage.getItem("rituels_visited");
-      if (visited) {
-        setIsFirstVisit(false);
-      } else {
-        setIsFirstVisit(true);
-        localStorage.setItem("rituels_visited", "true");
-      }
-      setHasCheckedVisit(true);
+      setTimeout(() => {
+        setSavedCode(code);
+        if (visited) {
+          setIsFirstVisit(false);
+        } else {
+          setIsFirstVisit(true);
+          localStorage.setItem("rituels_visited", "true");
+        }
+        setHasCheckedVisit(true);
+      }, 0);
     }
   }, []);
 
@@ -49,7 +51,7 @@ export default function Home() {
   // Sinon, on affiche les éléments immédiatement.
   const baseDelay = isFirstVisit ? 9.5 : 0.5;
 
-  const frameVariants = {
+  const frameVariants: Variants = {
     hidden: {
       opacity: 0,
     },
@@ -61,11 +63,11 @@ export default function Home() {
         type: "spring",
         bounce: 0.6,
         delay: baseDelay,
-      } as any,
+      },
     },
   };
 
-  const itemVariants = {
+  const itemVariants: Variants = {
     hidden: {
       opacity: 0,
       y: 50,
@@ -78,11 +80,11 @@ export default function Home() {
         type: "spring",
         bounce: 0.6,
         delay: baseDelay,
-      } as any,
+      },
     },
   };
 
-  const itemVariants2 = {
+  const itemVariants2: Variants = {
     hidden: {
       opacity: 0,
       y: 50,
@@ -95,11 +97,11 @@ export default function Home() {
         type: "spring",
         bounce: 0.6,
         delay: baseDelay + 0.5,
-      } as any,
+      },
     },
   };
 
-  const itemVariants3 = {
+  const itemVariants3: Variants = {
     hidden: {
       opacity: 0,
       y: 50,
@@ -112,7 +114,7 @@ export default function Home() {
         type: "spring",
         bounce: 0.6,
         delay: baseDelay + 0.5,
-      } as any,
+      },
     },
   };
 
@@ -402,22 +404,10 @@ export default function Home() {
         id="univers"
       >
         <div
-          className="flex flex-col items-center justify-center gap-8"
+          className="relative z-5 flex flex-col items-center justify-center gap-8"
           id="explication"
         >
-          <h2>
-            Séquence de test{" "}
-            <span className="relative text-3xl text-white lg:text-6xl">
-              n° 666
-              <Image
-                src="/assets/line.png"
-                alt=""
-                width={800}
-                height={100}
-                className="pointer-events-none absolute top-1/2 left-1/2 z-0 w-full -translate-x-1/2 -translate-y-1/2"
-              />
-            </span>
-          </h2>
+          <h2>Rapport Déclassifié : Laboratoire Skinner</h2>
           <div className="relative flex w-8/10 max-w-[1024px] flex-col gap-4 text-white lg:w-1/2">
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -430,10 +420,12 @@ export default function Home() {
                 delay: 0.2,
                 repeat: 0,
               }}
-              className="overflow-hidden"
+              className="overflow-hidden text-center"
             >
-              Dans cette enceinte, rien n'est laissé au hasard, mais tout semble
-              imprévisible.
+              En 1948, le psychologue B.F. Skinner a réussi à rendre des pigeons
+              superstitieux en distribuant des graines de manière aléatoire.{" "}
+              <br /> Le monde a acclamé ses travaux mais a également oublié ces
+              pigeons.
             </motion.p>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -446,57 +438,25 @@ export default function Home() {
                 delay: 0.4,
                 repeat: 0,
               }}
-              className="overflow-hidden"
+              className="overflow-hidden text-center"
             >
-              À chaque session, les règles qui régissent cette expérience
-              changent. Ne vous fiez pas à vos instincts : fiez-vous à votre
-              sens de l’observation.
+              Dans cette enceinte, l&apos;expérience ne s&apos;est jamais
+              arretée. En tant que sujet d&apos;expérience, il vous est
+              déconseillé de vous fier à vos instincts. Fiez-vous plutôt à votre
+              sens de l&apos;observation. Vous disposerez de trois cartes en
+              permanence. Analysez vos résultats, observez les autres sujets, et
+              déduisez la logique changeante du système pour obtenir vos
+              graines.
             </motion.p>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{
-                duration: 1,
-                type: "spring",
-                bounce: 0.6,
-                delay: 0.6,
-                repeat: 0,
-              }}
-              className="overflow-hidden"
-            >
-              Vous disposerez de trois cartes en permanence. Votre survie dépend
-              de votre capacité à percevoir les mécaniques cachées derrière les
-              symboles et les couleurs.
-            </motion.p>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{
-                duration: 1,
-                type: "spring",
-                bounce: 0.6,
-                delay: 0.8,
-                repeat: 0,
-              }}
-              className="overflow-hidden"
-            >
-              Analysez vos résultats, surveillez ceux des autres spécimens et
-              déduisez la logique du système pour atteindre le seuil de
-              victoire.
-            </motion.p>
-
-            <Image
-              src="/assets/bg/cards-1.png"
-              alt=""
-              width={517}
-              height={69}
-              className="pointer-events-none absolute -top-2/3 -left-1/3 z-0 w-48 select-none"
-            ></Image>
           </div>
         </div>
-
+        <Image
+          src="/assets/bg/cards-1.png"
+          alt=""
+          width={517}
+          height={69}
+          className="pointer-events-none absolute top-0 left-4 z-0 w-32 select-none lg:left-1/8 lg:w-48"
+        ></Image>
         <motion.img
           src="/assets/bg/path-2.png"
           alt=""
@@ -504,10 +464,129 @@ export default function Home() {
           height={69}
           className="height-fit pointer-events-none absolute bottom-24 left-1/2 z-0 w-[50vw] select-none lg:bottom-16"
         />
+        <motion.img
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{
+            duration: 1,
+            type: "spring",
+            bounce: 0.6,
+            delay: 1.6,
+            repeat: 0,
+          }}
+          className="pointer-events-none absolute bottom-30 left-[57%] z-0 w-16 select-none lg:w-24"
+          src="/assets/bg/left-foot.png"
+          alt=""
+          width={517}
+          height={69}
+        />
+        <motion.img
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{
+            duration: 1,
+            type: "spring",
+            bounce: 0.6,
+            delay: 1.4,
+            repeat: 0,
+          }}
+          className="pointer-events-none absolute bottom-36 left-[63%] z-0 w-16 select-none lg:w-24"
+          src="/assets/bg/right-foot.png"
+          alt=""
+          width={517}
+          height={69}
+        />
+        <motion.img
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{
+            duration: 1,
+            type: "spring",
+            bounce: 0.6,
+            delay: 1.2,
+            repeat: 0,
+          }}
+          className="pointer-events-none absolute bottom-30 left-[69%] z-0 w-16 select-none lg:w-24"
+          src="/assets/bg/left-foot.png"
+          alt=""
+          width={517}
+          height={69}
+        />
+        <motion.img
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{
+            duration: 1,
+            type: "spring",
+            bounce: 0.6,
+            delay: 1,
+            repeat: 0,
+          }}
+          className="pointer-events-none absolute bottom-36 left-[75%] z-0 w-16 select-none lg:w-24"
+          src="/assets/bg/right-foot.png"
+          alt=""
+          width={517}
+          height={69}
+        />
+        <motion.img
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{
+            duration: 1,
+            type: "spring",
+            bounce: 0.6,
+            delay: 0.8,
+            repeat: 0,
+          }}
+          className="pointer-events-none absolute bottom-30 left-[81%] z-0 w-16 select-none lg:w-24"
+          src="/assets/bg/left-foot.png"
+          alt=""
+          width={517}
+          height={69}
+        />
+        <motion.img
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{
+            duration: 1,
+            type: "spring",
+            bounce: 0.6,
+            delay: 0.6,
+            repeat: 0,
+          }}
+          className="pointer-events-none absolute bottom-36 left-[87%] z-0 w-16 select-none lg:w-24"
+          src="/assets/bg/right-foot.png"
+          alt=""
+          width={517}
+          height={69}
+        />
+        <motion.img
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{
+            duration: 1,
+            type: "spring",
+            bounce: 0.6,
+            delay: 0.4,
+            repeat: 0,
+          }}
+          className="pointer-events-none absolute bottom-30 left-[93%] z-0 hidden w-24 select-none lg:block"
+          src="/assets/bg/left-foot.png"
+          alt=""
+          width={517}
+          height={69}
+        />
       </section>
 
-      <section className="min-h-[70dvh] bg-[#191918] pb-64" id="rules">
-        <div className="flex flex-col items-center justify-center gap-8">
+      <section className="min-h-[70dvh] bg-[#191918] pb-48" id="rules">
+        <div className="relative flex flex-col items-center justify-center gap-8">
           <h2>Protocole de jeu (règles)</h2>
           <div className="flex w-8/10 max-w-[1024px] flex-col gap-4 text-white lg:w-1/2">
             <motion.p
@@ -523,7 +602,9 @@ export default function Home() {
               }}
               className="overflow-hidden"
             >
-              Rituels est un jeu de cartes expérimental pour 2 à 4 joueurs.
+              Rituels est un jeu de cartes expérimental pour 2 à 4 joueurs où le
+              but est d&apos;être le premier joueur à atteindre le quota de
+              graines fixé <br /> à l&apos;avance.
             </motion.p>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -538,9 +619,8 @@ export default function Home() {
               }}
               className="overflow-hidden"
             >
-              Les cartes sont composées de 2 éléments : un symbole et une
-              couleur. Chaque symbole possède une valeur fixe (de -1 à 3),
-              tandis que chaque couleur possède un pouvoir.
+              Pour gagner des graines, vous disposerez à tout moment de 3
+              cartes.
             </motion.p>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -555,10 +635,8 @@ export default function Home() {
               }}
               className="overflow-hidden"
             >
-              Au lancement de chaque partie, le système distribue aléatoirement
-              les valeurs et les pouvoirs. Votre but est d'identifier ces
-              variables avant vos adversaires et être le premier à atteindre le
-              score défini (quota).
+              Chaque carte est une combinaison de deux éléments : un symbole et
+              une couleur.
             </motion.p>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -573,9 +651,9 @@ export default function Home() {
               }}
               className="overflow-hidden"
             >
-              Les pouvoirs possibles sont les suivants :
+              Chaque symbole a une valeur différente entre -1 et 3.
             </motion.p>
-            <motion.ul
+            <motion.p
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -586,26 +664,39 @@ export default function Home() {
                 delay: 1,
                 repeat: 0,
               }}
+              className="overflow-hidden"
+            >
+              Chaque couleur a un pouvoir qui influence le cours du jeu :
+              inversion, gel, répétition et neutre.
+            </motion.p>
+            <motion.ul
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{
+                duration: 1,
+                type: "spring",
+                bounce: 0.6,
+                delay: 1.2,
+                repeat: 0,
+              }}
               className="ml-4 list-inside list-disc text-2xl"
             >
               <li>
-                Inversion (Action Immédiate) : Ce pouvoir agit sur votre carte
-                actuelle. Il inverse la valeur de votre symbole. (un 2 devient
-                -2) ;
+                L&apos;inversion inverse la valeur de la carte jouée. Si le
+                symbole vaut 2, alors la carte vaudra -2.
               </li>
               <li>
-                Gel (Effet sur le joueur suivant) : Ce pouvoir n'affecte pas
-                votre score, mais celui du sujet suivant. Le système forcera son
-                prochain résultat à 0, peu importe son symbole ;
+                Le gel empêche le joueur suivant de gagner des graines.
+                Qu&apos;importe ce que le jouer suivant joue, il ne gagnera ni
+                ne perdra <br /> de points.
               </li>
               <li>
-                Répétition (Effet de la carte précédente) : Cette couleur n'a
-                pas de pouvoir propre. Elle duplique le pouvoir de la dernière
-                carte jouée ;
+                La répétition répète le pouvoir de la carte précédemment jouée.
+                Si la carte précédente avait le pouvoir &quot;gel&quot;, cette
+                carte aura aussi l&apos;effet &quot;gel&quot;.
               </li>
-              <li>
-                Neutre : la valeur du symbole est appliquée sans modification.
-              </li>
+              <li>Neutre n&apos;a aucun effet mais est présent deux fois.</li>
             </motion.ul>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -620,9 +711,8 @@ export default function Home() {
               }}
               className="overflow-hidden"
             >
-              Note : chaque symbole possède une valeur unique. Pour les
-              couleurs, deux d'entre elles sont systématiquement "Neutres", les
-              autres se partagent les pouvoirs restants.
+              Les valeurs des symboles et les pouvoirs des couleurs sont
+              répartis aléatoirement à chaque partie.
             </motion.p>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -668,119 +758,28 @@ export default function Home() {
               }}
               className="overflow-hidden"
             >
-              Pour vous aider, vous pouvez utiliser le bloc-notes pour noter vos
-              découvertes.
+              Pour vous aidez, vous avez à votre disposition un bloc-notes où
+              vous pouvez noter vos hypothèses ainsi qu&apos;une messagerie qui
+              recense toutes les cartes qui ont été jouées.
             </motion.p>
           </div>
-        </div>
-      </section>
-
-      <section className="min-h-[70dvh] bg-[#191918] pb-32">
-        <div className="flex flex-col items-center justify-center gap-8">
-          <h2>Fonctionnement du système</h2>
-          <div className="flex w-8/10 max-w-[1024px] flex-col gap-4 text-white lg:w-1/2">
-            <Image
-              src="/screen/game.png"
-              alt="Interface de test"
-              width={1920}
-              height={1080}
-              className="mb-8"
-            />
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{
-                duration: 1,
-                type: "spring",
-                bounce: 0.6,
-                delay: 0.2,
-                repeat: 0,
-              }}
-              className="overflow-hidden"
-            >
-              Aperçu de l'interface :
-            </motion.p>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{
-                duration: 1,
-                type: "spring",
-                bounce: 0.6,
-                delay: 0.4,
-                repeat: 0,
-              }}
-              className="overflow-hidden"
-            >
-              1 — Réglages : ajustement des paramètres sonores et rappel des
-              protocoles ;
-            </motion.p>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{
-                duration: 1,
-                type: "spring",
-                bounce: 0.6,
-                delay: 0.6,
-                repeat: 0,
-              }}
-              className="overflow-hidden"
-            >
-              2 — Console de suivi : historique des cartes jouées et
-              communications entre spécimens ;
-            </motion.p>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{
-                duration: 1,
-                type: "spring",
-                bounce: 0.6,
-                delay: 0.8,
-                repeat: 0,
-              }}
-              className="overflow-hidden"
-            >
-              3 — Deck : les cartes actuellement en votre possession ;
-            </motion.p>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{
-                duration: 1,
-                type: "spring",
-                bounce: 0.6,
-                delay: 1,
-                repeat: 0,
-              }}
-              className="overflow-hidden"
-            >
-              4 — Bloc-notes : un espace pour consigner vos découvertes sur les
-              règles en vigueur ;
-            </motion.p>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{
-                duration: 1,
-                type: "spring",
-                bounce: 0.6,
-                delay: 1.2,
-                repeat: 0,
-              }}
-              className="overflow-hidden"
-            >
-              5 — Compteur : points accumulés (attention, les valeurs négatives
-              sont possibles).
-            </motion.p>
-          </div>
+          <motion.img
+            initial={{ opacity: 0, rotate: -45 }}
+            whileInView={{ opacity: 1, rotate: 15 }}
+            viewport={{ once: true }}
+            transition={{
+              duration: 1,
+              type: "spring",
+              bounce: 0.6,
+              delay: 2,
+              repeat: 0,
+            }}
+            className="pointer-events-none absolute bottom-1/4 -left-40 z-0 hidden w-48 origin-bottom rotate-45 overflow-hidden select-none lg:block"
+            src="/assets/pigeon.png"
+            alt=""
+            width={517}
+            height={517}
+          />
         </div>
       </section>
 

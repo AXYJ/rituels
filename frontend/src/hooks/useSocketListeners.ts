@@ -1,4 +1,4 @@
-import { useEffect, MutableRefObject } from "react";
+import { useEffect, MutableRefObject, Dispatch, SetStateAction } from "react";
 import { Socket } from "socket.io-client";
 import { Player, GameRules, View, HistoryItem } from "../types/game";
 
@@ -26,7 +26,12 @@ interface SocketListenersProps {
   setPlayerTurn: (turn: string) => void;
   setPlayerOrder: (order: string[]) => void;
   setDisplayOrder: (order: string[] | null) => void;
-  setPropositions: (props: any) => void;
+  setPropositions: Dispatch<
+    SetStateAction<{
+      symbolRules: Record<string, string>;
+      colorRules: Record<string, string>;
+    }>
+  >;
   setIsConnected: (connected: boolean) => void;
   sfxVolumeRef: MutableRefObject<number>;
   setNoMorePlayers: React.Dispatch<React.SetStateAction<boolean>>;
@@ -240,7 +245,33 @@ export const useSocketListeners = (props: SocketListenersProps) => {
     // ----------------
     return () => {
       clearInterval(keepAliveInterval);
-      socket.removeAllListeners();
+
+      const events = [
+        "connect",
+        "connect_error",
+        "disconnect",
+        "room_updated",
+        "reconnected",
+        "no_more_players",
+        "room_created",
+        "join_game_success",
+        "room_full",
+        "room_not_found",
+        "game_already_started",
+        "name_rejected",
+        "threshold_updated",
+        "room_deleted",
+        "game_started",
+        "card_played",
+        "game_won",
+        "turn_updated",
+        "game_reset",
+        "deck_updated",
+        "message_received",
+      ];
+      events.forEach((event) => {
+        socket.off(event);
+      });
     };
   }, [
     socket,

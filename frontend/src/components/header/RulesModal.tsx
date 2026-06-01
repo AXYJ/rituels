@@ -137,7 +137,7 @@ export default function RulesModal({
                   height={844}
                   className="mb-8 h-auto w-full rounded-lg shadow-md"
                 />
-                <p>Aperçu de l'interface :</p>
+                <p>Aperçu de l&apos;interface :</p>
                 <p>
                   1 — Réglages : ajustement des paramètres sonores et rappel des
                   protocoles ;
@@ -161,45 +161,46 @@ export default function RulesModal({
               <h2>Protocole de jeu</h2>
               <div className="flex max-w-[1024px] flex-col gap-4 text-white">
                 <p>
-                  Rituels est un jeu de cartes expérimental pour 2 à 4 joueurs.
+                  Rituels est un jeu de cartes expérimental pour 2 à 4 joueurs
+                  où le but est d&apos;être le premier joueur à atteindre le
+                  quota de graines fixé à l&apos;avance.
                 </p>
                 <p>
-                  Les cartes sont composées de 2 éléments : un symbole et une
-                  couleur. Chaque symbole possède une valeur fixe (de -1 à 3),
-                  tandis que chaque couleur possède un pouvoir.
+                  Pour gagner des graines, vous disposerez à tout moment de 3
+                  cartes.
                 </p>
                 <p>
-                  Au lancement de chaque partie, le système distribue
-                  aléatoirement les valeurs et les pouvoirs. Votre but est
-                  d'identifier ces variables avant vos adversaires et être le
-                  premier à atteindre le score défini (quota).
+                  Chaque carte est une combinaison de deux éléments : un symbole
+                  et une couleur.
                 </p>
-                <p>Les pouvoirs possibles sont les suivants :</p>
+                <p>Chaque symbole a une valeur différente entre -1 et 3.</p>
+                <p>
+                  Chaque couleur a un pouvoir qui influence le cours du jeu :
+                  inversion, gel, répétition et neutre.
+                </p>
                 <ul className="ml-4 list-inside list-disc text-2xl">
                   <li>
-                    Inversion (Action Immédiate) : Ce pouvoir agit sur votre
-                    carte actuelle. Il inverse la valeur de votre symbole. (un 2
-                    devient -2) ;
+                    L&apos;inversion inverse la valeur de la carte jouée. Si le
+                    symbole vaut 2, alors la carte vaudra -2.
                   </li>
                   <li>
-                    Gel (Effet sur le joueur suivant) : Ce pouvoir n'affecte pas
-                    votre score, mais celui du sujet suivant. Le système forcera
-                    son prochain résultat à 0, peu importe son symbole ;
+                    Le gel empêche le joueur suivant de gagner des graines.
+                    Qu&apos;importe ce que le jouer suivant joue, il ne gagnera
+                    ni ne perdra de points.
                   </li>
                   <li>
-                    Répétition (Effet de la carte précédente) : Cette couleur
-                    n'a pas de pouvoir propre. Elle duplique le pouvoir de la
-                    dernière carte jouée ;
+                    La répétition répète le pouvoir de la carte précédemment
+                    jouée. Si la carte précédente avait le pouvoir
+                    &quot;gel&quot;, cette carte aura aussi l&apos;effet
+                    &quot;gel&quot;.
                   </li>
                   <li>
-                    Neutre : la valeur du symbole est appliquée sans
-                    modification.
+                    Neutre n&apos;a aucun effet mais est présent deux fois.
                   </li>
                 </ul>
                 <p>
-                  Note : chaque symbole possède une valeur unique. Pour les
-                  couleurs, deux d'entre elles sont systématiquement "Neutres",
-                  les autres se partagent les pouvoirs restants.
+                  Les valeurs des symboles et les pouvoirs des couleurs sont
+                  répartis aléatoirement à chaque partie.
                 </p>
                 <p>À votre tour, vous devez jouer une carte de votre main.</p>
                 <p>
@@ -207,8 +208,9 @@ export default function RulesModal({
                   premier remporte la partie.
                 </p>
                 <p>
-                  Pour vous aider, vous pouvez utiliser le bloc-notes pour noter
-                  vos découvertes.
+                  Pour vous aidez, vous avez à votre disposition un bloc-notes
+                  où vous pouvez noter vos hypothèses ainsi qu&apos;une
+                  messagerie qui recense toutes les cartes qui ont été jouées.
                 </p>
               </div>
             </div>

@@ -4,6 +4,7 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { useRef, useEffect } from "react";
 import { useGame } from "../../context/GameContext";
+import { Player, Card } from "../../types/game";
 
 function OpponentDeck({
   opponent,
@@ -12,7 +13,7 @@ function OpponentDeck({
   getOpponentPlacementClass,
   getOpponentNamePlacementClass,
 }: {
-  opponent: any;
+  opponent: Player | undefined;
   index: number;
   total: number;
   getOpponentPlacementClass: (index: number, total: number) => string;
@@ -23,7 +24,10 @@ function OpponentDeck({
 
   useEffect(() => {
     if (opponent) {
-      if (prevScoreRef.current !== null && opponent.score !== prevScoreRef.current) {
+      if (
+        prevScoreRef.current !== null &&
+        opponent.score !== prevScoreRef.current
+      ) {
         const diff = opponent.score - prevScoreRef.current;
         const seed = seedRef.current;
 
@@ -57,7 +61,7 @@ function OpponentDeck({
       }
       prevScoreRef.current = opponent.score;
     }
-  }, [opponent?.score]);
+  }, [opponent, opponent?.score]);
 
   return (
     <div
@@ -83,7 +87,7 @@ function OpponentDeck({
         </div>
       </div>
 
-      {opponent?.deck?.cards?.map((card: any, cardIndex: number) => (
+      {opponent?.deck?.cards?.map((card: Card, cardIndex: number) => (
         <motion.div
           layout
           layoutId={`card-back-${opponent?.id}-${card.id || cardIndex}`}

@@ -77,8 +77,10 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       transports: ["websocket", "polling"],
     });
 
-    setSocket(newSocket);
-    setIsConnected(newSocket.connected);
+    setTimeout(() => {
+      setSocket(newSocket);
+      setIsConnected(newSocket.connected);
+    }, 0);
 
     return () => {
       newSocket.disconnect();
@@ -173,6 +175,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   const changeName = useCallback(
     (name: string) => {
       if (socket) {
+        console.log(name);
         socket.emit("change_name", name);
       }
     },

@@ -9,7 +9,9 @@ export default function OrientationGuard() {
     // Tente de forcer l'orientation en paysage sur les navigateurs le supportant
     const lockOrientation = async () => {
       try {
-        const orientation = screen.orientation as any;
+        const orientation = screen.orientation as unknown as {
+          lock?: (orientation: string) => Promise<void>;
+        };
         if (orientation && typeof orientation.lock === "function") {
           await orientation.lock("landscape");
         }
@@ -55,13 +57,13 @@ export default function OrientationGuard() {
         className="mb-4 text-4xl font-bold lg:text-5xl"
         style={{ fontFamily: "var(--font-family-sweet-and-salty)" }}
       >
-        Tourner votre écran <br /> à l'horizontal
+        Tourner votre écran <br /> à l&apos;horizontal
       </h2>
       <p
         className="mt-4 text-xl opacity-80 lg:text-2xl"
         style={{ fontFamily: "sans-serif" }}
       >
-        L'affichage en mode portrait n'est pas supporté sur mobile.
+        L&apos;affichage en mode portrait n&apos;est pas supporté sur mobile.
       </p>
     </div>
   );

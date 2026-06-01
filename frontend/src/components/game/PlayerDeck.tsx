@@ -3,13 +3,14 @@
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Card } from "../../types/game";
+import { Card, Player } from "../../types/game";
 import { useGame } from "../../context/GameContext";
+import { normalizeSymbol } from "../../utils/normalizeSymbol";
 
 type PlayerDeckProps = {
-  me: any;
+  me: Player | undefined;
   isMyTurn: boolean;
-  deck: any;
+  deck: { cards: Card[] | null } | undefined;
   handleCardClick: (card: Card) => void;
 };
 
@@ -96,7 +97,7 @@ export default function PlayerDeck({
       }
       prevScoreRef.current = me.score;
     }
-  }, [me?.score]);
+  }, [me, me?.score]);
 
   return (
     <div
@@ -178,7 +179,7 @@ export default function PlayerDeck({
                 )}
             </div>
             <Image
-              src={`/cards/${card.symbol}-${card.color}.png`}
+              src={`/cards/${normalizeSymbol(card.symbol)}-${card.color}.png`}
               alt="card"
               width={400}
               height={600}

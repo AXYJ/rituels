@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { View } from "../types/game";
 
 export default function Logo({
   className,
@@ -8,7 +9,7 @@ export default function Logo({
   onClick,
 }: {
   className?: string;
-  setView?: (view: any) => void;
+  setView?: (view: View) => void;
   onClick?: () => void;
 }) {
   const handleClick = () => {

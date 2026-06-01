@@ -14,7 +14,7 @@ export function shuffle(array) {
  * Génère les règles aléatoires pour une nouvelle partie
  */
 export function generateRules() {
-  const symbols = ["cercle", "croix", "carre", "triangle", "vague"];
+  const symbols = ["cercle", "croix", "vague", "carré", "étoile"];
   const colors = ["rouge", "bleu", "vert", "jaune", "rose"];
 
   const values = shuffle([3, 2, 1, 0, -1]);

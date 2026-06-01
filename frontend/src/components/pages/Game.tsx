@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 import { useGame } from "../../context/GameContext";
 import { Card } from "../../types/game";
+import { normalizeSymbol } from "../../utils/normalizeSymbol";
 import WinnerScreen from "../game/WinnerScreen";
 import Helper from "../game/BlocNotes";
 import History from "../game/Chat";
@@ -57,7 +58,7 @@ export default function Game() {
         }, 1500);
       }
     }
-  }, [me?.score]);
+  }, [me, me?.score]);
 
   useEffect(() => {
     queueMicrotask(() => setPendingCard(null));
@@ -201,7 +202,7 @@ export default function Game() {
                   className="absolute h-36 w-24 drop-shadow-sm lg:h-60 lg:w-40"
                 >
                   <Image
-                    src={`/cards/${played.symbol}-${played.color}.png`}
+                    src={`/cards/${normalizeSymbol(played.symbol)}-${played.color}.png`}
                     alt="played card"
                     width={400}
                     height={600}

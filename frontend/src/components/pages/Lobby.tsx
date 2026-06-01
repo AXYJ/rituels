@@ -3,7 +3,7 @@
 // Importations des modules
 import { useGame } from "../../context/GameContext";
 import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, Variants } from "framer-motion";
 import Image from "next/image";
 
 import Logo from "../logo";
@@ -11,7 +11,7 @@ import RulesModal from "../header/RulesModal";
 import CopyCodeRoom from "../../hooks/CopyCodeRoom";
 
 // Variants pour l'animation d'entrée
-const frameVariants = {
+const frameVariants: Variants = {
   hidden: {
     opacity: 0,
   },
@@ -22,11 +22,11 @@ const frameVariants = {
       staggerChildren: 0.2, // Délai entre chaque bloc
       type: "spring",
       bounce: 0.6,
-    } as any,
+    },
   },
 };
 
-const itemVariants = {
+const itemVariants: Variants = {
   hidden: {
     opacity: 0,
     y: 50,
@@ -38,7 +38,7 @@ const itemVariants = {
       duration: 0.8,
       type: "spring",
       bounce: 0.6,
-    } as any,
+    },
   },
 };
 
@@ -55,7 +55,6 @@ export default function Lobby() {
     socket,
     changeName,
     threshold,
-    setThreshold,
     updateThreshold,
     error,
     setError,
@@ -406,7 +405,7 @@ export default function Lobby() {
                   players.filter((p) => p.isHost || p.isReady).length ===
                     players.length && players.length !== 1
                     ? "/assets/button-long-green.png"
-                    : "/assets/button-long-red.png"
+                    : "/assets/button-long-border.png"
                 }
                 alt=""
                 width={800}
