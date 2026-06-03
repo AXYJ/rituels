@@ -127,38 +127,15 @@ export default function RulesModal({
             id="rules"
             className={`flex-col gap-6 ${rules ? "flex" : "hidden"}`}
           >
-            <div className="flex flex-col items-center justify-center gap-8">
-              <h2>Fonctionnement du système</h2>
-              <div className="flex max-w-[1024px] flex-col gap-4 text-white">
-                <Image
-                  src="/screen/game.png"
-                  alt="Aperçu de l'interface"
-                  width={1500}
-                  height={844}
-                  className="mb-8 h-auto w-full rounded-lg shadow-md"
-                />
-                <p>Aperçu de l&apos;interface :</p>
-                <p>
-                  1 — Réglages : ajustement des paramètres sonores et rappel des
-                  protocoles ;
-                </p>
-                <p>
-                  2 — Console de suivi : historique des cartes jouées et
-                  communications entre spécimens ;
-                </p>
-                <p>3 — Deck : les cartes actuellement en votre possession ;</p>
-                <p>
-                  4 — Bloc-notes : un espace pour consigner vos découvertes sur
-                  les règles en vigueur ;
-                </p>
-                <p>
-                  5 — Compteur : points accumulés (attention, les valeurs
-                  négatives sont possibles).
-                </p>
-              </div>
-            </div>
             <div className="flex flex-col items-center justify-center gap-8 pt-8">
               <h2>Protocole de jeu</h2>
+              <iframe
+                src="https://youtu.be/jhxZaYCYIco"
+                className="aspect-video w-full"
+                loading="lazy"
+                title="Rituels - Explication des règles"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              />
               <div className="flex max-w-[1024px] flex-col gap-4 text-white">
                 <p>
                   Rituels est un jeu de cartes expérimental pour 2 à 4 joueurs
