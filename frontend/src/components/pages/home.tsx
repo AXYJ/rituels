@@ -589,7 +589,7 @@ export default function Home() {
         <div className="relative flex flex-col items-center justify-center gap-8">
           <h2>Protocole de jeu (règles)</h2>
           <iframe
-            src="https://youtu.be/jhxZaYCYIco"
+            src="https://www.youtube.com/watch?v=jhxZaYCYIco"
             className="aspect-video w-8/10 max-w-[1024px] lg:w-1/2"
             loading="lazy"
             title="Rituels - Explication des règles"
