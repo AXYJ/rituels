@@ -130,7 +130,7 @@ export default function RulesModal({
             <div className="flex flex-col items-center justify-center gap-8 pt-8">
               <h2>Protocole de jeu</h2>
               <iframe
-                src="https://www.youtube.com/watch?v=jhxZaYCYIco"
+                src="https://www.youtube.com/embed/jhxZaYCYIco"
                 className="aspect-video w-full"
                 loading="lazy"
                 title="Rituels - Explication des règles"
