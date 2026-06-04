@@ -114,7 +114,6 @@ export const registerRoomHandlers = (io, socket, rooms) => {
           socket.emit("name_rejected");
         } else {
           player.name = name;
-          console.log("Nom joueur mis à jour :", player);
           io.to(code).emit("room_updated", { players: room.players });
         }
         break;

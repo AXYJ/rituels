@@ -304,6 +304,8 @@ export default function Lobby() {
                             trimmed.length <= 10
                           ) {
                             changeName(trimmed);
+                          } else if (trimmed === player.name) {
+                            setIsEditing(false);
                           } else {
                             setEditName(player.name);
                             setError(
