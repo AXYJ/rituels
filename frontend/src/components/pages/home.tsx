@@ -243,7 +243,6 @@ export default function Home() {
                   <DotLottieReact
                     src="/final.json"
                     className="pointer-events-none h-auto w-full max-w-[480px]"
-                    fetchPriority="high"
                     autoplay
                   />
                 ) : (
