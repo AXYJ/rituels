@@ -249,7 +249,7 @@ export default function Lobby() {
             variants={itemVariants}
             className="flex flex-col items-center gap-4"
           >
-            <h3>Seuil de victoire</h3>
+            <h3>Quota à atteindre</h3>
             <div className="flex items-center gap-4">
               <span className="text-4xl text-white">{threshold}</span>
             </div>

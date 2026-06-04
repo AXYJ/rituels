@@ -1,8 +1,23 @@
 import { useGame } from "../../context/GameContext";
 import Image from "next/image";
+import { useEffect } from "react";
 
 export default function MentionsLegales() {
-  const { setView } = useGame();
+  const { view, setView } = useGame();
+
+  useEffect(() => {
+    if (view === "mentions-legales#credits") {
+      const timer = setTimeout(() => {
+        const element = document.getElementById("credits");
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth" });
+        }
+      }, 100);
+      return () => clearTimeout(timer);
+    } else {
+      window.scrollTo(0, 0);
+    }
+  }, [view]);
 
   return (
     <div className="min-h-screen bg-[#191918] px-4 py-16">
@@ -21,17 +36,14 @@ export default function MentionsLegales() {
           <span>Retour à l&apos;accueil</span>
         </button>
 
-        <section className="flex flex-col gap-8">
+        <section className="flex flex-col gap-8 pb-32">
           <div className="mb-16 flex flex-col items-center justify-center gap-8 text-center">
-            <h1 className="text-6xl font-bold text-white">Mentions Légales</h1>
-            <p className="text-xl text-gray-400">
-              En cours de développement ...
-            </p>
+            <h1 className="text-6xl text-white">Mentions Légales</h1>
           </div>
 
           <div className="grid gap-16">
-            <section className="flex flex-col gap-4">
-              <h2 className="border-b border-gray-700 pb-2 text-3xl font-bold text-white">
+            <article className="flex flex-col gap-4">
+              <h2>
                 Article 1: Responsabilités
               </h2>
               <p className="text-lg text-white">
@@ -40,10 +52,10 @@ export default function MentionsLegales() {
                 la tête de manière saccadée. Dans ce cas de figure, veuillez
                 consulter un vétérinaire.
               </p>
-            </section>
+            </article>
 
-            <section className="flex flex-col gap-4">
-              <h2 className="border-b border-gray-700 pb-2 text-3xl font-bold text-white">
+            <article className="flex flex-col gap-4">
+              <h2>
                 Article 2 : Déconseillé aux profils suivants
               </h2>
               <p className="text-lg text-white">
@@ -71,10 +83,10 @@ export default function MentionsLegales() {
                   mathématique, même s&apos;il ne vous aime pas.
                 </li>
               </ul>
-            </section>
+            </article>
 
-            <section className="flex flex-col gap-4">
-              <h2 className="border-b border-gray-700 pb-2 text-3xl font-bold text-white">
+            <article className="flex flex-col gap-4">
+              <h2>
                 Article 3 : Propriété Intellectuelle des Échecs
               </h2>
               <p className="text-lg text-white">
@@ -87,10 +99,10 @@ export default function MentionsLegales() {
                 Le Laboratoire se réserve le droit d&apos;utiliser vos échecs
                 comme exemples pédagogiques pour les sujets suivants.
               </p>
-            </section>
+            </article>
 
-            <section className="flex flex-col gap-4">
-              <h2 className="border-b border-gray-700 pb-2 text-3xl font-bold text-white">
+            <article className="flex flex-col gap-4">
+              <h2>
                 Article 4 : Litiges et Plaintes
               </h2>
               <p className="text-lg text-white">
@@ -98,16 +110,43 @@ export default function MentionsLegales() {
                 raison. Toute plainte doit être formulée en picorant trois fois
                 le sol et en inclinant la tête de manière saccadée.
               </p>
-            </section>
+            </article>
 
-            <section className="flex flex-col gap-4">
-              <h2 className="border-b border-gray-700 pb-2 text-3xl font-bold text-white">
+            <article className="flex flex-col gap-4">
+              <h2>
                 Article 5 : Conditions d&apos;Arrêt
               </h2>
               <p className="text-lg text-white">
                 Aucune condition d&apos;arrêt n&apos;est prévue pour le moment.
               </p>
-            </section>
+            </article>
+          </div>
+        </section>
+
+        <section id="credits">
+          <div className="mb-16 flex flex-col items-center justify-center gap-8 text-center">
+            <h1 className="text-6xl text-white">Crédits</h1>
+          </div>
+          <div className="grid gap-16">
+            <article className="flex flex-col gap-4">
+              <h2>
+                Musique
+              </h2>
+              <p className="text-lg text-white">
+                "Sunshine trough Feathers" - Nicolas Merva
+              </p>
+            </article>
+            <article className="flex flex-col gap-4">
+              <h2>
+                Effets sonores
+              </h2>
+              <p className="text-lg text-white">
+                "ShuffleAndCardFlip 1" - Freesound_community
+              </p>
+              <p className="text-lg text-white">
+                "New Notification 040" - Universfield
+              </p>
+            </article>
           </div>
         </section>
       </div>

@@ -16,6 +16,9 @@ import { io, Socket } from "socket.io-client";
 // Clé pour le localStorage
 const PLAYER_NAME_KEY = "rituels_player_name";
 
+const SFX_KEY = "rituels_sfx_volume";
+const VOLUME_KEY = "rituels_volume";
+
 // Import des types
 import {
   View,
@@ -59,8 +62,27 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   });
 
   useEffect(() => {
+    // Chargement des volumes depuis le localStorage au démarrage
+    if (typeof window !== "undefined") {
+      const savedVolume = localStorage.getItem(VOLUME_KEY);
+      if (savedVolume) setVolume(parseFloat(savedVolume));
+
+      const savedSfxVolume = localStorage.getItem(SFX_KEY);
+      if (savedSfxVolume) {
+        setSfxVolume(parseFloat(savedSfxVolume));
+        sfxVolumeRef.current = parseFloat(savedSfxVolume);
+      }
+    }
+  }, []);
+
+  // Sauvegarde des volumes dans le localStorage quand ils changent
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem(VOLUME_KEY, volume.toString());
+      localStorage.setItem(SFX_KEY, sfxVolume.toString());
+    }
     sfxVolumeRef.current = sfxVolume;
-  }, [sfxVolume]);
+  }, [volume, sfxVolume]);
 
   useEffect(() => {
     // Création d'un ID de session pour pouvoir se reconnecter

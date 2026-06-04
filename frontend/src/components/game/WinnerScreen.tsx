@@ -13,6 +13,8 @@ export default function WinnerScreen() {
   const [showLeaderboard, setShowLeaderboard] = useState(false);
 
   const playerWin = players.find((p) => p.id === winner);
+
+  const ActualPlayers = players.filter((p) => !p.leavedPlayer);
   return (
     <div className="absolute inset-0 z-60">
       <div className="relative z-10 flex min-h-[100vh] w-full flex-col items-center gap-4 overflow-y-auto rounded-lg bg-black p-6 lg:justify-center lg:gap-8 lg:overflow-hidden">
@@ -143,7 +145,7 @@ export default function WinnerScreen() {
             <h3 className="mb-4 text-center">Classement :</h3>
             <div className="mb-8 flex justify-center gap-12">
               <ol className="list-inside list-decimal">
-                {players
+                {ActualPlayers
                   .sort((a, b) => b.score - a.score)
                   .map((player, index) => (
                     <li key={`player-${index}`} className="text-2xl">

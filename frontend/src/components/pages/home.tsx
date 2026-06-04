@@ -162,7 +162,7 @@ export default function Home() {
           <motion.li
             whileHover={{ y: -8 }}
             whileTap={{ scale: 0.9 }}
-            className="relative transition-all duration-300 hover:-translate-y-2 hover:shadow-lg"
+            className="relative transition-all duration-300  hover:shadow-lg"
           >
             <img
               src="assets/button-short.png"
@@ -182,7 +182,7 @@ export default function Home() {
           <motion.li
             whileHover={{ y: -8 }}
             whileTap={{ scale: 0.9 }}
-            className="relative transition-all duration-300 hover:-translate-y-2 hover:shadow-lg"
+            className="relative transition-all duration-300 hover:shadow-lg"
           >
             <img
               src="assets/button-short.png"
@@ -199,7 +199,7 @@ export default function Home() {
           <motion.li
             whileHover={{ y: -8 }}
             whileTap={{ scale: 0.9 }}
-            className="relative transition-all duration-300 hover:-translate-y-2 hover:shadow-lg"
+            className="relative transition-all duration-300 hover:shadow-lg"
           >
             <img
               src="assets/button-short.png"
@@ -814,12 +814,21 @@ export default function Home() {
 
       <footer className="bg-[#191918] py-8 text-center text-white">
         <div className="flex flex-col items-center justify-center gap-4">
+         <div className="flex gap-16">
           <button
             onClick={() => setView("mentions-legales")}
             className="cursor-pointer hover:underline"
           >
             <p>Mentions Legales</p>
           </button>
+          <button
+            onClick={() => setView("mentions-legales#credits")}
+            className="cursor-pointer hover:underline"
+          >
+            <p>Crédits</p>
+          </button>
+         </div>
+         
           <div>
             <p>Rituels - 2026 | HEFF</p>
             <p>Créé par : Alex Xiao 3TIWeb</p>

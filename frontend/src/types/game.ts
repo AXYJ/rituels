@@ -2,7 +2,7 @@ import React from "react";
 import { Socket } from "socket.io-client";
 
 // Définition des vues
-export type View = "home" | "lobby" | "game" | "mentions-legales";
+export type View = "home" | "lobby" | "game" | "mentions-legales" | "mentions-legales#credits";
 
 // Type pour une carte
 export interface Card {

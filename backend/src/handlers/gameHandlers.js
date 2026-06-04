@@ -113,12 +113,16 @@ export const registerGameHandlers = (io, socket, rooms) => {
         room.history = [];
         room.lastEffect = null;
 
-        room.players.forEach((p) => {
+        const activePlayers = room.players.filter((p) => !p.leavedPlayer);
+
+        activePlayers.forEach((p) => {
           p.isReady = p.isHost;
           p.deck = { cards: null };
         });
 
-        io.to(code).emit("game_reset", room.rules, room.players, triggerId);
+        room.players = activePlayers;
+
+        io.to(code).emit("game_reset", room.rules, activePlayers, triggerId);
         break;
       }
     }

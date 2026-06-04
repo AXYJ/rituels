@@ -13,7 +13,8 @@ function GameContent() {
 
   // Rendu des vues
   // Rendu conditionnel plutôt que routing Next.js pour éviter de perdre la connexion WebSocket
-  switch (view) {
+  const baseView = view.split("#")[0];
+  switch (baseView) {
     case "home":
       return <Home />;
     case "lobby":

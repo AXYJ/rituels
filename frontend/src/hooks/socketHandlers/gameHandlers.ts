@@ -121,14 +121,12 @@ export const registerGameHandlers = (
     "game_reset",
     (rules: GameRules, players: Player[], socketId: string) => {
       setPlayers(players);
-      if (socketId === socket.id) {
-        setView("lobby");
-        setRules(rules);
-        setHistory([]);
-        setWinner(null);
-        setPropositions({ symbolRules: {}, colorRules: {} });
-        setPlayerNumber(0);
-      }
+      setView("lobby");
+      setRules(rules);
+      setHistory([]);
+      setWinner(null);
+      setPropositions({ symbolRules: {}, colorRules: {} });
+      setPlayerNumber(0);
     }
   );
 
