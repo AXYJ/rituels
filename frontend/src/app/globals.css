@@ -3,6 +3,7 @@
 @font-face {
   font-family: "Sweet and Salty";
   src: url("../fonts/sweet_and_salty.woff2") format("woff2");
+  font-display: swap;
 }
 
 :root {
@@ -27,6 +28,8 @@
 html {
   scroll-behavior: smooth;
 }
+
+
 
 body {
   font-family: var(--font-family-sweet-and-salty);

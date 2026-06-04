@@ -31,6 +31,7 @@ export default function Logo({
         width={2780}
         height={1042}
         className="pointer-events-none h-auto w-full object-contain"
+        fetchPriority="high"
         loading="eager"
       />
     </div>
