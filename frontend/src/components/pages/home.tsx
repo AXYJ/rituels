@@ -14,6 +14,8 @@ import Image from "next/image";
 // Importations des composants
 import Logo from "../logo";
 
+const MotionImage = motion(Image);
+
 export default function Home() {
   // Appel du contexte
   const { createGame, joinGame, error, setError, isConnected, setView } =
@@ -25,6 +27,7 @@ export default function Home() {
   const [savedCode, setSavedCode] = useState<string | null>(null);
   const [isFirstVisit, setIsFirstVisit] = useState(false);
   const [hasCheckedVisit, setHasCheckedVisit] = useState(false);
+  const [playVideo, setPlayVideo] = useState(false);
 
   // Charger le code sauvegardé et vérifier la première visite après le montage (côté client uniquement)
   useEffect(() => {
@@ -378,7 +381,7 @@ export default function Home() {
               </a>
             </motion.div>
           </AnimatePresence>
-          <motion.img
+          <MotionImage
             src="/assets/bg/path.png"
             alt=""
             width={517}
@@ -386,6 +389,7 @@ export default function Home() {
             className="pointer-events-none absolute top-2/3 z-0 hidden w-80 select-none lg:left-9/12 lg:block lg:w-128"
             whileInView={hasCheckedVisit ? { opacity: 1 } : { opacity: 0 }}
             initial={{ opacity: 0 }}
+            fetchPriority="high"
             transition={{
               duration: 1,
               type: "spring",
@@ -394,6 +398,7 @@ export default function Home() {
               repeat: 0,
             }}
             viewport={{ once: true }}
+            sizes="(min-width: 1024px) 512px, 0px"
           />
         </div>
       </section>
@@ -455,13 +460,15 @@ export default function Home() {
           width={517}
           height={69}
           className="pointer-events-none absolute top-0 left-4 z-0 w-32 select-none lg:left-1/8 lg:w-48"
-        ></Image>
-        <motion.img
+          sizes="(min-width: 1024px) 192px, 128px"
+        />
+        <Image
           src="/assets/bg/path-2.png"
           alt=""
           width={517}
           height={69}
           className="height-fit pointer-events-none absolute bottom-24 left-1/2 z-0 w-[50vw] select-none lg:bottom-16"
+          sizes="50vw"
         />
         <motion.img
           initial={{ opacity: 0 }}
@@ -587,13 +594,41 @@ export default function Home() {
       <section className="min-h-[70dvh] bg-[#191918] pb-48" id="rules">
         <div className="relative flex flex-col items-center justify-center gap-8">
           <h2>Protocole de jeu (règles)</h2>
-          <iframe
-            src="https://www.youtube-nocookie.com/embed/jhxZaYCYIco"
-            className="aspect-video w-8/10 max-w-[1024px] lg:w-1/2"
-            loading="lazy"
-            title="Rituels - Explication des règles"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          />
+          {playVideo ? (
+            <iframe
+              src="https://www.youtube-nocookie.com/embed/jhxZaYCYIco?autoplay=1"
+              className="aspect-video w-8/10 max-w-[1024px] lg:w-1/2 rounded-2xl border border-white/10 shadow-2xl"
+              title="Rituels - Explication des règles"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+            />
+          ) : (
+            <div
+              onClick={() => setPlayVideo(true)}
+              className="relative aspect-video w-8/10 max-w-[1024px] lg:w-1/2 overflow-hidden cursor-pointer border-white/40 border-1"
+            >
+              <Image
+                src="/assets/video_preview.png"
+                alt="Rituels - Explication des règles"
+                fill
+                className="object-cover transition-transform duration-500 group-hover:scale-105"
+                sizes="(max-width: 1024px) 80vw, 50vw"
+                fetchPriority="high"
+                priority
+              />
+              <div className="absolute inset-0 flex items-center justify-center transition-colors duration-300 z-10">
+                <motion.div
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="w-16 h-16 md:w-20 md:h-20 flex items-center justify-center rounded-full bg-black  border border-white/30 text-white shadow-lg transition-transform duration-300"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-8 h-8 md:w-10 md:h-10 ml-1">
+                    <path fillRule="evenodd" d="M4.5 5.653c0-1.426 1.529-2.33 2.779-1.643l11.54 6.348c1.295.712 1.295 2.573 0 3.285L7.28 19.991c-1.25.687-2.779-.217-2.779-1.643V5.653z" clipRule="evenodd" />
+                  </svg>
+                </motion.div>
+              </div>
+            </div>
+          )}
           <div className="flex w-8/10 max-w-[1024px] flex-col gap-4 text-white lg:w-1/2">
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -769,7 +804,7 @@ export default function Home() {
               recense toutes les cartes qui ont été jouées.
             </motion.p>
           </div>
-          <motion.img
+          <MotionImage
             initial={{ opacity: 0, rotate: -45 }}
             whileInView={{ opacity: 1, rotate: 15 }}
             viewport={{ once: true }}
@@ -785,6 +820,7 @@ export default function Home() {
             alt=""
             width={517}
             height={517}
+            sizes="(min-width: 1024px) 192px, 0px"
           />
         </div>
       </section>
