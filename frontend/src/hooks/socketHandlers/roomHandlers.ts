@@ -26,7 +26,7 @@ export const registerRoomHandlers = (
     ) => {
       setRoomCode(code);
       setRules(rules);
-      localStorage.setItem(ROOM_CODE_KEY, code);
+      sessionStorage.setItem(ROOM_CODE_KEY, code);
 
       if (typeof window !== "undefined" && serverPlayers) {
         const me = serverPlayers.find((p: Player) => p.id === socket.id);
@@ -58,7 +58,7 @@ export const registerRoomHandlers = (
       playerNumber: number,
       threshold: number
     ) => {
-      localStorage.setItem(ROOM_CODE_KEY, code);
+      sessionStorage.setItem(ROOM_CODE_KEY, code);
       setRoomCode(code);
       setRules(rules);
 
@@ -94,7 +94,7 @@ export const registerRoomHandlers = (
     setPlayers([]);
     setPlayerNumber(0);
     setView("home");
-    localStorage.removeItem(ROOM_CODE_KEY);
+    sessionStorage.removeItem(ROOM_CODE_KEY);
     setError("Tous les joueurs sont partis.");
   });
 };

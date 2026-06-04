@@ -105,3 +105,9 @@ button {
 .relative:hover .header-btn-bg {
   opacity: 1;
 }
+
+/* Cache la flèche/triangle par défaut des datalists sur Chrome/Safari/Edge */
+input::-webkit-calendar-picker-indicator {
+  display: none !important;
+}
+

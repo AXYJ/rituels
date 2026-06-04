@@ -29,7 +29,7 @@ export default function Home() {
   // Charger le code sauvegardé et vérifier la première visite après le montage (côté client uniquement)
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const code = localStorage.getItem("rituels_room_code");
+      const code = sessionStorage.getItem("rituels_room_code");
       const visited = localStorage.getItem("rituels_visited");
       setTimeout(() => {
         setSavedCode(code);
@@ -135,6 +135,7 @@ export default function Home() {
 
   // Rejoindre une partie
   const handleJoinGame = () => {
+    setInputCode("");
     if (!isConnected) {
       setError("Connexion au serveur en cours... Veuillez patienter.");
       return;
@@ -315,7 +316,7 @@ export default function Home() {
                     onChange={(e) => setInputCode(e.target.value.toUpperCase())}
                     className="relative z-20 w-full bg-transparent p-2 px-6 py-4 text-4xl text-white outline-none"
                     list="room-codes-list"
-                    autoComplete="on"
+                    autoComplete="off"
                   />
                   <datalist id="room-codes-list">
                     {savedCode && <option value={savedCode} />}
