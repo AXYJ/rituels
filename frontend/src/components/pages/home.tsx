@@ -59,7 +59,7 @@ export default function Home() {
       opacity: 1,
       transition: {
         duration: 2,
-        staggerChildren: 0.3,
+        staggerChildren: 0.5,
         type: "spring",
         bounce: 0.6,
         delay: baseDelay,
@@ -79,7 +79,6 @@ export default function Home() {
         duration: 1,
         type: "spring",
         bounce: 0.6,
-        delay: baseDelay,
       },
     },
   };
@@ -96,7 +95,6 @@ export default function Home() {
         duration: 1,
         type: "spring",
         bounce: 0.6,
-        delay: baseDelay + 0.5,
       },
     },
   };
@@ -401,7 +399,7 @@ export default function Home() {
       </section>
 
       <section
-        className="relative min-h-[70dvh] bg-[#191918] pb-64"
+        className="relative min-h-[70dvh] bg-[#191918] pb-64 overflow-x-hidden"
         id="univers"
       >
         <div
