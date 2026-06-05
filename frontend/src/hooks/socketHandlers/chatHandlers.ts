@@ -9,11 +9,13 @@ export const registerChatHandlers = (
   ) => void,
   sfxVolumeRef: MutableRefObject<number>
 ) => {
-  socket.on("message_received", (idPlayer: string, message: string) => {
-    setHistory((prev) => [
-      ...prev,
-      { type: "message", player: idPlayer, message },
-    ]);
+  socket.on(
+    "message_received",
+    (idPlayer: string, playerName: string, message: string) => {
+      setHistory((prev) => [
+        ...prev,
+        { type: "message", player: idPlayer, playerName, message },
+      ]);
     if (sfxVolumeRef.current > 0) {
       const sound = new Audio("/sfx/notification.mp3");
       sound.volume = sfxVolumeRef.current;

@@ -63,7 +63,9 @@ export default function History() {
         <div className="mt-auto flex flex-col">
           {history.map((h, index) => {
             const playerName =
-              players.find((p) => p.id === h.player)?.name || h.player;
+              h.playerName ||
+              players.find((p) => p.id === h.player)?.name ||
+              h.player;
 
             if (h.type === "message") {
               return (

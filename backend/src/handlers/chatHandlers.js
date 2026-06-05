@@ -8,17 +8,23 @@ export const registerChatHandlers = (io, socket, rooms) => {
       if (player) {
         const status = await moderateMessage(message);
         if (status === "OK") {
-          const historyItem = { type: "message", player: socket.id, message };
+          const historyItem = {
+            type: "message",
+            player: socket.id,
+            playerName: player.name,
+            message,
+          };
           rooms[code].history.push(historyItem);
-          io.to(code).emit("message_received", socket.id, message);
+          io.to(code).emit("message_received", socket.id, player.name, message);
         } else {
           const historyItem = {
             type: "message",
             player: socket.id,
+            playerName: player.name,
             message: status,
           };
           rooms[code].history.push(historyItem);
-          io.to(code).emit("message_received", socket.id, status);
+          io.to(code).emit("message_received", socket.id, player.name, status);
         }
         break;
       }

@@ -39,7 +39,12 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   const [isConnected, setIsConnected] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [view, setView] = useState<View>("home");
-  const [roomCode, setRoomCode] = useState("");
+  const [roomCode, setRoomCode] = useState(() => {
+    if (typeof window !== "undefined") {
+      return sessionStorage.getItem("rituels_room_code") || "";
+    }
+    return "";
+  });
   const [players, setPlayers] = useState<Player[]>([]);
   const [rules, setRules] = useState<GameRules | null>(null);
   const [playerNumber, setPlayerNumber] = useState(0);
@@ -86,10 +91,10 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     // Création d'un ID de session pour pouvoir se reconnecter
-    let sessionId = sessionStorage.getItem("rituels_session_id");
+    let sessionId = localStorage.getItem("rituels_session_id");
     if (!sessionId) {
       sessionId = crypto.randomUUID();
-      sessionStorage.setItem("rituels_session_id", sessionId);
+      localStorage.setItem("rituels_session_id", sessionId);
     }
 
     // Initialisation de la connexion
@@ -136,7 +141,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
 
     const handleConnect = () => {
       if (roomCode) {
-        const sessionId = sessionStorage.getItem("rituels_session_id");
+        const sessionId = localStorage.getItem("rituels_session_id");
         socket.emit("join_game", roomCode, sessionId);
 
         const savedName = localStorage.getItem(PLAYER_NAME_KEY);
@@ -160,7 +165,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   // Création d'une partie
   const createGame = useCallback(() => {
     if (socket) {
-      const sessionId = sessionStorage.getItem("rituels_session_id");
+      const sessionId = localStorage.getItem("rituels_session_id");
       socket.emit("create_game", socket.id, sessionId);
 
       // Restaurer le nom si présent dans le localStorage
@@ -178,7 +183,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     (code: string) => {
       if (socket) {
         setRoomCode(code);
-        const sessionId = sessionStorage.getItem("rituels_session_id");
+        const sessionId = localStorage.getItem("rituels_session_id");
         socket.emit("join_game", code, sessionId);
 
         // Restaurer le nom si présent dans le localStorage
@@ -221,6 +226,9 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     }
     setView("home");
     setRoomCode("");
+    if (typeof window !== "undefined") {
+      sessionStorage.removeItem("rituels_room_code");
+    }
     setPlayers([]);
     setRules(null);
     setHistory([]);

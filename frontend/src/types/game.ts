@@ -16,6 +16,7 @@ export interface HistoryItem {
   type: "card" | "message";
   card?: Card;
   player: string;
+  playerName?: string;
   score?: number;
   points?: number;
   message?: string;

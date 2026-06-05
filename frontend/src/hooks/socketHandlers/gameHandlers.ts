@@ -58,6 +58,7 @@ export const registerGameHandlers = (
     (
       card: Card,
       idPlayer: string,
+      playerName: string,
       newOrder: string[],
       newScore: number,
       pointsGained: number,
@@ -69,6 +70,7 @@ export const registerGameHandlers = (
           type: "card",
           card,
           player: idPlayer,
+          playerName,
           score: newScore,
           points: pointsGained,
         },
