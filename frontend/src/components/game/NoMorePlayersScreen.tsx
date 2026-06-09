@@ -12,8 +12,8 @@ export default function NoMorePlayersScreen() {
     setView("home");
   };
   return (
-    <div className="fixed top-0 left-0 z-60 flex h-full w-full justify-center overflow-y-auto bg-black/50 lg:overflow-hidden">
-      <div className="flex w-full max-w-[1024px] flex-col items-center justify-center overflow-y-auto rounded-lg bg-black p-6 lg:justify-center lg:gap-8 lg:overflow-hidden">
+    <div className="fixed top-0 left-0 z-60 flex h-full w-full justify-center overflow-y-auto bg-black/80 lg:overflow-hidden">
+      <div className="flex w-full max-w-[1024px] flex-col items-center justify-center overflow-y-auto rounded-lg p-6 lg:justify-center lg:gap-8 lg:overflow-hidden">
         <h3 className="mb-8 text-center">
           Tout le monde a fait une indigestion à part toi !
         </h3>

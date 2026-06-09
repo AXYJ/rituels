@@ -427,8 +427,8 @@ export default function Home() {
               className="overflow-hidden text-center"
             >
               En 1948, le psychologue B.F. Skinner a réussi à rendre des pigeons
-              superstitieux en distribuant des graines de manière aléatoire.{" "}
-              <br /> Le monde a acclamé ses travaux mais a également oublié ces
+              superstitieux en distribuant des graines  de manière aléatoire.{" "}
+              Le monde a acclamé ses travaux mais a également oublié ces
               pigeons.
             </motion.p>
             <motion.p

@@ -2,7 +2,7 @@
 
 // Importations des modules
 import Image from "next/image";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 import { useGame } from "../../context/GameContext";
@@ -41,6 +41,10 @@ export default function Game() {
   const [scoreDiffs, setScoreDiffs] = useState<{ id: number; diff: number }[]>(
     []
   );
+  const isEnabled = true;
+  const onBackAttempt = useCallback(() => {
+    setShowQuit(true);
+  }, []);
   const prevScoreRef = useRef(me?.score ?? 0);
   const diffIdRef = useRef(0);
 
@@ -105,6 +109,32 @@ export default function Game() {
       window.removeEventListener("touchstart", handleTouch);
     };
   }, []);
+
+  useEffect(() => {
+    if (!isEnabled) return;
+
+    // 1. On pousse un état artificiel dans l'historique
+    window.history.pushState(null, "", window.location.href);
+
+    const handlePopState = () => {
+      // 2. L'utilisateur a cliqué sur "Retour". 
+      // On repousse immédiatement l'état pour bloquer le recul
+      window.history.pushState(null, "", window.location.href);
+
+      // 3. On déclenche une action (ex: ouvrir une pop-up "Voulez-vous quitter ?")
+      if (onBackAttempt) {
+        onBackAttempt();
+      }
+    };
+
+    // On écoute le bouton retour
+    window.addEventListener("popstate", handlePopState);
+
+    // Nettoyage au démontage du composant
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, [isEnabled, onBackAttempt]);
 
   return (
     <section className="min-h-[100.1dvh] overflow-x-hidden bg-[radial-gradient(ellipse_31.48%_48.47%_at_51.72%_50.00%,#464441_0%,#191918_100%)] lg:min-h-dvh">
