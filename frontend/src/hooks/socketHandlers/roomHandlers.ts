@@ -10,7 +10,6 @@ export const registerRoomHandlers = (
   setRules: (rules: GameRules | null) => void,
   setThreshold: (threshold: number) => void,
   setPlayers: (players: Player[] | ((prev: Player[]) => Player[])) => void,
-  setPlayerNumber: (num: number) => void,
   setView: (view: View) => void,
   setError: (error: string | null) => void
 ) => {
@@ -21,7 +20,6 @@ export const registerRoomHandlers = (
       code: string,
       rules: GameRules,
       serverPlayers: Player[],
-      playerNumber: number,
       threshold: number
     ) => {
       setRoomCode(code);
@@ -43,7 +41,6 @@ export const registerRoomHandlers = (
           score: p.score ?? 0,
         }))
       );
-      setPlayerNumber(playerNumber);
       setView("lobby");
     }
   );
@@ -55,7 +52,6 @@ export const registerRoomHandlers = (
       code: string,
       rules: GameRules,
       players: Player[],
-      playerNumber: number,
       threshold: number
     ) => {
       sessionStorage.setItem(ROOM_CODE_KEY, code);
@@ -71,7 +67,6 @@ export const registerRoomHandlers = (
 
       if (threshold !== undefined) setThreshold(threshold);
       setPlayers(players || []);
-      setPlayerNumber(playerNumber);
       setView("lobby");
     }
   );
@@ -92,7 +87,6 @@ export const registerRoomHandlers = (
     setRules(null);
     setThreshold(0);
     setPlayers([]);
-    setPlayerNumber(0);
     setView("home");
     sessionStorage.removeItem(ROOM_CODE_KEY);
     setError("Tous les joueurs sont partis.");

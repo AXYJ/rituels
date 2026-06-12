@@ -1,18 +1,17 @@
 "use client";
 
-// Importations des modules
+// Import des modules
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 import React from "react";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
-
-// Les variants sont maintenant définis à l'intérieur du composant pour gérer les délais dynamiques.
-
-import { useGame } from "../../context/GameContext";
 import Image from "next/image";
 
-// Importations des composants
-import Logo from "../logo";
+// Import du contexte
+import { useGame } from "../../context/GameContext";
+
+// Import des composants
+import Logo from "../Logo";
 
 const MotionImage = motion(Image);
 
@@ -28,8 +27,9 @@ export default function Home() {
   const [isFirstVisit, setIsFirstVisit] = useState(false);
   const [hasCheckedVisit, setHasCheckedVisit] = useState(false);
   const [playVideo, setPlayVideo] = useState(false);
+  const [joinable, setJoinable] = useState(false);
 
-  // Charger le code sauvegardé et vérifier la première visite après le montage (côté client uniquement)
+  // Charger le code sauvegardé et vérifier la première visite après le montage
   useEffect(() => {
     if (typeof window !== "undefined") {
       const code = sessionStorage.getItem("rituels_room_code");
@@ -152,10 +152,19 @@ export default function Home() {
     if (error) {
       const timer = setTimeout(() => {
         setError(null);
-      }, 5000);
+      }, 2000);
       return () => clearTimeout(timer);
     }
   }, [error, setError]);
+
+  // Active le bouton de connexion quand le code a 6 caractères
+  useEffect(() => {
+    if (inputCode.length === 6) {
+      setJoinable(true);
+    } else {
+      setJoinable(false);
+    }
+  }, [inputCode]);
 
   return (
     <>
@@ -195,7 +204,7 @@ export default function Home() {
               href="#univers"
               className="relative z-10 rounded-lg px-8 py-4 text-xl whitespace-nowrap text-white transition-all duration-300 hover:cursor-pointer hover:text-black lg:text-2xl"
             >
-              Univers
+              Introduction
             </a>
           </motion.li>
           <motion.li
@@ -263,7 +272,7 @@ export default function Home() {
                   initial={{ opacity: 0, y: -20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
-                  className="bg-red absolute top-10 z-50 flex items-center gap-4 rounded-md px-8 py-4 text-2xl font-bold text-white shadow-lg"
+                  className="bg-red fixed z-9999 top-10 flex items-center gap-4 rounded-md px-8 py-4 text-2xl font-bold text-white shadow-lg"
                 >
                   <span>{error}</span>
                   <button
@@ -327,7 +336,8 @@ export default function Home() {
                   whileHover={{ y: -8 }}
                   whileTap={{ scale: 0.9 }}
                   onClick={handleJoinGame}
-                  className="relative w-fit cursor-pointer rounded-3xl px-6 py-4 shadow-black transition-shadow duration-300 hover:shadow-lg"
+                  className={`relative w-fit rounded-3xl px-6 py-4 shadow-black transition-shadow duration-300 hover:shadow-lg ${joinable ? "" : "opacity-50 cursor-not-allowed pointer-events-none"
+                    }`}
                 >
                   <Image
                     src="/assets/button-short.png"
@@ -352,13 +362,13 @@ export default function Home() {
               animate={
                 hasCheckedVisit
                   ? {
-                      opacity: 1,
-                      y: 0,
-                    }
+                    opacity: 1,
+                    y: 0,
+                  }
                   : {
-                      opacity: 0,
-                      y: 20,
-                    }
+                    opacity: 0,
+                    y: 20,
+                  }
               }
               transition={{
                 duration: 1,
@@ -849,21 +859,21 @@ export default function Home() {
 
       <footer className="bg-[#191918] py-8 text-center text-white">
         <div className="flex flex-col items-center justify-center gap-4">
-         <div className="flex gap-16">
-          <button
-            onClick={() => setView("mentions-legales")}
-            className="cursor-pointer hover:underline"
-          >
-            <p>Mentions Legales</p>
-          </button>
-          <button
-            onClick={() => setView("mentions-legales#credits")}
-            className="cursor-pointer hover:underline"
-          >
-            <p>Crédits</p>
-          </button>
-         </div>
-         
+          <div className="flex gap-16">
+            <button
+              onClick={() => setView("mentions-legales")}
+              className="cursor-pointer hover:underline"
+            >
+              <p>Mentions Legales</p>
+            </button>
+            <button
+              onClick={() => setView("mentions-legales#credits")}
+              className="cursor-pointer hover:underline"
+            >
+              <p>Crédits</p>
+            </button>
+          </div>
+
           <div>
             <p>Rituels - 2026 | HEFF</p>
             <p>Créé par : Alex Xiao 3TIWeb</p>

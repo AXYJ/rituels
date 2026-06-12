@@ -1,6 +1,6 @@
 import { Socket } from "socket.io-client";
 import { Player, Card, GameRules, View, HistoryItem } from "../../types/game";
-import { MutableRefObject, Dispatch, SetStateAction } from "react";
+import { RefObject, Dispatch, SetStateAction } from "react";
 
 export const registerGameHandlers = (
   socket: Socket,
@@ -20,8 +20,7 @@ export const registerGameHandlers = (
       colorRules: Record<string, string>;
     }>
   >,
-  setPlayerNumber: (num: number) => void,
-  sfxVolumeRef: MutableRefObject<number>
+  sfxVolumeRef: RefObject<number>
 ) => {
   // Démarrage de la partie
   socket.on(
@@ -128,7 +127,6 @@ export const registerGameHandlers = (
       setHistory([]);
       setWinner(null);
       setPropositions({ symbolRules: {}, colorRules: {} });
-      setPlayerNumber(0);
     }
   );
 

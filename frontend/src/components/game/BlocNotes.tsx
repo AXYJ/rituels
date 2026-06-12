@@ -1,17 +1,56 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { useGame } from "../../context/GameContext";
 import { normalizeSymbol } from "../../utils/normalizeSymbol";
 
-export default function Helper() {
+interface CustomWindow extends Window {
+  __blocNotesOpen?: boolean;
+  __skipPopState?: boolean;
+}
+
+export default function BlocNotes() {
   const [isEditing, setIsEditing] = useState(false);
 
   const { rules, players, socket, propositions, setPropositions } = useGame();
 
   const me = players.find((p) => p.id === socket?.id);
+
+  // Synchronisation avec l'historique du navigateur (bouton retour sur mobile)
+  // Généré par IA
+  useEffect(() => {
+    const customWindow = window as unknown as CustomWindow;
+    if (isEditing) {
+      customWindow.__blocNotesOpen = true;
+      window.history.pushState({ type: "bloc-notes" }, "", window.location.href);
+    } else {
+      customWindow.__blocNotesOpen = false;
+      if (window.history.state?.type === "bloc-notes") {
+        customWindow.__skipPopState = true;
+        window.history.back();
+      }
+    }
+  }, [isEditing]);
+
+  useEffect(() => {
+    const handleClose = () => {
+      setIsEditing(false);
+    };
+    window.addEventListener("close-bloc-notes", handleClose);
+
+    return () => {
+      const customWindow = window as unknown as CustomWindow;
+      window.removeEventListener("close-bloc-notes", handleClose);
+      customWindow.__blocNotesOpen = false;
+      if (window.history.state?.type === "bloc-notes") {
+        customWindow.__skipPopState = true;
+        window.history.back();
+      }
+    };
+  }, []);
+  // Fin de la génération IA
 
   if (!me) return null;
 

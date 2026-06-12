@@ -1,9 +1,14 @@
 "use client";
 
+// Import des modules
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { useRef, useEffect } from "react";
+
+// Import du contexte
 import { useGame } from "../../context/GameContext";
+
+// Import des types
 import { Player, Card } from "../../types/game";
 
 function OpponentDeck({

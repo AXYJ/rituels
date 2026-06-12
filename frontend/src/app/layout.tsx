@@ -4,7 +4,7 @@ import OrientationGuard from "../components/OrientationGuard";
 
 export const metadata: Metadata = {
   title: "Rituels",
-  description: "Projet Rituels",
+  description: "Jouer à Rituels, le jeu qui met à l'épreuve vos neurones !",
 };
 
 export default function RootLayout({

@@ -1,14 +1,17 @@
 "use client";
 
-// Importations des modules
-import { useGame } from "../../context/GameContext";
+// Import des modules
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 import Image from "next/image";
 
-import Logo from "../logo";
-import RulesModal from "../header/RulesModal";
+// Import du contexte
+import { useGame } from "../../context/GameContext";
+
+// Import des composants
+import Logo from "../Logo";
 import CopyCodeRoom from "../../hooks/CopyCodeRoom";
+import RulesModal from "../game/RulesModal";
 
 // Variants pour l'animation d'entrée
 const frameVariants: Variants = {
@@ -44,6 +47,9 @@ const itemVariants: Variants = {
 
 export default function Lobby() {
   const [showRules, setShowRules] = useState(false);
+  const [copySuccess, setCopySuccess] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editName, setEditName] = useState("");
 
   // Appel du contexte
   const {
@@ -64,26 +70,7 @@ export default function Lobby() {
   const isHost = me?.isHost || false;
   const isReady = me?.isReady || false;
 
-  const [copySuccess, setCopySuccess] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
-  const [editName, setEditName] = useState("");
-
-  const handleCopyCode = () => {
-    CopyCodeRoom({ roomCode, setCopySuccess });
-  };
-
-  const handleReady = () => {
-    beReady();
-  };
-
-  const handleQuit = () => {
-    quitLobby();
-  };
-
-  const onGameStart = () => {
-    startGame();
-  };
-
+  // Modification du quota et envoie au serveur
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     const target = e.target as HTMLButtonElement;
     if (target.classList.contains("minus")) {
@@ -139,7 +126,8 @@ export default function Lobby() {
     <section className="bg-[radial-gradient(ellipse_31.48%_48.47%_at_51.72%_50.00%,_#464441_0%,_#191918_100%)] py-16 lg:py-0">
       <Logo
         className="absolute top-0 left-0 h-16 w-40 lg:top-4 lg:left-4"
-        onClick={() => handleQuit()}
+        onClick={() => quitLobby()}
+        onHoverScale={true}
       />
 
       <motion.button
@@ -174,7 +162,7 @@ export default function Lobby() {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="bg-red absolute top-10 left-1/2 z-50 flex -translate-x-1/2 items-center gap-4 rounded-md px-8 py-4 text-2xl text-white shadow-lg"
+            className="bg-red fixed top-10 left-1/2 flex -translate-x-1/2 items-center gap-4 rounded-md px-8 py-4 text-2xl text-white shadow-lg z-9999"
           >
             <span>{error}</span>
             <button
@@ -198,7 +186,7 @@ export default function Lobby() {
           className="relative flex items-center gap-4 text-3xl lg:text-5xl"
         >
           Code : <span className="tracking-widest">{roomCode}</span>{" "}
-          <button onClick={handleCopyCode} className="cursor-pointer">
+          <button onClick={() => {CopyCodeRoom({ roomCode, setCopySuccess })}} className="cursor-pointer">
             <Image
               src="/assets/copy.png"
               alt="Copier"
@@ -373,7 +361,7 @@ export default function Lobby() {
           <motion.button
             whileHover={{ y: -5 }}
             whileTap={{ scale: 0.9 }}
-            onClick={handleQuit}
+            onClick={() => { quitLobby() }}
             className="relative w-full cursor-pointer rounded-full px-6 py-2 text-white shadow-black transition-shadow duration-300 hover:shadow-lg"
           >
             <Image
@@ -390,15 +378,15 @@ export default function Lobby() {
             <motion.button
               whileHover={
                 players.filter((p) => p.isHost || p.isReady).length ===
-                players.length
+                  players.length
                   ? { y: -5 }
                   : {}
               }
               whileTap={{ scale: 0.9 }}
-              onClick={onGameStart}
+              onClick={() => { startGame() }}
               disabled={
                 players.filter((p) => p.isHost || p.isReady).length !==
-                  players.length || players.length === 1
+                players.length || players.length === 1
               }
               className={`relative w-full cursor-pointer rounded-full px-6 py-2 text-white shadow-black transition-shadow duration-300 ${players.filter((p) => p.isHost || p.isReady).length === players.length ? "hover:shadow-lg" : "cursor-not-allowed opacity-50"} ${players.length === 1 ? "pointer-events-none cursor-not-allowed opacity-50" : "cursor-pointer"}`}
             >
@@ -427,7 +415,7 @@ export default function Lobby() {
             <motion.button
               whileHover={{ y: -5 }}
               whileTap={{ scale: 0.9 }}
-              onClick={handleReady}
+              onClick={() => { beReady() }}
               className="relative w-full cursor-pointer rounded-full px-6 py-2 text-white shadow-black transition-shadow duration-300 hover:shadow-lg"
             >
               <Image
@@ -454,11 +442,10 @@ export default function Lobby() {
           {copySuccess && (
             <motion.div
               key="copy-success"
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
-              transition={{ duration: 0.3 }}
-              className="fixed bottom-8 left-1/2 -translate-x-1/2 rounded bg-green-500 px-4 py-2 text-white"
+              exit={{ opacity: 0, y: -20 }}
+              className="fixed left-1/2 -translate-x-1/2 bg-green-500  text-white top-10 z-50 flex items-center gap-4 rounded-md px-8 py-4 text-2xl shadow-lg"
             >
               Code copié !
             </motion.div>

@@ -1,6 +1,7 @@
 "use client";
+
+// Import du contexte
 import { useGame } from "@/src/context/GameContext";
-import React from "react";
 
 export default function NoMorePlayersScreen() {
   const { setNoMorePlayers, quitLobby, setView } = useGame();

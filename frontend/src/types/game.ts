@@ -54,9 +54,6 @@ export interface GameContextType {
   // Règles
   rules: GameRules | null;
   setRules: React.Dispatch<React.SetStateAction<GameRules | null>>;
-  // Joueur
-  playerNumber: number;
-  setPlayerNumber: (number: number) => void;
   // Modifier localement le deck du joueur
   setLocalPlayerDeck: (cards: Card[]) => void;
   // Jeu

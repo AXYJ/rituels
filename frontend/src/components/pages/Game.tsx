@@ -5,18 +5,25 @@ import Image from "next/image";
 import { useEffect, useState, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
+// Import du contexte
 import { useGame } from "../../context/GameContext";
+
+// Import des types
 import { Card } from "../../types/game";
+
+// Import des hooks
 import { normalizeSymbol } from "../../utils/normalizeSymbol";
+
+// Import des composants
 import WinnerScreen from "../game/WinnerScreen";
-import Helper from "../game/BlocNotes";
+import BlocNotes from "../game/BlocNotes";
 import History from "../game/Chat";
 import PlayerDeck from "../game/PlayerDeck";
 import OpponentDecks from "../game/OpponentDecks";
-import RulesModal from "../header/RulesModal";
+import RulesModal from "../game/RulesModal";
 import QuitModal from "../game/QuitModal";
 import NoMorePlayersScreen from "../game/NoMorePlayersScreen";
-import Logo from "../logo";
+import Logo from "../Logo";
 
 export default function Game() {
   const [showRules, setShowRules] = useState(false);
@@ -110,18 +117,34 @@ export default function Game() {
     };
   }, []);
 
+
+interface CustomWindow extends Window {
+  __blocNotesOpen?: boolean;
+  __skipPopState?: boolean;
+}
+
+  // Bloquer le bouton retour
+  // Généré par IA
   useEffect(() => {
     if (!isEnabled) return;
 
-    // 1. On pousse un état artificiel dans l'historique
     window.history.pushState(null, "", window.location.href);
 
     const handlePopState = () => {
-      // 2. L'utilisateur a cliqué sur "Retour". 
-      // On repousse immédiatement l'état pour bloquer le recul
+      const customWindow = window as unknown as CustomWindow;
+      if (customWindow.__skipPopState) {
+        customWindow.__skipPopState = false;
+        return;
+      }
+
+      if (customWindow.__blocNotesOpen) {
+        customWindow.__blocNotesOpen = false;
+        window.dispatchEvent(new CustomEvent("close-bloc-notes"));
+        return;
+      }
+
       window.history.pushState(null, "", window.location.href);
 
-      // 3. On déclenche une action (ex: ouvrir une pop-up "Voulez-vous quitter ?")
       if (onBackAttempt) {
         onBackAttempt();
       }
@@ -135,6 +158,7 @@ export default function Game() {
       window.removeEventListener("popstate", handlePopState);
     };
   }, [isEnabled, onBackAttempt]);
+  // Fin de la génération IA
 
   return (
     <section className="min-h-[100.1dvh] overflow-x-hidden bg-[radial-gradient(ellipse_31.48%_48.47%_at_51.72%_50.00%,#464441_0%,#191918_100%)] lg:min-h-dvh">
@@ -259,7 +283,7 @@ export default function Game() {
 
         {/* Helper and Score */}
 
-        <Helper />
+        <BlocNotes />
 
         {/* Winner */}
 

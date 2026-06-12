@@ -1,3 +1,6 @@
+// Empêche le mode portrait sur mobile
+// Générer par IA
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -68,3 +71,5 @@ export default function OrientationGuard() {
     </div>
   );
 }
+
+// Fin de la génération IA

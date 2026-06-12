@@ -1,6 +1,9 @@
-import { useGame } from "../../context/GameContext";
+// Import des modules
 import Image from "next/image";
 import { useEffect } from "react";
+
+// Import du contexte
+import { useGame } from "../../context/GameContext";
 
 export default function MentionsLegales() {
   const { view, setView } = useGame();

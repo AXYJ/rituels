@@ -1,4 +1,4 @@
-import { useEffect, MutableRefObject, Dispatch, SetStateAction } from "react";
+import { useEffect, RefObject, Dispatch, SetStateAction } from "react";
 import { Socket } from "socket.io-client";
 import { Player, GameRules, View, HistoryItem } from "../types/game";
 
@@ -17,7 +17,6 @@ interface SocketListenersProps {
   setRoomCode: (code: string) => void;
   setRules: (rules: GameRules | null) => void;
   setPlayers: (players: Player[] | ((prev: Player[]) => Player[])) => void;
-  setPlayerNumber: (num: number) => void;
   setThreshold: (threshold: number) => void;
   setHistory: (
     history: HistoryItem[] | ((prev: HistoryItem[]) => HistoryItem[])
@@ -33,7 +32,7 @@ interface SocketListenersProps {
     }>
   >;
   setIsConnected: (connected: boolean) => void;
-  sfxVolumeRef: MutableRefObject<number>;
+  sfxVolumeRef: RefObject<number>;
   setNoMorePlayers: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
@@ -45,7 +44,6 @@ export const useSocketListeners = (props: SocketListenersProps) => {
     setRoomCode,
     setRules,
     setPlayers,
-    setPlayerNumber,
     setThreshold,
     setHistory,
     setWinner,
@@ -108,7 +106,6 @@ export const useSocketListeners = (props: SocketListenersProps) => {
       setRules,
       setThreshold,
       setPlayers,
-      setPlayerNumber,
       setView,
       setError
     );
@@ -124,7 +121,6 @@ export const useSocketListeners = (props: SocketListenersProps) => {
       setRules,
       setView,
       setPropositions,
-      setPlayerNumber,
       sfxVolumeRef
     );
 
@@ -193,7 +189,6 @@ export const useSocketListeners = (props: SocketListenersProps) => {
         roomCode: string;
         rules: GameRules;
         players: Player[];
-        playerNumber: number;
         threshold: number;
         playerOrder: string[];
         playerTurn: string;
@@ -203,7 +198,6 @@ export const useSocketListeners = (props: SocketListenersProps) => {
           roomCode,
           rules,
           players,
-          playerNumber,
           threshold,
           playerOrder,
           playerTurn,
@@ -214,7 +208,6 @@ export const useSocketListeners = (props: SocketListenersProps) => {
         setRules(rules);
         if (threshold !== undefined) setThreshold(threshold);
         setPlayers(players || []);
-        setPlayerNumber(playerNumber);
 
         if (playerOrder && playerOrder.length > 0) {
           setPlayerOrder(playerOrder);
@@ -280,7 +273,6 @@ export const useSocketListeners = (props: SocketListenersProps) => {
     setRoomCode,
     setRules,
     setPlayers,
-    setPlayerNumber,
     setThreshold,
     setHistory,
     setWinner,

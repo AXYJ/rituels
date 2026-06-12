@@ -1,13 +1,13 @@
 import { Socket } from "socket.io-client";
 import { HistoryItem } from "../../types/game";
-import { MutableRefObject } from "react";
+import { RefObject } from "react";
 
 export const registerChatHandlers = (
   socket: Socket,
   setHistory: (
     history: HistoryItem[] | ((prev: HistoryItem[]) => HistoryItem[])
   ) => void,
-  sfxVolumeRef: MutableRefObject<number>
+  sfxVolumeRef: RefObject<number>
 ) => {
   socket.on(
     "message_received",

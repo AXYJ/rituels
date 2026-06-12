@@ -1,8 +1,11 @@
 "use client";
 
-import { useGame } from "../../context/GameContext";
+// Import des modules
 import { motion } from "framer-motion";
 import Image from "next/image";
+
+// Import du contexte
+import { useGame } from "../../context/GameContext";
 
 export default function QuitModal({ onClose }: { onClose: () => void }) {
   const { quitLobby } = useGame();

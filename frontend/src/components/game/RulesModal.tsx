@@ -1,11 +1,15 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
-import { useGame } from "../../context/GameContext";
+// Import des modules
 import { useState } from "react";
 import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
 
+// Import des hooks
 import CopyCodeRoom from "../../hooks/CopyCodeRoom";
+
+// Import du contexte
+import { useGame } from "../../context/GameContext";
 
 export default function RulesModal({
   onClose,
@@ -20,10 +24,6 @@ export default function RulesModal({
   const [rules, setRules] = useState(false);
 
   const [copySuccess, setCopySuccess] = useState(false);
-
-  const handleCopyCode = () => {
-    CopyCodeRoom({ roomCode, setCopySuccess });
-  };
 
   const handleClick = (e: React.MouseEvent) => {
     const id = e.currentTarget.id;
@@ -75,7 +75,7 @@ export default function RulesModal({
                   width={32}
                   height={32}
                   className="h-4 w-4 cursor-pointer transition-transform duration-300 ease-in-out hover:scale-110 lg:h-8 lg:w-8"
-                  onClick={handleCopyCode}
+                  onClick={() => CopyCodeRoom({ roomCode, setCopySuccess })}
                 />
               </h3>
               <div className="grid grid-cols-5 items-center gap-2">
@@ -222,11 +222,10 @@ export default function RulesModal({
         {copySuccess && (
           <motion.div
             key="copy-success"
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
-            transition={{ duration: 0.3 }}
-            className="fixed bottom-8 left-1/2 z-100 -translate-x-1/2 rounded bg-green-500 px-4 py-2 text-4xl text-white"
+            exit={{ opacity: 0, y: -20 }}
+            className="fixed left-1/2 -translate-x-1/2 bg-green-500 text-white top-10 z-9999 flex items-center gap-4 rounded-md px-8 py-4 text-2xl shadow-lg"
           >
             Code copié !
           </motion.div>

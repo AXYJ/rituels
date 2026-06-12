@@ -1,9 +1,14 @@
 "use client";
 
+// Import des modules
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+
+// Import des types
 import { Card, Player } from "../../types/game";
+
+// Import du contexte
 import { useGame } from "../../context/GameContext";
 import { normalizeSymbol } from "../../utils/normalizeSymbol";
 
@@ -24,6 +29,7 @@ export default function PlayerDeck({
     null
   );
 
+  // Gestion de la sélection de carte sur mobile
   useEffect(() => {
     const handleGlobalClick = () => {
       setSelectedCardIndex(null);

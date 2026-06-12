@@ -1,7 +1,10 @@
 "use client";
 
+// Import des modules
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
+
+// Import du contexte
 import { useGame } from "../../context/GameContext";
 
 export default function History() {

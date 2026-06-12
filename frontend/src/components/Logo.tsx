@@ -7,10 +7,12 @@ export default function Logo({
   className,
   setView,
   onClick,
+  onHoverScale,
 }: {
   className?: string;
   setView?: (view: View) => void;
   onClick?: () => void;
+  onHoverScale?: boolean;
 }) {
   const handleClick = () => {
     if (onClick) {
@@ -22,7 +24,7 @@ export default function Logo({
 
   return (
     <div
-      className={`z-100 flex items-center justify-center ${setView || onClick ? "cursor-pointer" : ""} ${className || ""}`}
+      className={`z-100 flex items-center justify-center ${onHoverScale ? "hover:scale-110 transition-transform duration-300 ease-in-out" : ""} ${setView || onClick ? "cursor-pointer" : ""} ${className || ""}`}
       onClick={handleClick}
     >
       <Image

@@ -47,7 +47,6 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   });
   const [players, setPlayers] = useState<Player[]>([]);
   const [rules, setRules] = useState<GameRules | null>(null);
-  const [playerNumber, setPlayerNumber] = useState(0);
   const [playerTurn, setPlayerTurn] = useState("");
   const [playerOrder, setPlayerOrder] = useState<string[]>([]);
   const [history, setHistory] = useState<HistoryItem[]>([]);
@@ -122,7 +121,6 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     setRoomCode,
     setRules,
     setPlayers,
-    setPlayerNumber,
     setThreshold,
     setHistory,
     setWinner,
@@ -233,7 +231,6 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     setRules(null);
     setHistory([]);
     setDisplayOrder(null);
-    setPlayerNumber(0);
   }, [socket]);
 
   // Démarrer la partie
@@ -324,8 +321,6 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       changeName,
       rules,
       setRules,
-      playerNumber,
-      setPlayerNumber,
       beReady,
       quitLobby,
       startGame,
@@ -366,7 +361,6 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       joinGame,
       changeName,
       rules,
-      playerNumber,
       beReady,
       quitLobby,
       startGame,

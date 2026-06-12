@@ -1,8 +1,12 @@
 "use client";
 
-// Components
-import { GameProvider, useGame } from "../context/GameContext";
+// Import des modules
 import { useEffect, useRef } from "react";
+
+// Import du context
+import { GameProvider, useGame } from "../context/GameContext";
+
+// Import des composants
 import Home from "../components/pages/home";
 import Lobby from "../components/pages/Lobby";
 import Game from "../components/pages/Game";
@@ -33,6 +37,7 @@ function GameContent() {
   }
 }
 
+// Lecteur audio
 function AudioPlayer() {
   const { volume } = useGame();
   const audioRef = useRef<HTMLAudioElement>(null);
