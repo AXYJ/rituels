@@ -120,7 +120,7 @@ export const registerGameHandlers = (
 
   socket.on(
     "game_reset",
-    (rules: GameRules, players: Player[], socketId: string) => {
+    (rules: GameRules, players: Player[]) => {
       setPlayers(players);
       setView("lobby");
       setRules(rules);

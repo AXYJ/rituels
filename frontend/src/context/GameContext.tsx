@@ -283,8 +283,9 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
 
   // Reset le jeu
   const resetGame = useCallback(() => {
+    setView("lobby");
     if (socket) {
-      socket.emit("reset_game", socket.id);
+      socket.emit("return_to_lobby");
     }
   }, [socket]);
 

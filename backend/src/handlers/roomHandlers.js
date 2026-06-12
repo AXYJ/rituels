@@ -9,13 +9,14 @@ export const registerRoomHandlers = (io, socket, rooms) => {
       players: [
         {
           id: idPlayer,
-          name: "Host",
+          name: "Hôte",
           sessionId: sessionId || idPlayer,
           isHost: true,
           isReady: false,
           score: 0,
           deck: { cards: null },
           leavedPlayer: false,
+          inLobby: true,
         },
       ],
       threshold: 15,
@@ -31,7 +32,6 @@ export const registerRoomHandlers = (io, socket, rooms) => {
       roomCode,
       rules,
       room.players,
-      room.players.length,
       room.threshold
     );
   });
@@ -50,6 +50,7 @@ export const registerRoomHandlers = (io, socket, rooms) => {
       const oldId = existingPlayer.id;
       existingPlayer.id = socket.id;
       existingPlayer.leavedPlayer = false;
+      existingPlayer.inLobby = room.playerOrder ? false : true;
       socket.join(roomCode);
 
       if (room.playerOrder) {
@@ -85,6 +86,7 @@ export const registerRoomHandlers = (io, socket, rooms) => {
         score: 0,
         deck: { cards: null },
         leavedPlayer: false,
+        inLobby: true,
       };
       room.players.push(player);
       socket.join(roomCode);
@@ -95,7 +97,6 @@ export const registerRoomHandlers = (io, socket, rooms) => {
         roomCode,
         room.rules,
         room.players,
-        room.players.length,
         room.threshold
       );
     } else {

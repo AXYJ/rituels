@@ -7,6 +7,33 @@ import {
     generateRules 
 } from "../gameLogic.js";
 
+export const checkAndResetGame = (roomCode, rooms, io) => {
+  const room = rooms[roomCode];
+  if (!room) return;
+
+  const activePlayers = room.players.filter((p) => !p.leavedPlayer);
+  const allInLobby = activePlayers.every((p) => p.inLobby);
+
+  if (room.isGameOver && allInLobby) {
+    room.rules = generateRules();
+    delete room.playerOrder;
+    room.threshold = 15;
+    room.history = [];
+    room.lastEffect = null;
+    room.isGameOver = false;
+
+    activePlayers.forEach((p) => {
+      p.isReady = p.isHost;
+      p.deck = { cards: null };
+      p.inLobby = true;
+    });
+
+    room.players = activePlayers;
+
+    io.to(roomCode).emit("game_reset", room.rules, activePlayers);
+  }
+};
+
 export const registerGameHandlers = (io, socket, rooms) => {
   // Démarrer la partie
   socket.on("start_game", (roomCode, threshold) => {
@@ -22,6 +49,7 @@ export const registerGameHandlers = (io, socket, rooms) => {
             createCard(room.rules),
           ],
         };
+        p.inLobby = false;
       });
       room.threshold = threshold;
       room.history = [];
@@ -76,6 +104,7 @@ export const registerGameHandlers = (io, socket, rooms) => {
         room.history.push(historyItem);
 
         if (isWin) {
+          room.isGameOver = true;
           return io.to(code).emit("game_won", player.id, player.score);
         }
 
@@ -103,28 +132,17 @@ export const registerGameHandlers = (io, socket, rooms) => {
     }
   });
 
-  // Rejouer la partie
-  socket.on("reset_game", (triggerId) => {
+  // Retour au lobby
+  socket.on("return_to_lobby", () => {
     for (const code in rooms) {
       const room = rooms[code];
       const player = room.players.find((p) => p.id === socket.id);
       if (player) {
-        room.rules = generateRules();
-        delete room.playerOrder;
-        room.threshold = 15;
-        room.history = [];
-        room.lastEffect = null;
+        player.inLobby = true;
 
-        const activePlayers = room.players.filter((p) => !p.leavedPlayer);
+        io.to(code).emit("room_updated", { players: room.players });
 
-        activePlayers.forEach((p) => {
-          p.isReady = p.isHost;
-          p.deck = { cards: null };
-        });
-
-        room.players = activePlayers;
-
-        io.to(code).emit("game_reset", room.rules, activePlayers, triggerId);
+        checkAndResetGame(code, rooms, io);
         break;
       }
     }

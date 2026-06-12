@@ -6,7 +6,7 @@ import { getNextPlayerOrder } from "./gameLogic.js";
 
 // Handlers
 import { registerRoomHandlers } from "./handlers/roomHandlers.js";
-import { registerGameHandlers } from "./handlers/gameHandlers.js";
+import { registerGameHandlers, checkAndResetGame } from "./handlers/gameHandlers.js";
 import { registerChatHandlers } from "./handlers/chatHandlers.js";
 
 // Initialisation
@@ -89,6 +89,10 @@ io.on("connection", (socket) => {
                     if (isGameStarted && room.playerOrder && room.playerOrder[0] === idPlayer) {
                         room.playerOrder = getNextPlayerOrder(room.playerOrder, room.players);
                         io.to(code).emit("turn_updated", room.playerOrder);
+                    }
+
+                    if (room.isGameOver) {
+                        checkAndResetGame(code, rooms, io);
                     }
                 }
                 break;
