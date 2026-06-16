@@ -606,7 +606,7 @@ export default function Home() {
           <h2>Protocole de jeu (règles)</h2>
           {playVideo ? (
             <iframe
-              src="https://www.youtube-nocookie.com/embed/jhxZaYCYIco?autoplay=1"
+              src="https://www.youtube-nocookie.com/embed/Cb2AY2S5HGs?autoplay=1"
               className="aspect-video w-8/10 max-w-[1024px] lg:w-1/2 rounded-2xl border border-white/10 shadow-2xl"
               title="Rituels - Explication des règles"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
