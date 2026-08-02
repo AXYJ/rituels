@@ -24,11 +24,12 @@ const io = new Server(server, {
         origin: [
             "http://localhost:3000", 
             "http://127.0.0.1:3000",
-            process.env.NEXT_PUBLIC_SOCKET_URL
+            "https://rituels.xiao-web.com"
         ].filter(Boolean),
         methods: ["GET", "POST"],
         credentials: true
     },
+    transports: ["polling", "websocket"],
     pingInterval: 25000,
     pingTimeout: 60000
 });
