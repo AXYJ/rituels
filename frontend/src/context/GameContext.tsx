@@ -15,7 +15,6 @@ import { io, Socket } from "socket.io-client";
 
 // Clé pour le localStorage
 const PLAYER_NAME_KEY = "rituels_player_name";
-
 const SFX_KEY = "rituels_sfx_volume";
 const VOLUME_KEY = "rituels_volume";
 
