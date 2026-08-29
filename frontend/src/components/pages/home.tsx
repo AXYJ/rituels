@@ -875,8 +875,8 @@ export default function Home() {
           </div>
 
           <div>
-            <p>Rituels - 2026 | HEFF</p>
             <p>Créé par : Alex Xiao 3TIWeb</p>
+            <p>© Rituels 2026 | Tous droits réservés </p>
           </div>
         </div>
       </footer>
