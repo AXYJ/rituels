@@ -27,7 +27,7 @@ export default function MentionsLegales() {
 
   return (
     <div className="min-h-screen bg-[#191918] px-4 py-16">
-      <div className="mx-auto max-w-[1024px]">
+      <div className="mx-auto max-w-5xl">
         <button
           onClick={() => setView("home")}
           className="group mb-8 flex cursor-pointer items-center gap-2 text-white transition-colors hover:text-gray-300"

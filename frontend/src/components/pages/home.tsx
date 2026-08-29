@@ -228,7 +228,7 @@ export default function Home() {
       </header>
       {/* // Animation au chargement */}
       <section
-        className="bg-[radial-gradient(ellipse_31.48%_48.47%_at_51.72%_50.00%,_#464441_0%,_#191918_100%)] pb-32"
+        className="bg-[radial-gradient(ellipse_31.48%_48.47%_at_51.72%_50.00%,#464441_0%,#191918_100%)] pb-32"
         id="launch-btn"
       >
         <div className="relative flex min-h-screen flex-col items-center gap-2 overflow-hidden pt-12 lg:justify-center lg:gap-8 lg:pt-0">
@@ -254,14 +254,14 @@ export default function Home() {
                 isFirstVisit ? (
                   <DotLottieReact
                     src="/final.json"
-                    className="pointer-events-none h-auto w-full max-w-[480px]"
+                    className="pointer-events-none h-auto w-full max-w-120"
                     autoplay
                   />
                 ) : (
-                  <Logo className="h-auto w-full max-w-[480px]" />
+                  <Logo className="h-auto w-full max-w-120" />
                 )
               ) : (
-                <div className="aspect-[2780/1042] h-auto w-full max-w-[480px]" />
+                <div className="aspect-2780/1042 h-auto w-full max-w-120" />
               )}
             </motion.div>
 
@@ -290,7 +290,7 @@ export default function Home() {
               variants={frameVariants}
               initial="hidden"
               animate={hasCheckedVisit ? "visible" : "hidden"}
-              className="launch-btn flex w-8/10 max-w-[1024px] flex-col items-center gap-4 lg:gap-12"
+              className="launch-btn flex w-8/10 max-w-120 flex-col items-center gap-4 lg:gap-12"
             >
               <motion.button
                 variants={itemVariants}
@@ -396,7 +396,7 @@ export default function Home() {
             alt=""
             width={517}
             height={69}
-            className="pointer-events-none absolute top-2/3 z-0 hidden w-80 select-none lg:left-9/12 lg:block lg:w-128"
+            className="pointer-events-none absolute top-2/3 z-0 hidden w-80 select-none lg:left-9/12 lg:block lg:w-lg"
             whileInView={hasCheckedVisit ? { opacity: 1 } : { opacity: 0 }}
             initial={{ opacity: 0 }}
             fetchPriority="high"
@@ -422,7 +422,7 @@ export default function Home() {
           id="explication"
         >
           <h2>Rapport Déclassifié : Laboratoire Skinner</h2>
-          <div className="relative flex w-8/10 max-w-[1024px] flex-col gap-4 text-white lg:w-1/2">
+          <div className="relative flex w-8/10 max-w-5xl flex-col gap-4 text-white lg:w-1/2">
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -607,7 +607,7 @@ export default function Home() {
           {playVideo ? (
             <iframe
               src="https://www.youtube-nocookie.com/embed/Cb2AY2S5HGs?autoplay=1"
-              className="aspect-video w-8/10 max-w-[1024px] lg:w-1/2 rounded-2xl border border-white/10 shadow-2xl"
+              className="aspect-video w-8/10 max-w-5xl lg:w-1/2 rounded-2xl border border-white/10 shadow-2xl"
               title="Rituels - Explication des règles"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               allowFullScreen
@@ -615,7 +615,7 @@ export default function Home() {
           ) : (
             <div
               onClick={() => setPlayVideo(true)}
-              className="relative aspect-video w-8/10 max-w-[1024px] lg:w-1/2 overflow-hidden cursor-pointer border-white/40 border-1"
+              className="relative aspect-video w-8/10 max-w-5xl lg:w-1/2 overflow-hidden cursor-pointer border-white/40 border"
             >
               <Image
                 src="/assets/video_preview.png"
@@ -639,7 +639,7 @@ export default function Home() {
               </div>
             </div>
           )}
-          <div className="flex w-8/10 max-w-[1024px] flex-col gap-4 text-white lg:w-1/2">
+          <div className="flex w-8/10 max-w-5xl flex-col gap-4 text-white lg:w-1/2">
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -875,7 +875,7 @@ export default function Home() {
           </div>
 
           <div>
-            <p>Créé par : Alex Xiao 3TIWeb</p>
+            <p>Créé par : Alex Xiao</p>
             <p>© Rituels 2026 | Tous droits réservés </p>
           </div>
         </div>
