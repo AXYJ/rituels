@@ -298,7 +298,7 @@ export default function Home() {
                 whileTap={{ scale: 0.9 }}
                 onClick={startGame}
                 disabled={btnDisabled}
-                className={`relative w-full cursor-pointer rounded-3xl px-12 py-4 shadow-black transition-shadow duration-300 hover:shadow-lg lg:w-1/2`}
+                className={`relative w-full cursor-pointer rounded-3xl px-12 py-4 shadow-black transition-shadow duration-300 hover:shadow-lg`}
               >
                 <Image
                   src="/assets/button-long.png"
@@ -315,7 +315,7 @@ export default function Home() {
 
               <motion.div
                 variants={itemVariants2}
-                className="items-between flex w-full gap-4 text-white lg:w-1/2"
+                className="items-between flex w-full gap-4 text-white"
               >
                 <div className="need-border relative w-full">
                   <input
