@@ -2,6 +2,9 @@
 
 Un jeu de cartes multijoueur en temps réel. Affrontez vos amis, jouez des cartes pour gagner des points, et interagissez via le chat intégré !
 
+🌐 **Jouer en ligne :** [https://rituels.xiao-web.com/](https://rituels.xiao-web.com/)
+
+
 ## 🚀 Fonctionnalités
 
 - **Multijoueur en temps réel** : Synchronisation fluide des parties grâce à Socket.io.
