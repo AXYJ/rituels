@@ -29,7 +29,7 @@ export default function Logo({
     >
       <Image
         src="/logo-v4.png"
-        alt="Logo"
+        alt="Rituels - Jeu de cartes expérimental"
         width={2780}
         height={1042}
         className="pointer-events-none h-auto w-full object-contain"
