@@ -13,11 +13,11 @@ export const metadata: Metadata = {
     process.env.NEXT_PUBLIC_APP_URL || "https://rituels.xiao-web.com"
   ),
   title: {
-    default: "Rituels - Le jeu de cartes expérimental aux règles changeantes",
+    default: "Rituels — Le jeu de cartes des sujets d'expérience",
     template: "%s | Rituels",
   },
   description:
-    "Rituels est un jeu de cartes expérimental pour 2 à 4 joueurs où le but est d'être le premier joueur à atteindre le quota de graines fixé à l'avance.",
+    "Rituels, jeu de cartes en ligne pour 2-4 joueurs. Posez vos cartes, déduisez la logique changeante du système et récoltez vos graines avant les autres.",
   applicationName: "Rituels",
   authors: [{ name: "Rituels" }],
   creator: "Rituels",
@@ -25,7 +25,6 @@ export const metadata: Metadata = {
   keywords: [
     "jeu de cartes",
     "jeu de cartes en ligne",
-    "jeu de stratégie",
     "jeu de déduction",
     "règles changeantes",
     "jeu multijoueur",
@@ -33,6 +32,14 @@ export const metadata: Metadata = {
     "rituels",
     "rituels jeu",
     "laboratoire skinner",
+    "jeu de société en ligne",
+    "jeu entre amis à distance",
+    "superstition pigeon skinner",
+    "expérience skinner jeu",
+    "jeu de cartes mystérieux",
+    "jeu de cartes psychologique",
+    "cartes de zener"
+
   ],
   robots: {
     index: true,
@@ -48,7 +55,6 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "/",
   },
-  manifest: "/manifest.json",
   icons: {
     icon: [
       {
@@ -69,9 +75,9 @@ export const metadata: Metadata = {
     locale: "fr_FR",
     url: "/",
     siteName: "Rituels",
-    title: "Rituels - Le jeu de cartes expérimental aux règles changeantes",
+    title: "Rituels — Le jeu de cartes des sujets d'expérience",
     description:
-      "Rituels est un jeu de cartes expérimental pour 2 à 4 joueurs où le but est d'être le premier joueur à atteindre le quota de graines fixé à l'avance.",
+      "Rituels, jeu de cartes en ligne pour 2-4 joueurs. Posez vos cartes, déduisez la logique changeante du système et récoltez vos graines avant les autres.",
     images: [
       {
         url: "/opengraph-image.png",
@@ -83,9 +89,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Rituels - Le jeu de cartes expérimental aux règles changeantes",
+    title: "Rituels — Le jeu de cartes des sujets d'expérience",
     description:
-      "Rituels est un jeu de cartes expérimental pour 2 à 4 joueurs où le but est d'être le premier joueur à atteindre le quota de graines fixé à l'avance.",
+      "Rituels, jeu de cartes en ligne pour 2-4 joueurs. Posez vos cartes, déduisez la logique changeante du système et récoltez vos graines avant les autres.",
     images: ["/opengraph-image.png"],
   },
   category: "game",
@@ -97,9 +103,9 @@ const jsonLd = {
   name: "Rituels",
   url: "https://rituels.xiao-web.com",
   description:
-    "Rituels est un jeu de cartes expérimental pour 2 à 4 joueurs où le but est d'être le premier joueur à atteindre le quota de graines fixé à l'avance.",
+    "Rituels, jeu de cartes en ligne pour 2-4 joueurs. Posez vos cartes, déduisez la logique changeante du système et récoltez vos graines avant les autres.",
   applicationCategory: "GameApplication",
-  genre: ["Jeu de cartes", "Stratégie", "Déduction", "Multijoueur"],
+  genre: ["Jeu de cartes", "Déduction", "Multijoueur"],
   operatingSystem: "All",
   offers: {
     "@type": "Offer",

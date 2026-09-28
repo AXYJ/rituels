@@ -13,6 +13,13 @@ import { useGame } from "../../context/GameContext";
 // Import des composants
 import Logo from "../Logo";
 
+// Textes des règles (source unique, partagée avec RulesModal.tsx)
+import {
+  RULES_PARAGRAPHS,
+  RULES_EFFECTS,
+  RULES_FOOTER_PARAGRAPHS,
+} from "../../content/rulesText";
+
 const MotionImage = motion(Image);
 
 export default function Home() {
@@ -437,7 +444,7 @@ export default function Home() {
               className="overflow-hidden text-center"
             >
               En 1948, le psychologue B.F. Skinner a réussi à rendre des pigeons
-              superstitieux en distribuant des graines  de manière aléatoire.{" "}
+              superstitieux en distribuant des graines de manière aléatoire.{" "}
               Le monde a acclamé ses travaux mais a également oublié ces
               pigeons.
             </motion.p>
@@ -653,9 +660,7 @@ export default function Home() {
               }}
               className="overflow-hidden"
             >
-              Rituels est un jeu de cartes expérimental pour 2 à 4 joueurs où le
-              but est d&apos;être le premier joueur à atteindre le quota de
-              graines fixé <br /> à l&apos;avance.
+              {RULES_PARAGRAPHS[0]}
             </motion.p>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -670,8 +675,7 @@ export default function Home() {
               }}
               className="overflow-hidden"
             >
-              Pour gagner des graines, vous disposerez à tout moment de 3
-              cartes.
+              {RULES_PARAGRAPHS[1]}
             </motion.p>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -686,8 +690,7 @@ export default function Home() {
               }}
               className="overflow-hidden"
             >
-              Chaque carte est une combinaison de deux éléments : un symbole et
-              une couleur.
+              {RULES_PARAGRAPHS[2]}
             </motion.p>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -702,7 +705,7 @@ export default function Home() {
               }}
               className="overflow-hidden"
             >
-              Chaque symbole a une valeur différente entre -1 et 3.
+              {RULES_PARAGRAPHS[3]}
             </motion.p>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -717,8 +720,7 @@ export default function Home() {
               }}
               className="overflow-hidden"
             >
-              Chaque couleur a un pouvoir qui influence le cours du jeu :
-              inversion, gel, répétition et neutre.
+              {RULES_PARAGRAPHS[4]}
             </motion.p>
             <motion.ul
               initial={{ opacity: 0, y: 20 }}
@@ -733,21 +735,9 @@ export default function Home() {
               }}
               className="ml-4 list-inside list-disc text-2xl"
             >
-              <li>
-                L&apos;inversion inverse la valeur de la carte jouée. Si le
-                symbole vaut 2, alors la carte vaudra -2.
-              </li>
-              <li>
-                Le gel empêche le joueur suivant de gagner des graines.
-                Qu&apos;importe ce que le jouer suivant joue, il ne gagnera ni
-                ne perdra <br /> de points.
-              </li>
-              <li>
-                La répétition répète le pouvoir de la carte précédemment jouée.
-                Si la carte précédente avait le pouvoir &quot;gel&quot;, cette
-                carte aura aussi l&apos;effet &quot;gel&quot;.
-              </li>
-              <li>Neutre n&apos;a aucun effet mais est présent deux fois.</li>
+              {RULES_EFFECTS.map((text, i) => (
+                <li key={`rule-effect-${i}`}>{text}</li>
+              ))}
             </motion.ul>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -762,8 +752,7 @@ export default function Home() {
               }}
               className="overflow-hidden"
             >
-              Les valeurs des symboles et les pouvoirs des couleurs sont
-              répartis aléatoirement à chaque partie.
+              {RULES_FOOTER_PARAGRAPHS[0]}
             </motion.p>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -778,7 +767,7 @@ export default function Home() {
               }}
               className="overflow-hidden"
             >
-              À votre tour, vous devez jouer une carte de votre main.
+              {RULES_FOOTER_PARAGRAPHS[1]}
             </motion.p>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -793,8 +782,7 @@ export default function Home() {
               }}
               className="overflow-hidden"
             >
-              Le joueur dont le score atteint ou dépasse le quota défini en
-              premier remporte la partie.
+              {RULES_FOOTER_PARAGRAPHS[2]}
             </motion.p>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -809,9 +797,7 @@ export default function Home() {
               }}
               className="overflow-hidden"
             >
-              Pour vous aidez, vous avez à votre disposition un bloc-notes où
-              vous pouvez noter vos hypothèses ainsi qu&apos;une messagerie qui
-              recense toutes les cartes qui ont été jouées.
+              {RULES_FOOTER_PARAGRAPHS[3]}
             </motion.p>
           </div>
           <MotionImage
@@ -864,7 +850,7 @@ export default function Home() {
               onClick={() => setView("mentions-legales")}
               className="cursor-pointer hover:underline"
             >
-              <p>Mentions Legales</p>
+              <p>Mentions Légales</p>
             </button>
             <button
               onClick={() => setView("mentions-legales#credits")}

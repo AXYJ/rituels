@@ -44,5 +44,4 @@ L'application frontend sera accessible sur [http://localhost:3000](http://localh
 
 ## 🌍 Déploiement
 
-- **Frontend** : Optimisé pour un déploiement facile sur [Vercel](https://vercel.com/).
-- **Backend** : Prêt pour un déploiement sur des plateformes comme [Render](https://render.com/). *(Note : Le backend utilise directement les variables `process.env` en production).*
+- **Hébergement** : Le frontend et le backend sont hébergés chez [Hostinger](https://www.hostinger.com/). *(Note : Le backend utilise directement les variables `process.env` en production).*

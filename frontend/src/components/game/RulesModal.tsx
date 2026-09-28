@@ -11,6 +11,13 @@ import CopyCodeRoom from "../../hooks/CopyCodeRoom";
 // Import du contexte
 import { useGame } from "../../context/GameContext";
 
+// Textes des règles (source unique, partagée avec home.tsx)
+import {
+  RULES_PARAGRAPHS,
+  RULES_EFFECTS,
+  RULES_FOOTER_PARAGRAPHS,
+} from "../../content/rulesText";
+
 export default function RulesModal({
   onClose,
   onQuit,
@@ -130,65 +137,24 @@ export default function RulesModal({
             <div className="flex flex-col items-center justify-center gap-8 pt-8">
               <h2>Protocole de jeu</h2>
               <iframe
-                src="https://www.youtube.com/embed/Cb2AY2S5HGs"
+                src="https://www.youtube-nocookie.com/embed/Cb2AY2S5HGs"
                 className="aspect-video w-full"
                 loading="lazy"
                 title="Rituels - Explication des règles"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               />
-              <div className="flex max-w-[1024px] flex-col gap-4 text-white">
-                <p>
-                  Rituels est un jeu de cartes expérimental pour 2 à 4 joueurs
-                  où le but est d&apos;être le premier joueur à atteindre le
-                  quota de graines fixé à l&apos;avance.
-                </p>
-                <p>
-                  Pour gagner des graines, vous disposerez à tout moment de 3
-                  cartes.
-                </p>
-                <p>
-                  Chaque carte est une combinaison de deux éléments : un symbole
-                  et une couleur.
-                </p>
-                <p>Chaque symbole a une valeur différente entre -1 et 3.</p>
-                <p>
-                  Chaque couleur a un pouvoir qui influence le cours du jeu :
-                  inversion, gel, répétition et neutre.
-                </p>
+              <div className="flex max-w-5xl flex-col gap-4 text-white">
+                {RULES_PARAGRAPHS.map((text, i) => (
+                  <p key={`rule-p-${i}`}>{text}</p>
+                ))}
                 <ul className="ml-4 list-inside list-disc text-2xl">
-                  <li>
-                    L&apos;inversion inverse la valeur de la carte jouée. Si le
-                    symbole vaut 2, alors la carte vaudra -2.
-                  </li>
-                  <li>
-                    Le gel empêche le joueur suivant de gagner des graines.
-                    Qu&apos;importe ce que le jouer suivant joue, il ne gagnera
-                    ni ne perdra de points.
-                  </li>
-                  <li>
-                    La répétition répète le pouvoir de la carte précédemment
-                    jouée. Si la carte précédente avait le pouvoir
-                    &quot;gel&quot;, cette carte aura aussi l&apos;effet
-                    &quot;gel&quot;.
-                  </li>
-                  <li>
-                    Neutre n&apos;a aucun effet mais est présent deux fois.
-                  </li>
+                  {RULES_EFFECTS.map((text, i) => (
+                    <li key={`rule-effect-${i}`}>{text}</li>
+                  ))}
                 </ul>
-                <p>
-                  Les valeurs des symboles et les pouvoirs des couleurs sont
-                  répartis aléatoirement à chaque partie.
-                </p>
-                <p>À votre tour, vous devez jouer une carte de votre main.</p>
-                <p>
-                  Le joueur dont le score atteint ou dépasse le quota défini en
-                  premier remporte la partie.
-                </p>
-                <p>
-                  Pour vous aidez, vous avez à votre disposition un bloc-notes
-                  où vous pouvez noter vos hypothèses ainsi qu&apos;une
-                  messagerie qui recense toutes les cartes qui ont été jouées.
-                </p>
+                {RULES_FOOTER_PARAGRAPHS.map((text, i) => (
+                  <p key={`rule-footer-${i}`}>{text}</p>
+                ))}
               </div>
             </div>
           </div>

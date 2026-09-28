@@ -14,9 +14,9 @@ export default function NoMorePlayersScreen() {
   };
   return (
     <div className="fixed top-0 left-0 z-60 flex h-full w-full justify-center overflow-y-auto bg-black/80 lg:overflow-hidden">
-      <div className="flex w-full max-w-[1024px] flex-col items-center justify-center overflow-y-auto rounded-lg p-6 lg:justify-center lg:gap-8 lg:overflow-hidden">
+      <div className="flex w-full max-w-5xl flex-col items-center justify-center overflow-y-auto rounded-lg p-6 lg:justify-center lg:gap-8 lg:overflow-hidden">
         <h3 className="mb-8 text-center">
-          Tout le monde a fait une indigestion à part toi !
+          Tout le monde a fait une indigestion à part vous !
         </h3>
         <h2 className="mb-8 text-center">
           Souhaitez-vous attendre leur retour ?

@@ -265,6 +265,11 @@ export default function MentionsLegales() {
                       <td className="p-4">Associer de manière unique le joueur à sa connexion en cours et permettre la reconnexion automatique en cas de coupure réseau.</td>
                       <td className="p-4 text-white/60">Conservé localement sur votre navigateur (localStorage) pour permettre les reconnexions.</td>
                     </tr>
+                    <tr>
+                      <td className="p-4 font-semibold text-white">Pseudonyme et messages du chat</td>
+                      <td className="p-4">Transmis à un service tiers de modération automatique par intelligence artificielle (Groq) afin de détecter et filtrer les contenus vulgaires, haineux ou sexuels avant diffusion aux autres joueurs.</td>
+                      <td className="p-4 text-white/60">Traités ponctuellement lors de l&apos;envoi, non conservés par ce prestataire ni par Rituels au-delà de l&apos;historique de la partie en cours (supprimé à la fermeture du salon).</td>
+                    </tr>
                   </tbody>
                 </table>
               </div>

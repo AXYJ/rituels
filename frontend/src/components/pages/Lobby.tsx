@@ -123,7 +123,7 @@ export default function Lobby() {
   }, [error, setError]);
 
   return (
-    <section className="bg-[radial-gradient(ellipse_31.48%_48.47%_at_51.72%_50.00%,_#464441_0%,_#191918_100%)] py-16 lg:py-0">
+    <section className="bg-[radial-gradient(ellipse_31.48%_48.47%_at_51.72%_50.00%,#464441_0%,#191918_100%)] py-16 lg:py-0">
       <Logo
         className="absolute top-0 left-0 h-16 w-40 lg:top-4 lg:left-4"
         onClick={() => quitLobby()}
@@ -179,7 +179,7 @@ export default function Lobby() {
         variants={frameVariants}
         initial="hidden"
         animate="visible"
-        className="mx-auto flex min-h-screen w-full max-w-[1024px] flex-col items-center justify-center gap-4 lg:gap-8"
+        className="mx-auto flex min-h-screen w-full max-w-5xl flex-col items-center justify-center gap-4 lg:gap-8"
       >
         <motion.h1
           variants={itemVariants}

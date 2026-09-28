@@ -17,7 +17,7 @@ export default function WinnerScreen() {
   const ActualPlayers = players.filter((p) => !p.leavedPlayer);
   return (
     <div className="absolute inset-0 z-60">
-      <div className="relative z-10 flex min-h-[100vh] w-full flex-col items-center gap-4 overflow-y-auto rounded-lg bg-black p-6 lg:justify-center lg:gap-8 lg:overflow-hidden">
+      <div className="relative z-10 flex min-h-screen w-full flex-col items-center gap-4 overflow-y-auto rounded-lg bg-black p-6 lg:justify-center lg:gap-8 lg:overflow-hidden">
         {winner === socket?.id ? (
           <h2 className="text-center font-bold">
             Bravo {playerWin?.name} ! <br />
@@ -26,7 +26,7 @@ export default function WinnerScreen() {
         ) : (
           <h2 className="text-center font-bold">
             Dommage, le/la gagnant(e) est {playerWin?.name} ! <br />
-            Il/Elle a atteint {threshold} graines avant toi.
+            Il/Elle a atteint {threshold} graines avant vous.
           </h2>
         )}
         <div className="flex gap-18">
