@@ -4,12 +4,10 @@ import { useEffect } from "react";
 
 // Import du contexte
 import { useGame } from "../../context/GameContext";
+import EmailLink from "../EmailLink";
 
 export default function MentionsLegales() {
   const { view, setView } = useGame();
-
-  const emailUser = "contact";
-  const emailDomain = "xiao-web.com";
 
   useEffect(() => {
     if (view === "mentions-legales#credits") {
@@ -146,14 +144,7 @@ export default function MentionsLegales() {
               </p>
               <p className="text-lg text-white/80 leading-relaxed">
                 <span className="font-semibold text-white">Contact :</span>{" "}
-                <a
-                  className="text-white underline transition-colors hover:text-gray-300"
-                  href={`mailto:${emailUser}@${emailDomain}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {emailUser} [at] {emailDomain}
-                </a>
+                <EmailLink className="text-white underline transition-colors hover:text-gray-300" />
               </p>
             </article>
 
@@ -360,12 +351,7 @@ export default function MentionsLegales() {
                 contacter l&apos;éditeur du site à l&apos;adresse suivante :
               </p>
               <div className="mt-2 text-center text-lg">
-                <a
-                  className="font-semibold text-white underline transition-colors hover:text-gray-300"
-                  href={`mailto:${emailUser}@${emailDomain}`}
-                >
-                  {emailUser} [at] {emailDomain}
-                </a>
+                <EmailLink className="font-semibold text-white underline transition-colors hover:text-gray-300" />
               </div>
             </article>
           </div>
