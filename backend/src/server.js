@@ -13,6 +13,12 @@ import { registerChatHandlers } from "./handlers/chatHandlers.js";
 const app = express();
 app.use(cors());
 
+// Backend : ne doit pas être indexé par les moteurs de recherche
+app.use((req, res, next) => {
+    res.set("X-Robots-Tag", "noindex, nofollow");
+    next();
+});
+
 // Route de base pour vérifier que le serveur fonctionne
 app.get("/", (req, res) => {
     res.send("Rituels Server is running");
