@@ -5,16 +5,89 @@ import Image from "next/image";
 
 import { useGame } from "../../context/GameContext";
 
+type RuleItem = { key: string; text: string; correct?: boolean };
+
+// Colonne titrée ; `correct` colore la ligne en vert ou rouge (propositions du joueur)
+function RuleList({ title, items }: { title: string; items: RuleItem[] }) {
+  return (
+    <div>
+      <h4 className="text-center text-4xl">{title}</h4>
+      <ul>
+        {items.map(({ key, text, correct }) => (
+          <li
+            key={key}
+            className={`text-2xl ${correct === undefined ? "" : correct ? "text-green" : "text-red"}`}
+          >
+            {text}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function TabButton({
+  onClick,
+  children,
+}: {
+  onClick: () => void;
+  children: string;
+}) {
+  return (
+    <button
+      className="relative px-12 py-2 transition-transform duration-300 ease-in-out hover:scale-110"
+      onClick={onClick}
+    >
+      <Image
+        src="/assets/button-noborder-bottom.png"
+        alt=""
+        width={320}
+        height={320}
+        className="absolute inset-0 z-0 h-full w-full object-fill select-none"
+      />
+      <p className="relative text-black">{children}</p>
+    </button>
+  );
+}
+
 export default function WinnerScreen() {
   const { winner, rules, players, resetGame, threshold, propositions, socket } =
     useGame();
 
   const [showRules, setShowRules] = useState(true);
-  const [showLeaderboard, setShowLeaderboard] = useState(false);
 
   const playerWin = players.find((p) => p.id === winner);
 
-  const ActualPlayers = players.filter((p) => !p.leavedPlayer);
+  const activePlayers = players.filter((p) => !p.leavedPlayer);
+
+  const symbolRules = rules?.symbolRules ?? {};
+  const colorRules = rules?.colorRules ?? {};
+
+  const actualSymbols = Object.entries(symbolRules).map(([symbol, value]) => ({
+    key: symbol,
+    text: `${symbol} : ${value} points`,
+  }));
+  const actualColors = Object.entries(colorRules).map(([color, effect]) => ({
+    key: color,
+    text: `${color} : ${effect}`,
+  }));
+  const guessedSymbols = Object.keys(symbolRules).map((symbol) => {
+    const guess = propositions.symbolRules[symbol];
+    return {
+      key: symbol,
+      text: `${symbol} : ${guess || "--"} points`,
+      correct: guess !== "" && Number(guess) === symbolRules[symbol],
+    };
+  });
+  const guessedColors = Object.keys(colorRules).map((color) => {
+    const guess = propositions.colorRules[color];
+    return {
+      key: color,
+      text: `${color} : ${guess || "--"}`,
+      correct: guess !== "" && guess === colorRules[color],
+    };
+  });
+
   return (
     <div className="absolute inset-0 z-60">
       <div className="relative z-10 flex min-h-screen w-full flex-col items-center gap-4 overflow-y-auto rounded-lg bg-black p-6 lg:justify-center lg:gap-8 lg:overflow-hidden">
@@ -30,125 +103,37 @@ export default function WinnerScreen() {
           </h2>
         )}
         <div className="flex gap-18">
-          <button
-            className="relative px-12 py-2 transition-transform duration-300 ease-in-out hover:scale-110"
-            onClick={() => {
-              setShowRules(true);
-              setShowLeaderboard(false);
-            }}
-          >
-            <Image
-              src="/assets/button-noborder-bottom.png"
-              alt="settings"
-              width={320}
-              height={320}
-              className="absolute inset-0 z-0 h-full w-full object-fill select-none"
-            />
-            <p className="relative text-black">Règles</p>
-          </button>
-          <button
-            className="relative px-12 py-2 transition-transform duration-300 ease-in-out hover:scale-110"
-            onClick={() => {
-              setShowRules(false);
-              setShowLeaderboard(true);
-            }}
-          >
-            <Image
-              src="/assets/button-noborder-bottom.png"
-              alt="settings"
-              width={320}
-              height={320}
-              className="absolute inset-0 z-0 h-full w-full object-fill select-none"
-            />
-            <p className="relative text-black">Classement</p>
-          </button>
+          <TabButton onClick={() => setShowRules(true)}>Règles</TabButton>
+          <TabButton onClick={() => setShowRules(false)}>Classement</TabButton>
         </div>
-        {showRules && (
+        {showRules ? (
           <div className="z-10 flex min-h-[66.66vh] gap-18 lg:min-h-[50vh]">
             <div>
               <h3 className="mb-4 text-center">
                 Voici les règles de cette partie :
               </h3>
               <div className="mb-8 flex justify-center gap-12">
-                <ul>
-                  <h4 className="text-center text-4xl">Symboles</h4>
-                  {Object.entries(rules?.symbolRules || {}).map(
-                    ([symbol, value], index) => (
-                      <li key={`sym-${index}`} className="text-2xl">
-                        {symbol} : {value} points
-                      </li>
-                    )
-                  )}
-                </ul>
-                <ul>
-                  <h4 className="text-center text-4xl">Couleurs</h4>
-                  {Object.entries(rules?.colorRules || {}).map(
-                    ([color, effect], index) => (
-                      <li key={`col-${index}`} className="text-2xl">
-                        {color} : {effect}
-                      </li>
-                    )
-                  )}
-                </ul>
+                <RuleList title="Symboles" items={actualSymbols} />
+                <RuleList title="Couleurs" items={actualColors} />
               </div>
             </div>
             <div>
               <h3 className="mb-4 text-center">Vos propositions : </h3>
               <div className="mb-8 flex justify-center gap-12">
-                <ul>
-                  <h4 className="text-center text-4xl">Symboles</h4>
-                  {Object.keys(rules?.symbolRules || {}).map(
-                    (symbol, index) => {
-                      const prop = propositions.symbolRules[symbol];
-                      const actual = rules?.symbolRules[symbol];
-                      const isCorrect = prop !== "" && Number(prop) === actual;
-
-                      return (
-                        <li
-                          key={`prop-sym-${index}`}
-                          className={`text-2xl ${
-                            isCorrect ? "text-green" : "text-red"
-                          }`}
-                        >
-                          {symbol} : {prop || "--"} points
-                        </li>
-                      );
-                    }
-                  )}
-                </ul>
-                <ul>
-                  <h4 className="text-center text-4xl">Couleurs</h4>
-                  {Object.keys(rules?.colorRules || {}).map((color, index) => {
-                    const prop = propositions.colorRules[color];
-                    const actual = rules?.colorRules[color];
-                    const isCorrect = prop !== "" && prop === actual;
-
-                    return (
-                      <li
-                        key={`prop-col-${index}`}
-                        className={`text-2xl ${
-                          isCorrect ? "text-green" : "text-red"
-                        }`}
-                      >
-                        {color} : {prop || "--"}
-                      </li>
-                    );
-                  })}
-                </ul>
+                <RuleList title="Symboles" items={guessedSymbols} />
+                <RuleList title="Couleurs" items={guessedColors} />
               </div>
             </div>
           </div>
-        )}
-
-        {showLeaderboard && (
+        ) : (
           <div className="z-10 min-h-[66.66vh] gap-18 lg:min-h-[50vh]">
             <h3 className="mb-4 text-center">Classement :</h3>
             <div className="mb-8 flex justify-center gap-12">
               <ol className="list-inside list-decimal">
-                {ActualPlayers
+                {[...activePlayers]
                   .sort((a, b) => b.score - a.score)
-                  .map((player, index) => (
-                    <li key={`player-${index}`} className="text-2xl">
+                  .map((player) => (
+                    <li key={player.id} className="text-2xl">
                       {player.name} : {player.score} graines
                     </li>
                   ))}
@@ -158,9 +143,7 @@ export default function WinnerScreen() {
         )}
 
         <button
-          onClick={() => {
-            resetGame();
-          }}
+          onClick={resetGame}
           className="z-10 cursor-pointer rounded bg-white px-16 py-4 text-3xl font-bold text-black transition-transform duration-300 ease-in-out hover:scale-110"
         >
           Rejouer

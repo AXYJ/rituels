@@ -126,7 +126,7 @@ export default function PlayerDeck({
                   : {}
               }
               transition={{ type: "spring", stiffness: 200, damping: 20 }}
-              className={`group relative flex aspect-[2/3] items-center justify-center overflow-hidden rounded-xl lg:after:pointer-events-none lg:after:absolute lg:after:inset-0 lg:after:opacity-0 lg:after:transition-opacity lg:after:duration-300 ${hasProposition && isMyTurn ? "lg:group-hover:after:opacity-100" : ""} ${isMyTurn ? "" : "pointer-events-none"}`}
+              className={`group relative flex aspect-2/3 items-center justify-center overflow-hidden rounded-xl lg:after:pointer-events-none lg:after:absolute lg:after:inset-0 lg:after:opacity-0 lg:after:transition-opacity lg:after:duration-300 ${hasProposition && isMyTurn ? "lg:group-hover:after:opacity-100" : ""} ${isMyTurn ? "" : "pointer-events-none"}`}
             >
               <div
                 className={`pointer-events-none absolute inset-0 z-20 flex-col items-center justify-start transition-opacity duration-300 lg:flex lg:pt-8 lg:opacity-0 lg:group-hover:opacity-100 ${selectedCardIndex === index ? "flex opacity-100" : "hidden opacity-0"}`}
