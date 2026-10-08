@@ -1,15 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import type { JSX } from "react/jsx-runtime";
 
-// Adresse assemblée après le montage : absente du HTML servi aux bots sans JS.
-export default function EmailLink({ className }: { className?: string }): JSX.Element {
-  const [email, setEmail] = useState<string>("");
+// Adresse assemblée côté client uniquement : absente du HTML servi aux bots sans JS.
+const EMAIL = ["contact", "xiao-web.com"].join("@");
+const subscribe = () => () => {};
 
-  useEffect(() => {
-    setEmail(["contact", "xiao-web.com"].join("@"));
-  }, []);
+export default function EmailLink({ className }: { className?: string }): JSX.Element {
+  // Rendu serveur (et hydratation) : chaîne vide, puis l'adresse une fois monté
+  const email = useSyncExternalStore(subscribe, () => EMAIL, () => "");
 
   if (!email) {
     return <span className={className}>contact [at] xiao-web [dot] com</span>;

@@ -32,6 +32,13 @@ import {
 } from "../utils/storageKeys";
 import { restoreName } from "../utils/socketHelpers";
 
+// Volume enregistré (0.5 par défaut, et côté serveur où localStorage n'existe pas)
+const readVolume = (key: string) => {
+  if (typeof window === "undefined") return 0.5;
+  const saved = parseFloat(localStorage.getItem(key) ?? "");
+  return Number.isNaN(saved) ? 0.5 : saved;
+};
+
 // Création du contexte
 const GameContext = createContext<GameContextType | undefined>(undefined);
 
@@ -55,8 +62,8 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   const [winner, setWinner] = useState<string | null>(null);
   const [noMorePlayers, setNoMorePlayers] = useState(false);
   const [displayOrder, setDisplayOrder] = useState<string[] | null>(null);
-  const [volume, setVolume] = useState(0.5);
-  const [sfxVolume, setSfxVolume] = useState(0.5);
+  const [volume, setVolume] = useState(() => readVolume(VOLUME_KEY));
+  const [sfxVolume, setSfxVolume] = useState(() => readVolume(SFX_KEY));
   const sfxVolumeRef = useRef(sfxVolume);
   const [threshold, setThreshold] = useState(15);
   const [propositions, setPropositions] = useState<{
@@ -66,20 +73,6 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     symbolRules: {},
     colorRules: {},
   });
-
-  useEffect(() => {
-    // Chargement des volumes depuis le localStorage au démarrage
-    if (typeof window !== "undefined") {
-      const savedVolume = localStorage.getItem(VOLUME_KEY);
-      if (savedVolume) setVolume(parseFloat(savedVolume));
-
-      const savedSfxVolume = localStorage.getItem(SFX_KEY);
-      if (savedSfxVolume) {
-        setSfxVolume(parseFloat(savedSfxVolume));
-        sfxVolumeRef.current = parseFloat(savedSfxVolume);
-      }
-    }
-  }, []);
 
   // Sauvegarde des volumes dans le localStorage quand ils changent
   useEffect(() => {
