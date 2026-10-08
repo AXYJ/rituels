@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from "react";
 // Import du contexte
 import { useGame } from "../../context/GameContext";
 
-export default function History() {
+export default function HistoryChat() {
   const [message, setMessage] = useState("");
   const { history, players, sendMessage } = useGame();
   const [usingHistory, setUsingHistory] = useState(false);
@@ -108,7 +108,7 @@ export default function History() {
       </div>
 
       <form
-        className="lgh-10 z-10 mx-2 mb-2 flex h-8 rounded-lg bg-white lg:mx-4 lg:mb-4"
+        className="lg:h-10 z-10 mx-2 mb-2 flex h-8 rounded-lg bg-white lg:mx-4 lg:mb-4"
         onSubmit={handleSendMessage}
       >
         <input

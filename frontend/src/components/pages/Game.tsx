@@ -18,7 +18,7 @@ import { backGuard } from "../../utils/backGuard";
 // Import des composants
 import WinnerScreen from "../game/WinnerScreen";
 import BlocNotes from "../game/BlocNotes";
-import History from "../game/Chat";
+import HistoryChat from "../game/HistoryChat";
 import PlayerDeck from "../game/PlayerDeck";
 import OpponentDecks from "../game/OpponentDecks";
 import RulesModal from "../game/RulesModal";
@@ -155,7 +155,7 @@ export default function Game() {
 
         {/* Historique des actions */}
 
-        <History />
+        <HistoryChat />
 
         {/* Zone de jeu */}
 
