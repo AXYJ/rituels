@@ -30,18 +30,6 @@ export const useSocketListeners = (
       setNoMorePlayers,
     } = actions;
 
-    // Keep-alive pour éviter que le serveur (ex: Render) ne mette le socket en veille
-    const socketUrl =
-      process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:4000";
-    const keepAliveInterval = setInterval(
-      () => {
-        fetch(socketUrl).catch((err) =>
-          console.error("Erreur keep-alive", err)
-        );
-      },
-      5 * 60 * 1000
-    );
-
     // Chaque register* renvoie sa propre fonction de désabonnement
     const cleanups = [
       registerRoomHandlers(socket, actions),
@@ -154,7 +142,6 @@ export const useSocketListeners = (
     ];
 
     return () => {
-      clearInterval(keepAliveInterval);
       cleanups.forEach((cleanup) => cleanup());
     };
     // actions est recréé à chaque rendu mais ne contient que des setters stables et une ref
