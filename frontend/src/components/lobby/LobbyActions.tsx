@@ -18,7 +18,10 @@ export default function LobbyActions() {
   const isReady = me?.isReady || false;
 
   const readyCount = players.filter((p) => p.isHost || p.isReady).length;
-  const canStart = readyCount === players.length && players.length > 1;
+  // En fin de partie, les autres joueurs peuvent ne pas être encore revenus au lobby
+  const allBack = players.every((p) => p.leavedPlayer || p.inLobby !== false);
+  const canStart =
+    readyCount === players.length && players.length > 1 && allBack;
 
   return (
     <motion.div variants={itemVariants} className="flex w-8/10 gap-4 lg:w-1/2">

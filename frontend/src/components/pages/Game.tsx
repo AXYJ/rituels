@@ -48,11 +48,18 @@ export default function Game() {
 
   const [clickedCard, setClickedCard] = useState<Card | null>(null);
   // Carte jouée mais pas encore confirmée par le serveur (absente de l'historique)
+  // (ou refusée par le serveur : la carte est alors revenue dans la main)
   const pendingCard =
-    clickedCard && !history.some((h) => h.card?.id === clickedCard.id)
+    clickedCard &&
+    !history.some((h) => h.card?.id === clickedCard.id) &&
+    !deck?.cards?.some((c) => c.id === clickedCard.id)
       ? clickedCard
       : null;
   const scoreDiffs = useScoreDiffs(me?.score);
+  // Un seul joueur marque à la fois : la somme des scores adverses varie du gain de celui qui vient de jouer
+  const opponentDiffs = useScoreDiffs(
+    players.filter((p) => p.id !== me?.id).reduce((sum, p) => sum + p.score, 0)
+  );
 
   const playedCards = useMemo(() => {
     const cards = history
@@ -156,6 +163,25 @@ export default function Game() {
                   exit={{ opacity: 0 }}
                   transition={{ duration: 1, ease: "easeOut" }}
                   className={`pointer-events-none absolute top-0 right-0 text-5xl lg:text-9xl ${diff > 0 ? "text-green" : "text-red"}`}
+                >
+                  {diff > 0 ? "+" : ""}
+                  {diff}
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </div>
+
+          {/* Animation du score des adversaires (symétrique du sien) */}
+          <div className="pointer-events-auto absolute top-0 left-8 z-50 flex items-center self-start">
+            <AnimatePresence>
+              {opponentDiffs.map(({ id, diff }) => (
+                <motion.div
+                  key={id}
+                  initial={{ opacity: 0, y: 10, x: -20 }}
+                  animate={{ opacity: 1, y: -40, x: -20 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 1, ease: "easeOut" }}
+                  className={`pointer-events-none absolute top-0 left-0 text-5xl lg:text-9xl ${diff > 0 ? "text-green" : "text-red"}`}
                 >
                   {diff > 0 ? "+" : ""}
                   {diff}

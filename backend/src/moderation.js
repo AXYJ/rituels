@@ -11,7 +11,7 @@ try {
 }
 
 const apiKey = process.env.GROQ_API_KEY;
-const model = process.env.GROQ_MODEL || 'llama-3.1-8b-instant';
+const model = process.env.GROQ_MODEL || 'openai/gpt-oss-20b';
 
 // Sans clé, la modération est désactivée (pratique en local) au lieu d'empêcher le serveur de démarrer
 // Délai court et aucun réessai : si Groq est lent ou en erreur, le texte passe (fail-open) au lieu d'attendre
@@ -56,7 +56,8 @@ export async function moderatePseudo(pseudo) {
     const completion = await groq.chat.completions.create({
       model,
       temperature: 0,
-      max_completion_tokens: 20,
+      reasoning_effort: 'low',
+      max_completion_tokens: 300,
       messages: [
         {
           role: 'system',
@@ -94,7 +95,8 @@ export async function moderateMessage(message) {
     const completion = await groq.chat.completions.create({
       model,
       temperature: 0,
-      max_completion_tokens: 500,
+      reasoning_effort: 'low',
+      max_completion_tokens: 800,
       messages: [
         {
           role: 'system',

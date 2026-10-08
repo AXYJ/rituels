@@ -35,7 +35,8 @@ export default function PlayerRow({ player }: { player: Player }) {
   const [editName, setEditName] = useState("");
 
   const isMe = player.id === socket?.id;
-  const isOn = player.isHost || player.isReady;
+  // Un joueur pas encore revenu au lobby (fin de partie) n'est pas prêt, hôte compris
+  const isOn = (player.isHost || player.isReady) && player.inLobby !== false;
 
   const commitName = () => {
     setIsEditing(false);

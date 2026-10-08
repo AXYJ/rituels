@@ -205,9 +205,9 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   // Démarrer la partie
   const startGame = useCallback(() => {
     if (socket) {
-      socket.emit("start_game", roomCode, threshold);
+      socket.emit("start_game", roomCode);
     }
-  }, [socket, roomCode, threshold]);
+  }, [socket, roomCode]);
 
   // Mise à jour du seuil de victoire
   const updateThreshold = useCallback(

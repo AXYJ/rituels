@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
 import { useGame } from "../../context/GameContext";
@@ -15,18 +15,19 @@ export default function ThresholdPicker({ isHost }: { isHost: boolean }) {
   // Saisie en cours dans le champ (null = on affiche la valeur du serveur)
   const [draft, setDraft] = useState<string | null>(null);
 
-  // Valide et envoie au serveur après un délai de réflexion (debouncing)
+  const commit = useCallback(() => {
+    if (draft === null) return;
+    const value = Number(draft);
+    if (draft !== "" && !isNaN(value)) updateThreshold(clamp(value));
+    setDraft(null);
+  }, [draft, updateThreshold]);
+
+  // Valide après un délai de réflexion (debouncing), ou tout de suite en quittant le champ
   useEffect(() => {
     if (draft === null) return;
-
-    const timer = setTimeout(() => {
-      const value = Number(draft);
-      if (draft !== "" && !isNaN(value)) updateThreshold(clamp(value));
-      setDraft(null);
-    }, 1000);
-
+    const timer = setTimeout(commit, 1000);
     return () => clearTimeout(timer);
-  }, [draft, updateThreshold]);
+  }, [draft, commit]);
 
   const atMin = threshold <= MIN_THRESHOLD;
   const atMax = threshold >= MAX_THRESHOLD;
@@ -58,6 +59,7 @@ export default function ThresholdPicker({ isHost }: { isHost: boolean }) {
               type="number"
               value={draft ?? threshold}
               onChange={(e) => setDraft(e.target.value)}
+              onBlur={commit}
               className="w-16 rounded-md border border-gray-300 bg-white p-1 text-center text-2xl text-black"
               min={MIN_THRESHOLD}
               max={MAX_THRESHOLD}

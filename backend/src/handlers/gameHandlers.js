@@ -6,7 +6,7 @@ import {
     createCard,
     generateRules
 } from "../gameLogic.js";
-import { clampThreshold, getRoomAndPlayer } from "../rooms.js";
+import { getRoomAndPlayer } from "../rooms.js";
 import {
   emitRoomUpdated,
   emitToRoom,
@@ -25,7 +25,6 @@ export const checkAndResetGame = (roomCode, rooms, io) => {
   if (room.isGameOver && allInLobby) {
     room.rules = generateRules();
     delete room.playerOrder;
-    room.threshold = 15;
     room.history = [];
     room.lastEffect = null;
     room.isGameOver = false;
@@ -47,10 +46,12 @@ export const checkAndResetGame = (roomCode, rooms, io) => {
 
 export const registerGameHandlers = (io, socket, rooms) => {
   // Démarrer la partie
-  socket.on("start_game", (roomCode, threshold) => {
+  socket.on("start_game", (roomCode) => {
     const found = getRoomAndPlayer(socket, rooms);
     if (!found || !found.player.isHost || found.code !== roomCode) return;
     const { room } = found;
+    // Tout le monde doit être revenu au lobby (en fin de partie, les autres sont encore sur l'écran de victoire)
+    if (room.players.some((p) => !p.leavedPlayer && !p.inLobby)) return;
 
     room.playerOrder = whoStart(room.players);
     room.players.forEach((p) => {
@@ -64,10 +65,6 @@ export const registerGameHandlers = (io, socket, rooms) => {
       };
       p.inLobby = false;
     });
-    // Le seuil est borné par update_threshold ; on garde celui du serveur si la valeur reçue est invalide
-    if (Number.isFinite(threshold)) {
-      room.threshold = clampThreshold(threshold);
-    }
     room.history = [];
     room.lastEffect = null;
     emitToRoom(io, room, "game_started", (viewerId) => [
@@ -85,9 +82,13 @@ export const registerGameHandlers = (io, socket, rooms) => {
     const { code, room, player } = found;
 
     // Partie en cours, tour du joueur, et carte réellement dans son deck
-    if (room.isGameOver || room.playerOrder?.[0] !== socket.id) return;
+    if (room.isGameOver) return;
     const ownCard = player.deck.cards?.find((c) => c.id === card.id);
-    if (!ownCard) return;
+    if (room.playerOrder?.[0] !== socket.id || !ownCard) {
+      // Client désynchronisé (tour, main) : on renvoie l'état réel pour qu'il ne reste pas bloqué
+      emitRoomUpdated(io, room, { withOrder: true });
+      return;
+    }
 
     const { points, effectiveEffect } = calculateCardPoints(
       ownCard,
@@ -111,7 +112,10 @@ export const registerGameHandlers = (io, socket, rooms) => {
     if (isWin) {
       room.isGameOver = true;
       // Fin de partie : les règles sont enfin révélées
-      return io.to(code).emit("game_won", player.id, player.score, room.rules);
+      room.players.forEach((p) => (p.isReady = false));
+      io.to(code).emit("game_won", player.id, player.score, room.rules);
+      // Chacun repasse en « pas prêt » jusqu'à son retour au lobby
+      return emitRoomUpdated(io, room);
     }
 
     room.lastEffect = effectiveEffect;

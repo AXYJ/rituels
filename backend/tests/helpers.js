@@ -77,7 +77,8 @@ export async function lobby(server, playerCount = 2) {
 export async function startedGame(server, playerCount = 2, threshold = 15) {
   const room = await lobby(server, playerCount);
   const [host] = room.players;
-  host.emit("start_game", room.code, threshold);
+  host.emit("update_threshold", threshold);
+  host.emit("start_game", room.code);
   await settle();
 
   const [first, order] = host.last("game_started").args;

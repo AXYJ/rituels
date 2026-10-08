@@ -105,6 +105,7 @@ export interface Player {
   deck: { cards: Card[] | null };
   score: number;
   leavedPlayer: boolean;
+  inLobby?: boolean;
   // Seulement connu pour le joueur local (jamais envoyé par le serveur pour les autres)
   sessionId?: string;
 }

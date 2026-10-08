@@ -82,6 +82,11 @@ export const useSocketListeners = (
             if (displayOrder) setDisplayOrder(displayOrder);
           }
 
+          // Un joueur est revenu : plus besoin de l'écran d'attente
+          if (serverPlayers.filter((p: Player) => !p.leavedPlayer).length > 1) {
+            setNoMorePlayers(false);
+          }
+
           setPlayers((prevPlayers) => {
             const safePrevPlayers = prevPlayers || [];
             return serverPlayers.map((serverPlayer: Player) => {

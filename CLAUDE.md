@@ -35,7 +35,7 @@ Tests: `npm test` from the repo root (or from `backend/`) runs the backend `node
 
 ### Required environment variables
 
-- Backend: `GROQ_API_KEY` (without it the server still starts but moderation is disabled, with a warning), optional `GROQ_MODEL` (default `llama-3.1-8b-instant`), `PORT` (defaults to 4000), `ALLOWED_ORIGINS` (comma-separated CORS origins).
+- Backend: `GROQ_API_KEY` (without it the server still starts but moderation is disabled, with a warning), optional `GROQ_MODEL` (default `openai/gpt-oss-20b`), `PORT` (defaults to 4000), `ALLOWED_ORIGINS` (comma-separated CORS origins).
 - Frontend: `NEXT_PUBLIC_SOCKET_URL` (defaults to `http://localhost:4000`, same as the backend's default port).
 
 ## Architecture
