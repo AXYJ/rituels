@@ -6,7 +6,7 @@ export type View = "home" | "lobby" | "game" | "mentions-legales" | "mentions-le
 
 // Type pour une carte
 export interface Card {
-  id?: number;
+  id?: string;
   symbol: string;
   color: string;
 }
@@ -47,7 +47,6 @@ export interface GameContextType {
   beReady: () => void;
   quitLobby: () => void;
   startGame: () => void;
-  updateDeck: (deck: { cards: Card[] | null }) => void;
   cardPlayed: (card: Card) => void;
   sendMessage: (message: string) => void;
   resetGame: () => void;
@@ -106,4 +105,30 @@ export interface Player {
   score: number;
   leavedPlayer: boolean;
   sessionId: string;
+}
+
+// Actions d'état passées aux handlers d'events socket
+export interface SocketActions {
+  setView: (view: View) => void;
+  setError: (error: string | null) => void;
+  setRoomCode: (code: string) => void;
+  setRules: (rules: GameRules | null) => void;
+  setPlayers: (players: Player[] | ((prev: Player[]) => Player[])) => void;
+  setThreshold: (threshold: number) => void;
+  setHistory: (
+    history: HistoryItem[] | ((prev: HistoryItem[]) => HistoryItem[])
+  ) => void;
+  setWinner: (winner: string | null) => void;
+  setPlayerTurn: (turn: string) => void;
+  setPlayerOrder: (order: string[]) => void;
+  setDisplayOrder: (order: string[] | null) => void;
+  setPropositions: React.Dispatch<
+    React.SetStateAction<{
+      symbolRules: Record<string, string>;
+      colorRules: Record<string, string>;
+    }>
+  >;
+  setIsConnected: (connected: boolean) => void;
+  setNoMorePlayers: React.Dispatch<React.SetStateAction<boolean>>;
+  sfxVolumeRef: React.RefObject<number>;
 }

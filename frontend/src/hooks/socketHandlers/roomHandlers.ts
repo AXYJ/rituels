@@ -1,22 +1,20 @@
 import { Socket } from "socket.io-client";
-import { Player, GameRules, View } from "../../types/game";
-
-const ROOM_CODE_KEY = "rituels_room_code";
-const PLAYER_NAME_KEY = "rituels_player_name";
+import { Player, GameRules, SocketActions } from "../../types/game";
+import { PLAYER_NAME_KEY, ROOM_CODE_KEY } from "../../utils/storageKeys";
+import { listen } from "../../utils/socketHelpers";
 
 export const registerRoomHandlers = (
   socket: Socket,
-  setRoomCode: (code: string) => void,
-  setRules: (rules: GameRules | null) => void,
-  setThreshold: (threshold: number) => void,
-  setPlayers: (players: Player[] | ((prev: Player[]) => Player[])) => void,
-  setView: (view: View) => void,
-  setError: (error: string | null) => void
+  { setRoomCode, setRules, setThreshold, setPlayers, setView, setError }: SocketActions
 ) => {
-  // Création d'un lobby
-  socket.on(
-    "room_created",
-    (
+  const rememberName = (players: Player[]) => {
+    const me = players.find((p) => p.id === socket.id);
+    if (me?.name) localStorage.setItem(PLAYER_NAME_KEY, me.name);
+  };
+
+  return listen(socket, {
+    // Création d'un lobby
+    room_created: (
       code: string,
       rules: GameRules,
       serverPlayers: Player[],
@@ -25,14 +23,7 @@ export const registerRoomHandlers = (
       setRoomCode(code);
       setRules(rules);
       sessionStorage.setItem(ROOM_CODE_KEY, code);
-
-      if (typeof window !== "undefined" && serverPlayers) {
-        const me = serverPlayers.find((p: Player) => p.id === socket.id);
-        if (me?.name) {
-          localStorage.setItem(PLAYER_NAME_KEY, me.name);
-        }
-      }
-
+      if (serverPlayers) rememberName(serverPlayers);
       if (threshold !== undefined) setThreshold(threshold);
       setPlayers(
         (serverPlayers || []).map((p: Player) => ({
@@ -42,13 +33,10 @@ export const registerRoomHandlers = (
         }))
       );
       setView("lobby");
-    }
-  );
+    },
 
-  // Rejoindre une partie
-  socket.on(
-    "join_game_success",
-    (
+    // Rejoindre une partie
+    join_game_success: (
       code: string,
       rules: GameRules,
       players: Player[],
@@ -57,38 +45,18 @@ export const registerRoomHandlers = (
       sessionStorage.setItem(ROOM_CODE_KEY, code);
       setRoomCode(code);
       setRules(rules);
-
-      if (typeof window !== "undefined" && players) {
-        const me = players.find((p: Player) => p.id === socket.id);
-        if (me?.name) {
-          localStorage.setItem(PLAYER_NAME_KEY, me.name);
-        }
-      }
-
+      if (players) rememberName(players);
       if (threshold !== undefined) setThreshold(threshold);
       setPlayers(players || []);
       setView("lobby");
-    }
-  );
+    },
 
-  // Erreurs salon
-  socket.on("room_full", () => setError("La partie est pleine !"));
-  socket.on("room_not_found", () => setError("Partie introuvable !"));
-  socket.on("game_already_started", () =>
-    setError("La partie a déjà commencé !")
-  );
-  socket.on("name_rejected", () => setError("Pseudo refusé !"));
+    // Erreurs salon
+    room_full: () => setError("La partie est pleine !"),
+    room_not_found: () => setError("Partie introuvable !"),
+    game_already_started: () => setError("La partie a déjà commencé !"),
+    name_rejected: () => setError("Pseudo refusé !"),
 
-  socket.on("threshold_updated", (newThreshold: number) =>
-    setThreshold(newThreshold)
-  );
-  socket.on("room_deleted", () => {
-    setRoomCode("");
-    setRules(null);
-    setThreshold(0);
-    setPlayers([]);
-    setView("home");
-    sessionStorage.removeItem(ROOM_CODE_KEY);
-    setError("Tous les joueurs sont partis.");
+    threshold_updated: (newThreshold: number) => setThreshold(newThreshold),
   });
 };

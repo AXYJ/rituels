@@ -13,11 +13,6 @@ import {
 } from "react";
 import { io, Socket } from "socket.io-client";
 
-// Clé pour le localStorage
-const PLAYER_NAME_KEY = "rituels_player_name";
-const SFX_KEY = "rituels_sfx_volume";
-const VOLUME_KEY = "rituels_volume";
-
 // Import des types
 import {
   View,
@@ -26,8 +21,16 @@ import {
   Player,
   Card,
   HistoryItem,
+  SocketActions,
 } from "../types/game";
 import { useSocketListeners } from "../hooks/useSocketListeners";
+import {
+  ROOM_CODE_KEY,
+  SESSION_ID_KEY,
+  SFX_KEY,
+  VOLUME_KEY,
+} from "../utils/storageKeys";
+import { restoreName } from "../utils/socketHelpers";
 
 // Création du contexte
 const GameContext = createContext<GameContextType | undefined>(undefined);
@@ -40,7 +43,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   const [view, setView] = useState<View>("home");
   const [roomCode, setRoomCode] = useState(() => {
     if (typeof window !== "undefined") {
-      return sessionStorage.getItem("rituels_room_code") || "";
+      return sessionStorage.getItem(ROOM_CODE_KEY) || "";
     }
     return "";
   });
@@ -89,10 +92,8 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     // Création d'un ID de session pour pouvoir se reconnecter
-    let sessionId = localStorage.getItem("rituels_session_id");
-    if (!sessionId) {
-      sessionId = crypto.randomUUID();
-      localStorage.setItem("rituels_session_id", sessionId);
+    if (!localStorage.getItem(SESSION_ID_KEY)) {
+      localStorage.setItem(SESSION_ID_KEY, crypto.randomUUID());
     }
 
     // Initialisation de la connexion
@@ -102,6 +103,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       transports: ["websocket", "polling"],
     });
 
+    // Différé d'un tick pour ne pas appeler setState de façon synchrone dans l'effet
     setTimeout(() => {
       setSocket(newSocket);
       setIsConnected(newSocket.connected);
@@ -113,8 +115,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   // Utilisation du hook personnalisé pour gérer les écouteurs Socket
-  useSocketListeners({
-    socket,
+  const socketActions: SocketActions = {
     setView,
     setError,
     setRoomCode,
@@ -130,7 +131,8 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     sfxVolumeRef,
     setNoMorePlayers,
     setIsConnected,
-  });
+  };
+  useSocketListeners(socket, socketActions);
 
   // Reconnexion automatique au lobby / partie après une déconnexion
   useEffect(() => {
@@ -138,13 +140,8 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
 
     const handleConnect = () => {
       if (roomCode) {
-        const sessionId = localStorage.getItem("rituels_session_id");
-        socket.emit("join_game", roomCode, sessionId);
-
-        const savedName = localStorage.getItem(PLAYER_NAME_KEY);
-        if (savedName) {
-          socket.emit("change_name", savedName);
-        }
+        socket.emit("join_game", roomCode, localStorage.getItem(SESSION_ID_KEY));
+        restoreName(socket);
       }
     };
 
@@ -162,16 +159,8 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   // Création d'une partie
   const createGame = useCallback(() => {
     if (socket) {
-      const sessionId = localStorage.getItem("rituels_session_id");
-      socket.emit("create_game", socket.id, sessionId);
-
-      // Restaurer le nom si présent dans le localStorage
-      if (typeof window !== "undefined") {
-        const savedName = localStorage.getItem(PLAYER_NAME_KEY);
-        if (savedName) {
-          socket.emit("change_name", savedName);
-        }
-      }
+      socket.emit("create_game", localStorage.getItem(SESSION_ID_KEY));
+      restoreName(socket);
     }
   }, [socket]);
 
@@ -180,16 +169,8 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     (code: string) => {
       if (socket) {
         setRoomCode(code);
-        const sessionId = localStorage.getItem("rituels_session_id");
-        socket.emit("join_game", code, sessionId);
-
-        // Restaurer le nom si présent dans le localStorage
-        if (typeof window !== "undefined") {
-          const savedName = localStorage.getItem(PLAYER_NAME_KEY);
-          if (savedName) {
-            socket.emit("change_name", savedName);
-          }
-        }
+        socket.emit("join_game", code, localStorage.getItem(SESSION_ID_KEY));
+        restoreName(socket);
       }
     },
     [socket]
@@ -199,7 +180,6 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   const changeName = useCallback(
     (name: string) => {
       if (socket) {
-        console.log(name);
         socket.emit("change_name", name);
       }
     },
@@ -211,7 +191,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     if (socket) {
       const me = players.find((p) => p.id === socket.id);
       if (me) {
-        socket.emit("ready", !me.isReady, socket.id);
+        socket.emit("ready", !me.isReady);
       }
     }
   }, [socket, players]);
@@ -219,12 +199,12 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   // Quitter le lobby
   const quitLobby = useCallback(() => {
     if (socket) {
-      socket.emit("quit_lobby", socket.id);
+      socket.emit("quit_lobby");
     }
     setView("home");
     setRoomCode("");
     if (typeof window !== "undefined") {
-      sessionStorage.removeItem("rituels_room_code");
+      sessionStorage.removeItem(ROOM_CODE_KEY);
     }
     setPlayers([]);
     setRules(null);
@@ -238,16 +218,6 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       socket.emit("start_game", roomCode, threshold);
     }
   }, [socket, roomCode, threshold]);
-
-  // Mis à jour du deck
-  const updateDeck = useCallback(
-    (deck: { cards: Card[] | null }) => {
-      if (socket) {
-        socket.emit("update_deck", socket.id, deck);
-      }
-    },
-    [socket]
-  );
 
   // Mise à jour du seuil de victoire
   const updateThreshold = useCallback(
@@ -264,7 +234,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   const cardPlayed = useCallback(
     (card: Card) => {
       if (socket) {
-        socket.emit("card_played", socket.id, card);
+        socket.emit("card_played", card);
       }
     },
     [socket]
@@ -338,7 +308,6 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       displayOrder,
       setDisplayOrder,
       resetGame,
-      updateDeck,
       volume,
       setVolume,
       sfxVolume,
@@ -373,7 +342,6 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       winner,
       displayOrder,
       resetGame,
-      updateDeck,
       volume,
       sfxVolume,
       threshold,

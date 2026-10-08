@@ -12,6 +12,7 @@ import { useGame } from "../../context/GameContext";
 
 // Import des composants
 import Logo from "../Logo";
+import { ROOM_CODE_KEY } from "../../utils/storageKeys";
 
 // Textes des règles (source unique, partagée avec RulesModal.tsx)
 import {
@@ -39,7 +40,7 @@ export default function Home() {
   // Charger le code sauvegardé et vérifier la première visite après le montage
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const code = sessionStorage.getItem("rituels_room_code");
+      const code = sessionStorage.getItem(ROOM_CODE_KEY);
       const visited = localStorage.getItem("rituels_visited");
       setTimeout(() => {
         setSavedCode(code);

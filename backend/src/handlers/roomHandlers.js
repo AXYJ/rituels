@@ -1,16 +1,75 @@
-import { generateRules, moderatePseudo } from "../gameLogic.js";
+import { generateRules, getNextPlayerOrder } from "../gameLogic.js";
+import { moderatePseudo, MAX_NAME_LENGTH } from "../moderation.js";
+import { generateRoomCode, getRoomAndPlayer } from "../rooms.js";
+import { checkAndResetGame } from "./gameHandlers.js";
+
+const MIN_THRESHOLD = 5;
+const MAX_THRESHOLD = 30;
+
+// Départ d'un joueur (partagé par quit_lobby et disconnect)
+export const handlePlayerLeave = (io, socket, rooms) => {
+  const found = getRoomAndPlayer(socket, rooms);
+  if (!found) return;
+  const { code, room, player } = found;
+  if (player.leavedPlayer) return;
+
+  socket.leave(code);
+  socket.data.roomCode = undefined;
+
+  const isGameStarted = room.playerOrder && room.playerOrder.length > 0;
+
+  if (!isGameStarted) {
+    // Si la partie n'a pas commencé, on retire complètement le joueur
+    room.players.splice(room.players.indexOf(player), 1);
+  } else {
+    // Si elle a commencé, on le marque simplement comme déconnecté
+    player.leavedPlayer = true;
+  }
+
+  const activePlayers = room.players.filter((p) => !p.leavedPlayer);
+
+  if (activePlayers.length === 0) {
+    delete rooms[code];
+    return;
+  }
+
+  if (isGameStarted && activePlayers.length <= 1) {
+    io.to(code).emit("no_more_players");
+    return;
+  }
+
+  if (player.isHost) {
+    player.isHost = false;
+    activePlayers[0].isHost = true;
+  }
+
+  io.to(code).emit("room_updated", {
+    players: room.players,
+    playerOrder: room.playerOrder,
+  });
+
+  if (isGameStarted && room.playerOrder[0] === socket.id) {
+    room.playerOrder = getNextPlayerOrder(room.playerOrder, room.players);
+    io.to(code).emit("turn_updated", room.playerOrder);
+  }
+
+  if (room.isGameOver) {
+    checkAndResetGame(code, rooms, io);
+  }
+};
 
 export const registerRoomHandlers = (io, socket, rooms) => {
   // Création d'une partie
-  socket.on("create_game", (idPlayer, sessionId) => {
-    const roomCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+  socket.on("create_game", (sessionId) => {
+    const roomCode = generateRoomCode(rooms);
+    const rules = generateRules();
 
-    rooms[roomCode] = {
+    const room = (rooms[roomCode] = {
       players: [
         {
-          id: idPlayer,
+          id: socket.id,
           name: "Hôte",
-          sessionId: sessionId || idPlayer,
+          sessionId: sessionId || socket.id,
           isHost: true,
           isReady: false,
           score: 0,
@@ -21,24 +80,17 @@ export const registerRoomHandlers = (io, socket, rooms) => {
       ],
       threshold: 15,
       history: [],
-    };
-    socket.join(roomCode);
-    const rules = generateRules();
-    rooms[roomCode].rules = rules;
-
-    const room = rooms[roomCode];
-    socket.emit(
-      "room_created",
-      roomCode,
       rules,
-      room.players,
-      room.threshold
-    );
+    });
+    socket.join(roomCode);
+    socket.data.roomCode = roomCode;
+
+    socket.emit("room_created", roomCode, rules, room.players, room.threshold);
   });
 
   // Rejoindre une partie
   socket.on("join_game", (roomCode, sessionId) => {
-    if (!rooms[roomCode]) {
+    if (typeof roomCode !== "string" || !rooms[roomCode]) {
       socket.emit("room_not_found");
       return;
     }
@@ -52,6 +104,7 @@ export const registerRoomHandlers = (io, socket, rooms) => {
       existingPlayer.leavedPlayer = false;
       existingPlayer.inLobby = room.playerOrder ? false : true;
       socket.join(roomCode);
+      socket.data.roomCode = roomCode;
 
       if (room.playerOrder) {
         room.playerOrder = room.playerOrder.map((id) =>
@@ -90,6 +143,7 @@ export const registerRoomHandlers = (io, socket, rooms) => {
       };
       room.players.push(player);
       socket.join(roomCode);
+      socket.data.roomCode = roomCode;
 
       io.to(roomCode).emit("room_updated", { players: room.players });
       socket.emit(
@@ -106,45 +160,42 @@ export const registerRoomHandlers = (io, socket, rooms) => {
 
   // Changement du nom
   socket.on("change_name", async (name) => {
-    for (const code in rooms) {
-      const room = rooms[code];
-      const player = room.players.find((p) => p.id === socket.id);
-      if (player) {
-        const status = await moderatePseudo(name);
-        if (status === "NON") {
-          socket.emit("name_rejected");
-        } else {
-          player.name = name;
-          io.to(code).emit("room_updated", { players: room.players });
-        }
-        break;
-      }
+    const found = getRoomAndPlayer(socket, rooms);
+    if (!found || typeof name !== "string") return;
+    const cleaned = name.trim();
+    if (!cleaned || cleaned.length > MAX_NAME_LENGTH) {
+      socket.emit("name_rejected");
+      return;
+    }
+
+    // Même nom que celui déjà validé : pas besoin de rappeler le modérateur
+    if (cleaned === found.player.name) return;
+
+    const status = await moderatePseudo(cleaned);
+    if (status === "NON") {
+      socket.emit("name_rejected");
+    } else {
+      found.player.name = cleaned;
+      io.to(found.code).emit("room_updated", { players: found.room.players });
     }
   });
 
   // Prêt
-  socket.on("ready", (isReady, idPlayer) => {
-    for (const code in rooms) {
-      const room = rooms[code];
-      const player = room.players.find((p) => p.id === idPlayer);
-      if (player) {
-        player.isReady = isReady;
-        io.to(code).emit("room_updated", { players: room.players });
-        break;
-      }
-    }
+  socket.on("ready", (isReady) => {
+    const found = getRoomAndPlayer(socket, rooms);
+    if (!found) return;
+    found.player.isReady = Boolean(isReady);
+    io.to(found.code).emit("room_updated", { players: found.room.players });
   });
 
   // Mise à jour du seuil de victoire
   socket.on("update_threshold", (newThreshold) => {
-    for (const code in rooms) {
-      const room = rooms[code];
-      const host = room.players.find((p) => p.id === socket.id && p.isHost);
-      if (host) {
-        room.threshold = Math.min(Math.max(newThreshold, 5), 30);
-        io.to(code).emit("threshold_updated", room.threshold);
-        break;
-      }
-    }
+    const found = getRoomAndPlayer(socket, rooms);
+    if (!found || !found.player.isHost || !Number.isFinite(newThreshold)) return;
+    found.room.threshold = Math.min(Math.max(newThreshold, MIN_THRESHOLD), MAX_THRESHOLD);
+    io.to(found.code).emit("threshold_updated", found.room.threshold);
   });
+
+  // Départ volontaire
+  socket.on("quit_lobby", () => handlePlayerLeave(io, socket, rooms));
 };

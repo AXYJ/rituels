@@ -2,7 +2,7 @@
 
 // Importations des modules
 import Image from "next/image";
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 // Import du contexte
@@ -13,6 +13,7 @@ import { Card } from "../../types/game";
 
 // Import des hooks
 import { normalizeSymbol } from "../../utils/normalizeSymbol";
+import { backGuard } from "../../utils/backGuard";
 
 // Import des composants
 import WinnerScreen from "../game/WinnerScreen";
@@ -44,11 +45,15 @@ export default function Game() {
   const isMyTurn = me ? playerTurn === me.id : false;
   const deck = me?.deck;
 
-  const [pendingCard, setPendingCard] = useState<Card | null>(null);
+  const [clickedCard, setClickedCard] = useState<Card | null>(null);
+  // Carte jouée mais pas encore confirmée par le serveur (absente de l'historique)
+  const pendingCard =
+    clickedCard && !history.some((h) => h.card?.id === clickedCard.id)
+      ? clickedCard
+      : null;
   const [scoreDiffs, setScoreDiffs] = useState<{ id: number; diff: number }[]>(
     []
   );
-  const isEnabled = true;
   const onBackAttempt = useCallback(() => {
     setShowQuit(true);
   }, []);
@@ -71,9 +76,11 @@ export default function Game() {
     }
   }, [me, me?.score]);
 
-  useEffect(() => {
-    queueMicrotask(() => setPendingCard(null));
-  }, [history]);
+  const playedCards = useMemo(() => {
+    const cards = history.filter((h) => h.type === "card" && h.card).map((h) => h.card!);
+    if (pendingCard) cards.push(pendingCard);
+    return cards;
+  }, [history, pendingCard]);
 
   const handleCardClick = (card: Card) => {
     // Si une carte est déjà en train d'être jouée, on ignore le clic (anti-spam)
@@ -87,7 +94,7 @@ export default function Game() {
         const newCards = [...me.deck.cards];
         newCards.splice(cardIndex, 1);
         setLocalPlayerDeck(newCards);
-        setPendingCard(card);
+        setClickedCard(card);
       }
     }
     cardPlayed(card);
@@ -118,47 +125,29 @@ export default function Game() {
   }, []);
 
 
-interface CustomWindow extends Window {
-  __blocNotesOpen?: boolean;
-  __skipPopState?: boolean;
-}
-
-  // Bloquer le bouton retour
-  // Généré par IA
+  // Bloquer le bouton retour (le bloc-notes ouvert le consomme en premier)
   useEffect(() => {
-    if (!isEnabled) return;
-
     window.history.pushState(null, "", window.location.href);
 
     const handlePopState = () => {
-      const customWindow = window as unknown as CustomWindow;
-      if (customWindow.__skipPopState) {
-        customWindow.__skipPopState = false;
+      if (backGuard.skipPopState) {
+        backGuard.skipPopState = false;
         return;
       }
 
-      if (customWindow.__blocNotesOpen) {
-        customWindow.__blocNotesOpen = false;
-        window.dispatchEvent(new CustomEvent("close-bloc-notes"));
+      if (backGuard.blocNotesOpen) {
+        backGuard.blocNotesOpen = false;
+        backGuard.closeBlocNotes?.();
         return;
       }
 
       window.history.pushState(null, "", window.location.href);
-
-      if (onBackAttempt) {
-        onBackAttempt();
-      }
+      onBackAttempt();
     };
 
-    // On écoute le bouton retour
     window.addEventListener("popstate", handlePopState);
-
-    // Nettoyage au démontage du composant
-    return () => {
-      window.removeEventListener("popstate", handlePopState);
-    };
-  }, [isEnabled, onBackAttempt]);
-  // Fin de la génération IA
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, [onBackAttempt]);
 
   return (
     <section className="min-h-[100.1dvh] overflow-x-hidden bg-[radial-gradient(ellipse_31.48%_48.47%_at_51.72%_50.00%,#464441_0%,#191918_100%)] lg:min-h-dvh">
@@ -221,23 +210,7 @@ interface CustomWindow extends Window {
           </div>
 
           <AnimatePresence>
-            {(() => {
-              const playedCards = history
-                .filter((h) => h.type === "card" && h.card)
-                .map((h) => h.card!);
-
-              // On ajoute pendingCard uniquement s'il est différent de la dernière carte enregistrée par le serveur
-              if (pendingCard) {
-                const lastPlayedCard =
-                  playedCards.length > 0
-                    ? playedCards[playedCards.length - 1]
-                    : null;
-                if (!lastPlayedCard || lastPlayedCard.id !== pendingCard.id) {
-                  playedCards.push(pendingCard);
-                }
-              }
-
-              return playedCards.map((played, i) => (
+            {playedCards.map((played, i) => (
                 <motion.div
                   layout
                   layoutId={`card-${played.id || played.symbol + played.color}`}
@@ -263,8 +236,7 @@ interface CustomWindow extends Window {
                     className="pointer-events-none h-full w-full object-contain"
                   />
                 </motion.div>
-              ));
-            })()}
+            ))}
           </AnimatePresence>
         </div>
 

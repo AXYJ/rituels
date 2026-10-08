@@ -8,15 +8,15 @@ Un jeu de cartes multijoueur en temps réel. Affrontez vos amis, jouez des carte
 ## 🚀 Fonctionnalités
 
 - **Multijoueur en temps réel** : Synchronisation fluide des parties grâce à Socket.io.
-- **Logique de jeu sécurisée** : Les calculs de score et la génération de cartes sont entièrement gérés côté serveur (anti-triche).
-- **Chat intégré** : Discutez avec les autres joueurs dans le lobby et pendant la partie (avec défilement automatique).
+- **Logique de jeu sécurisée** : Les calculs de score et la génération de cartes sont entièrement gérés côté serveur. Le serveur identifie chaque joueur par son socket (jamais par un id envoyé par le client), vérifie le tour et que la carte jouée est bien dans son deck (anti-triche).
+- **Chat intégré** : Discutez avec les autres joueurs dans le lobby et pendant la partie (avec défilement automatique). Les pseudos (10 caractères max) et messages (300 max, 1 par seconde) sont modérés par un LLM (Groq).
 - **Interface dynamique et réactive** : Animations fluides avec Framer Motion et design moderne.
 - **Système de sessions** : Sauvegarde locale de votre pseudonyme et détection automatique des nouveaux joueurs pour l'animation d'introduction.
 
 ## 🛠️ Stack Technique
 
 - **Frontend** : Next.js (React), TypeScript, Tailwind CSS, Framer Motion, Socket.io-client.
-- **Backend** : Node.js, Express, Socket.io.
+- **Backend** : Node.js, Express, Socket.io, Groq (modération).
 
 ## 💻 Installation et Lancement local
 
@@ -31,7 +31,13 @@ cd backend
 npm install
 npm run dev
 ```
-*(Le serveur se lancera sur le port défini, par défaut souvent 3001).*
+Variables d'environnement du backend :
+- `GROQ_API_KEY` (**obligatoire**) : clé API Groq pour la modération ; `GROQ_MODEL` (optionnel).
+- `PORT` (défaut `4000`) ; `ALLOWED_ORIGINS` (optionnel, origines CORS séparées par des virgules).
+
+Le frontend contacte le backend via `NEXT_PUBLIC_SOCKET_URL` (défaut `http://localhost:4000`).
+
+Tests du backend : `npm test` (dans `backend/`).
 
 ### 2. Démarrer le Frontend (Client)
 Ouvrez un nouveau terminal :

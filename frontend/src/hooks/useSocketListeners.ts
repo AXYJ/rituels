@@ -1,63 +1,34 @@
-import { useEffect, RefObject, Dispatch, SetStateAction } from "react";
+import { useEffect } from "react";
 import { Socket } from "socket.io-client";
-import { Player, GameRules, View, HistoryItem } from "../types/game";
+import { Player, GameRules, HistoryItem, SocketActions } from "../types/game";
+import { PLAYER_NAME_KEY } from "../utils/storageKeys";
+import { listen, rotateOrder } from "../utils/socketHelpers";
 
 // Handlers segmentés
 import { registerRoomHandlers } from "./socketHandlers/roomHandlers";
 import { registerGameHandlers } from "./socketHandlers/gameHandlers";
 import { registerChatHandlers } from "./socketHandlers/chatHandlers";
 
-// Clé pour le localStorage
-const PLAYER_NAME_KEY = "rituels_player_name";
-
-interface SocketListenersProps {
-  socket: Socket | null;
-  setView: (view: View) => void;
-  setError: (error: string | null) => void;
-  setRoomCode: (code: string) => void;
-  setRules: (rules: GameRules | null) => void;
-  setPlayers: (players: Player[] | ((prev: Player[]) => Player[])) => void;
-  setThreshold: (threshold: number) => void;
-  setHistory: (
-    history: HistoryItem[] | ((prev: HistoryItem[]) => HistoryItem[])
-  ) => void;
-  setWinner: (winner: string | null) => void;
-  setPlayerTurn: (turn: string) => void;
-  setPlayerOrder: (order: string[]) => void;
-  setDisplayOrder: (order: string[] | null) => void;
-  setPropositions: Dispatch<
-    SetStateAction<{
-      symbolRules: Record<string, string>;
-      colorRules: Record<string, string>;
-    }>
-  >;
-  setIsConnected: (connected: boolean) => void;
-  sfxVolumeRef: RefObject<number>;
-  setNoMorePlayers: React.Dispatch<React.SetStateAction<boolean>>;
-}
-
-export const useSocketListeners = (props: SocketListenersProps) => {
-  const {
-    socket,
-    setView,
-    setError,
-    setRoomCode,
-    setRules,
-    setPlayers,
-    setThreshold,
-    setHistory,
-    setWinner,
-    setPlayerTurn,
-    setPlayerOrder,
-    setDisplayOrder,
-    setPropositions,
-    setIsConnected,
-    setNoMorePlayers,
-    sfxVolumeRef,
-  } = props;
-
+export const useSocketListeners = (
+  socket: Socket | null,
+  actions: SocketActions
+) => {
   useEffect(() => {
     if (!socket) return;
+    const {
+      setView,
+      setError,
+      setRoomCode,
+      setRules,
+      setPlayers,
+      setThreshold,
+      setHistory,
+      setPlayerTurn,
+      setPlayerOrder,
+      setDisplayOrder,
+      setIsConnected,
+      setNoMorePlayers,
+    } = actions;
 
     // Keep-alive pour éviter que le serveur (ex: Render) ne mette le socket en veille
     const socketUrl =
@@ -71,217 +42,124 @@ export const useSocketListeners = (props: SocketListenersProps) => {
       5 * 60 * 1000
     );
 
-    // ----------------
-    // Connexion & Cycle de vie
-    // ----------------
-    socket.on("connect", () => {
-      console.log("Connecté au serveur ! ID:", socket.id);
-      setIsConnected(true);
-    });
+    // Chaque register* renvoie sa propre fonction de désabonnement
+    const cleanups = [
+      registerRoomHandlers(socket, actions),
+      registerGameHandlers(socket, actions),
+      registerChatHandlers(socket, actions),
 
-    socket.on("connect_error", (err) => {
-      console.error("Erreur de connexion socket:", err);
-      setError("Erreur de connexion serveur");
-      setIsConnected(false);
-    });
+      // Connexion & cycle de vie, mise à jour du lobby, reconnexion
+      listen(socket, {
+        connect: () => {
+          console.log("Connecté au serveur ! ID:", socket.id);
+          setIsConnected(true);
+        },
 
-    socket.on("disconnect", (reason) => {
-      console.log("Socket déconnecté:", reason);
-      setIsConnected(false);
-      if (
-        reason === "io server disconnect" ||
-        reason === "io client disconnect"
-      ) {
-        setView("home");
-        setError("Vous avez été déconnecté du serveur.");
-      }
-    });
+        connect_error: (err: Error) => {
+          console.error("Erreur de connexion socket:", err);
+          setError("Erreur de connexion serveur");
+          setIsConnected(false);
+        },
 
-    // ----------------
-    // Enregistrement des handlers modularisés
-    // ----------------
-    registerRoomHandlers(
-      socket,
-      setRoomCode,
-      setRules,
-      setThreshold,
-      setPlayers,
-      setView,
-      setError
-    );
+        disconnect: (reason: string) => {
+          console.log("Socket déconnecté:", reason);
+          setIsConnected(false);
+          if (
+            reason === "io server disconnect" ||
+            reason === "io client disconnect"
+          ) {
+            setView("home");
+            setError("Vous avez été déconnecté du serveur.");
+          }
+        },
 
-    registerGameHandlers(
-      socket,
-      setHistory,
-      setWinner,
-      setPlayerTurn,
-      setPlayerOrder,
-      setDisplayOrder,
-      setPlayers,
-      setRules,
-      setView,
-      setPropositions,
-      sfxVolumeRef
-    );
+        // Mise à jour du lobby / salle
+        room_updated: (data: { players: Player[]; playerOrder?: string[] }) => {
+          if (!data || !data.players) return;
 
-    registerChatHandlers(socket, setHistory, sfxVolumeRef);
-
-    // ----------------
-    // Handlers spécifiques à la mise à jour globale et reconnexion
-    // ----------------
-
-    // Mise à jour du lobby / salle
-    socket.on(
-      "room_updated",
-      (data: { players: Player[]; playerOrder?: string[] }) => {
-        if (!data || !data.players) return;
-
-        // Persistance du pseudo validé
-        if (typeof window !== "undefined") {
+          // Persistance du pseudo validé
           const me = data.players.find((p: Player) => p.id === socket.id);
           if (me?.name) {
             localStorage.setItem(PLAYER_NAME_KEY, me.name);
           }
-        }
 
-        const { players: serverPlayers, playerOrder: serverPlayerOrder } = data;
+          const { players: serverPlayers, playerOrder: serverPlayerOrder } =
+            data;
 
-        if (serverPlayerOrder) {
-          setPlayerOrder(serverPlayerOrder);
-          setPlayerTurn(serverPlayerOrder[0]);
+          if (serverPlayerOrder) {
+            setPlayerOrder(serverPlayerOrder);
+            setPlayerTurn(serverPlayerOrder[0]);
 
-          const myOrder = serverPlayerOrder.findIndex(
-            (p: string) => p === socket.id
-          );
-          if (myOrder !== -1) {
-            const newDisplayOrder = [
-              ...serverPlayerOrder.slice(myOrder),
-              ...serverPlayerOrder.slice(0, myOrder),
-            ];
-            setDisplayOrder(newDisplayOrder);
+            const displayOrder = rotateOrder(serverPlayerOrder, socket.id);
+            if (displayOrder) setDisplayOrder(displayOrder);
           }
-        }
 
-        setPlayers((prevPlayers) => {
-          const safePrevPlayers = prevPlayers || [];
-          return serverPlayers.map((serverPlayer: Player) => {
-            const localPlayer =
-              safePrevPlayers.find((p) => p.id === serverPlayer.id) ||
-              safePrevPlayers.find(
-                (p) => p.sessionId === serverPlayer.sessionId
-              );
-            return {
-              ...serverPlayer,
-              deck: serverPlayer.deck?.cards
-                ? serverPlayer.deck
-                : (localPlayer?.deck ?? { cards: null }),
-              score: serverPlayer.score ?? localPlayer?.score ?? 0,
-            };
+          setPlayers((prevPlayers) => {
+            const safePrevPlayers = prevPlayers || [];
+            return serverPlayers.map((serverPlayer: Player) => {
+              const localPlayer =
+                safePrevPlayers.find((p) => p.id === serverPlayer.id) ||
+                safePrevPlayers.find(
+                  (p) => p.sessionId === serverPlayer.sessionId
+                );
+              return {
+                ...serverPlayer,
+                deck: serverPlayer.deck?.cards
+                  ? serverPlayer.deck
+                  : (localPlayer?.deck ?? { cards: null }),
+                score: serverPlayer.score ?? localPlayer?.score ?? 0,
+              };
+            });
           });
-        });
-      }
-    );
+        },
 
-    // Gestion de la reconnexion
-    socket.on(
-      "reconnected",
-      (data: {
-        roomCode: string;
-        rules: GameRules;
-        players: Player[];
-        threshold: number;
-        playerOrder: string[];
-        playerTurn: string;
-        history: HistoryItem[];
-      }) => {
-        const {
-          roomCode,
-          rules,
-          players,
-          threshold,
-          playerOrder,
-          playerTurn,
-          history,
-        } = data;
+        // Gestion de la reconnexion
+        reconnected: (data: {
+          roomCode: string;
+          rules: GameRules;
+          players: Player[];
+          threshold: number;
+          playerOrder: string[];
+          playerTurn: string;
+          history: HistoryItem[];
+        }) => {
+          const {
+            roomCode,
+            rules,
+            players,
+            threshold,
+            playerOrder,
+            playerTurn,
+            history,
+          } = data;
 
-        setRoomCode(roomCode);
-        setRules(rules);
-        if (threshold !== undefined) setThreshold(threshold);
-        setPlayers(players || []);
+          setRoomCode(roomCode);
+          setRules(rules);
+          if (threshold !== undefined) setThreshold(threshold);
+          setPlayers(players || []);
 
-        if (playerOrder && playerOrder.length > 0) {
-          setPlayerOrder(playerOrder);
-          setPlayerTurn(playerTurn);
-          setHistory(history || []);
+          if (playerOrder && playerOrder.length > 0) {
+            setPlayerOrder(playerOrder);
+            setPlayerTurn(playerTurn);
+            setHistory(history || []);
 
-          const myOrder = playerOrder.findIndex((p: string) => p === socket.id);
-          if (myOrder !== -1) {
-            const newDisplayOrder = [
-              ...playerOrder.slice(myOrder),
-              ...playerOrder.slice(0, myOrder),
-            ];
-            setDisplayOrder(newDisplayOrder);
+            const displayOrder = rotateOrder(playerOrder, socket.id);
+            if (displayOrder) setDisplayOrder(displayOrder);
+            setView("game");
+          } else {
+            setView("lobby");
           }
-          setView("game");
-        } else {
-          setView("lobby");
-        }
-      }
-    );
+        },
 
-    socket.on("no_more_players", () => {
-      setNoMorePlayers(true);
-    });
+        no_more_players: () => setNoMorePlayers(true),
+      }),
+    ];
 
-    // ----------------
-    // Cleanup
-    // ----------------
     return () => {
       clearInterval(keepAliveInterval);
-
-      const events = [
-        "connect",
-        "connect_error",
-        "disconnect",
-        "room_updated",
-        "reconnected",
-        "no_more_players",
-        "room_created",
-        "join_game_success",
-        "room_full",
-        "room_not_found",
-        "game_already_started",
-        "name_rejected",
-        "threshold_updated",
-        "room_deleted",
-        "game_started",
-        "card_played",
-        "game_won",
-        "turn_updated",
-        "game_reset",
-        "deck_updated",
-        "message_received",
-      ];
-      events.forEach((event) => {
-        socket.off(event);
-      });
+      cleanups.forEach((cleanup) => cleanup());
     };
-  }, [
-    socket,
-    setView,
-    setError,
-    setRoomCode,
-    setRules,
-    setPlayers,
-    setThreshold,
-    setHistory,
-    setWinner,
-    setPlayerTurn,
-    setPlayerOrder,
-    setDisplayOrder,
-    setPropositions,
-    setIsConnected,
-    setNoMorePlayers,
-    sfxVolumeRef,
-  ]);
+    // actions est recréé à chaque rendu mais ne contient que des setters stables et une ref
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [socket]);
 };

@@ -6,7 +6,7 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 
 // Import des hooks
-import CopyCodeRoom from "../../hooks/CopyCodeRoom";
+import copyToClipboard from "../../utils/copyToClipboard";
 
 // Import du contexte
 import { useGame } from "../../context/GameContext";
@@ -82,7 +82,7 @@ export default function RulesModal({
                   width={32}
                   height={32}
                   className="h-4 w-4 cursor-pointer transition-transform duration-300 ease-in-out hover:scale-110 lg:h-8 lg:w-8"
-                  onClick={() => CopyCodeRoom({ roomCode, setCopySuccess })}
+                  onClick={() => copyToClipboard(roomCode, setCopySuccess)}
                 />
               </h3>
               <div className="grid grid-cols-5 items-center gap-2">

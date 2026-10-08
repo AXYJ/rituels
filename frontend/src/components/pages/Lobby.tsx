@@ -10,7 +10,7 @@ import { useGame } from "../../context/GameContext";
 
 // Import des composants
 import Logo from "../Logo";
-import CopyCodeRoom from "../../hooks/CopyCodeRoom";
+import copyToClipboard from "../../utils/copyToClipboard";
 import RulesModal from "../game/RulesModal";
 
 // Variants pour l'animation d'entrée
@@ -186,7 +186,7 @@ export default function Lobby() {
           className="relative flex items-center gap-4 text-3xl lg:text-5xl"
         >
           Code : <span className="tracking-widest">{roomCode}</span>{" "}
-          <button onClick={() => {CopyCodeRoom({ roomCode, setCopySuccess })}} className="cursor-pointer">
+          <button onClick={() => {copyToClipboard(roomCode, setCopySuccess)}} className="cursor-pointer">
             <Image
               src="/assets/copy.png"
               alt="Copier"
