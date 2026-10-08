@@ -52,4 +52,4 @@ The frontend and backend only communicate over Socket.io events — there is no 
 
 **Chat/name moderation**: `send_message` and `change_name` both go through Groq-backed LLM moderation (`moderatePseudo` / `moderateMessage` in `moderation.js`) before being broadcast — messages aren't filtered by a static wordlist.
 
-**Deployment**: frontend on Vercel, backend on Render. The frontend's keep-alive `fetch` in `useSocketListeners.ts` (every 5 min) exists specifically to stop Render's free-tier backend from idling.
+**Deployment**: frontend and backend are both hosted on Hostinger (the legal notice in `MentionsLegales` names Hostinger as host). The frontend's keep-alive `fetch` in `useSocketListeners.ts` (every 5 min) dates from the previous Render free-tier hosting and may no longer be needed.
