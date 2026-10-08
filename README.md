@@ -8,7 +8,7 @@ Un jeu de cartes multijoueur en temps réel. Affrontez vos amis, jouez des carte
 ## 🚀 Fonctionnalités
 
 - **Multijoueur en temps réel** : Synchronisation fluide des parties grâce à Socket.io.
-- **Logique de jeu sécurisée** : Les calculs de score et la génération de cartes sont entièrement gérés côté serveur. Le serveur identifie chaque joueur par son socket (jamais par un id envoyé par le client), vérifie le tour et que la carte jouée est bien dans son deck (anti-triche).
+- **Logique de jeu sécurisée** : Les calculs de score et la génération de cartes sont entièrement gérés côté serveur. Le serveur identifie chaque joueur par son socket (jamais par un id envoyé par le client), vérifie le tour et que la carte jouée est bien dans son deck (anti-triche). Les règles secrètes, les mains des autres joueurs et les identifiants de session ne sont jamais envoyés aux clients : les règles ne sont révélées qu'à la fin de la partie.
 - **Chat intégré** : Discutez avec les autres joueurs dans le lobby et pendant la partie (avec défilement automatique). Les pseudos (10 caractères max) et messages (300 max, 1 par seconde) sont modérés par un LLM (Groq).
 - **Interface dynamique et réactive** : Animations fluides avec Framer Motion et design moderne.
 - **Système de sessions** : Sauvegarde locale de votre pseudonyme et détection automatique des nouveaux joueurs pour l'animation d'introduction.

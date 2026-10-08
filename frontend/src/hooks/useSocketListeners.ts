@@ -97,11 +97,9 @@ export const useSocketListeners = (
           setPlayers((prevPlayers) => {
             const safePrevPlayers = prevPlayers || [];
             return serverPlayers.map((serverPlayer: Player) => {
-              const localPlayer =
-                safePrevPlayers.find((p) => p.id === serverPlayer.id) ||
-                safePrevPlayers.find(
-                  (p) => p.sessionId === serverPlayer.sessionId
-                );
+              const localPlayer = safePrevPlayers.find(
+                (p) => p.id === serverPlayer.id
+              );
               return {
                 ...serverPlayer,
                 deck: serverPlayer.deck?.cards

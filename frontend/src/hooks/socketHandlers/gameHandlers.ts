@@ -78,7 +78,8 @@ export const registerGameHandlers = (
     },
 
     // Fin de partie
-    game_won: (idPlayer: string, finalScore: number) => {
+    game_won: (idPlayer: string, finalScore: number, finalRules: GameRules) => {
+      setRules(finalRules);
       setPlayers((prev) =>
         prev.map((p) => (p.id === idPlayer ? { ...p, score: finalScore } : p))
       );

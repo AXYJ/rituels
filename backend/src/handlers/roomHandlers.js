@@ -1,6 +1,13 @@
 import { generateRules, getNextPlayerOrder } from "../gameLogic.js";
 import { moderatePseudo, MAX_NAME_LENGTH } from "../moderation.js";
 import { generateRoomCode, getRoomAndPlayer } from "../rooms.js";
+import {
+  emitRoomUpdated,
+  maskRules,
+  publicHistory,
+  publicPlayers,
+  rulesFor,
+} from "../serializers.js";
 import { checkAndResetGame } from "./gameHandlers.js";
 
 const MIN_THRESHOLD = 5;
@@ -43,10 +50,7 @@ export const handlePlayerLeave = (io, socket, rooms) => {
     activePlayers[0].isHost = true;
   }
 
-  io.to(code).emit("room_updated", {
-    players: room.players,
-    playerOrder: room.playerOrder,
-  });
+  emitRoomUpdated(io, room, { withOrder: true });
 
   if (isGameStarted && room.playerOrder[0] === socket.id) {
     room.playerOrder = getNextPlayerOrder(room.playerOrder, room.players);
@@ -85,7 +89,13 @@ export const registerRoomHandlers = (io, socket, rooms) => {
     socket.join(roomCode);
     socket.data.roomCode = roomCode;
 
-    socket.emit("room_created", roomCode, rules, room.players, room.threshold);
+    socket.emit(
+      "room_created",
+      roomCode,
+      maskRules(rules),
+      publicPlayers(room.players, socket.id),
+      room.threshold
+    );
   });
 
   // Rejoindre une partie
@@ -114,19 +124,16 @@ export const registerRoomHandlers = (io, socket, rooms) => {
 
       socket.emit("reconnected", {
         roomCode,
-        rules: room.rules,
-        players: room.players,
+        rules: rulesFor(room),
+        players: publicPlayers(room.players, socket.id),
         playerNumber: room.players.length,
         threshold: room.threshold,
         playerOrder: room.playerOrder,
         playerTurn: room.playerOrder ? room.playerOrder[0] : null,
-        history: room.history || [],
+        history: publicHistory(room.history || []),
       });
 
-      io.to(roomCode).emit("room_updated", {
-        players: room.players,
-        playerOrder: room.playerOrder,
-      });
+      emitRoomUpdated(io, room, { withOrder: true });
     } else if (room.playerOrder && room.playerOrder.length > 0) {
       socket.emit("game_already_started");
     } else if (room.players.length < 4) {
@@ -145,12 +152,12 @@ export const registerRoomHandlers = (io, socket, rooms) => {
       socket.join(roomCode);
       socket.data.roomCode = roomCode;
 
-      io.to(roomCode).emit("room_updated", { players: room.players });
+      emitRoomUpdated(io, room);
       socket.emit(
         "join_game_success",
         roomCode,
-        room.rules,
-        room.players,
+        rulesFor(room),
+        publicPlayers(room.players, socket.id),
         room.threshold
       );
     } else {
@@ -176,7 +183,7 @@ export const registerRoomHandlers = (io, socket, rooms) => {
       socket.emit("name_rejected");
     } else {
       found.player.name = cleaned;
-      io.to(found.code).emit("room_updated", { players: found.room.players });
+      emitRoomUpdated(io, found.room);
     }
   });
 
@@ -185,7 +192,7 @@ export const registerRoomHandlers = (io, socket, rooms) => {
     const found = getRoomAndPlayer(socket, rooms);
     if (!found) return;
     found.player.isReady = Boolean(isReady);
-    io.to(found.code).emit("room_updated", { players: found.room.players });
+    emitRoomUpdated(io, found.room);
   });
 
   // Mise à jour du seuil de victoire

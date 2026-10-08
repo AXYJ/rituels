@@ -7,6 +7,13 @@ import {
     generateRules
 } from "../gameLogic.js";
 import { getRoomAndPlayer } from "../rooms.js";
+import {
+  emitRoomUpdated,
+  emitToRoom,
+  hideCard,
+  maskRules,
+  publicPlayers,
+} from "../serializers.js";
 
 export const checkAndResetGame = (roomCode, rooms, io) => {
   const room = rooms[roomCode];
@@ -31,7 +38,10 @@ export const checkAndResetGame = (roomCode, rooms, io) => {
 
     room.players = activePlayers;
 
-    io.to(roomCode).emit("game_reset", room.rules, activePlayers);
+    emitToRoom(io, room, "game_reset", (viewerId) => [
+      maskRules(room.rules),
+      publicPlayers(activePlayers, viewerId),
+    ]);
   }
 };
 
@@ -60,13 +70,12 @@ export const registerGameHandlers = (io, socket, rooms) => {
     }
     room.history = [];
     room.lastEffect = null;
-    io.to(roomCode).emit(
-      "game_started",
+    emitToRoom(io, room, "game_started", (viewerId) => [
       room.playerOrder[0],
       room.playerOrder,
-      room.rules,
-      room.players
-    );
+      maskRules(room.rules),
+      publicPlayers(room.players, viewerId),
+    ]);
   });
 
   // Carte jouée
@@ -101,7 +110,8 @@ export const registerGameHandlers = (io, socket, rooms) => {
 
     if (isWin) {
       room.isGameOver = true;
-      return io.to(code).emit("game_won", player.id, player.score);
+      // Fin de partie : les règles sont enfin révélées
+      return io.to(code).emit("game_won", player.id, player.score, room.rules);
     }
 
     room.lastEffect = effectiveEffect;
@@ -110,16 +120,16 @@ export const registerGameHandlers = (io, socket, rooms) => {
     player.deck.cards = player.deck.cards.filter((c) => c.id !== ownCard.id);
     player.deck.cards.push(newCard);
 
-    io.to(code).emit(
-      "card_played",
+    // La carte piochée n'est visible que par son propriétaire
+    emitToRoom(io, room, "card_played", (viewerId) => [
       ownCard,
       socket.id,
       player.name,
       room.playerOrder,
       player.score,
       points,
-      newCard
-    );
+      viewerId === socket.id ? newCard : hideCard(newCard),
+    ]);
   });
 
   // Retour au lobby
@@ -128,7 +138,7 @@ export const registerGameHandlers = (io, socket, rooms) => {
     if (!found) return;
     found.player.inLobby = true;
 
-    io.to(found.code).emit("room_updated", { players: found.room.players });
+    emitRoomUpdated(io, found.room);
 
     checkAndResetGame(found.code, rooms, io);
   });

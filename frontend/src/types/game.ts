@@ -91,8 +91,9 @@ export interface GameContextType {
 
 // Types pour les règles issues du serveur
 export interface GameRules {
-  symbolRules: Record<string, number>;
-  colorRules: Record<string, string>;
+  // Les valeurs restent null tant que la partie n'est pas terminée (secret du jeu)
+  symbolRules: Record<string, number | null>;
+  colorRules: Record<string, string | null>;
 }
 
 // Types pour les joueurs
@@ -104,7 +105,8 @@ export interface Player {
   deck: { cards: Card[] | null };
   score: number;
   leavedPlayer: boolean;
-  sessionId: string;
+  // Seulement connu pour le joueur local (jamais envoyé par le serveur pour les autres)
+  sessionId?: string;
 }
 
 // Actions d'état passées aux handlers d'events socket
