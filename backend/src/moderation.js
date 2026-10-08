@@ -12,11 +12,11 @@ try {
 const apiKey = process.env.GROQ_API_KEY;
 const model = process.env.GROQ_MODEL || 'llama-3.3-70b-versatile';
 
-if (!apiKey) {
-  throw new Error('La variable d environnement GROQ_API_KEY est requise.');
+// Sans clé, la modération est désactivée (pratique en local) au lieu d'empêcher le serveur de démarrer
+const groq = apiKey ? new Groq({ apiKey }) : null;
+if (!groq) {
+  console.warn('GROQ_API_KEY absente : modération des pseudos et messages désactivée.');
 }
-
-const groq = new Groq({ apiKey });
 
 export const MAX_NAME_LENGTH = 10;
 export const MAX_MESSAGE_LENGTH = 300;
@@ -30,6 +30,7 @@ export async function moderatePseudo(pseudo) {
   if (!cleaned) {
     throw new Error('Le texte a moderer est requis.');
   }
+  if (!groq) return 'OK';
 
   try {
     const completion = await groq.chat.completions.create({
@@ -65,6 +66,7 @@ export async function moderateMessage(message) {
   if (!cleaned) {
     throw new Error('Le texte a moderer est requis.');
   }
+  if (!groq) return cleaned;
 
   try {
     const completion = await groq.chat.completions.create({
