@@ -2,7 +2,7 @@
 
 // Import des modules
 import Image from "next/image";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 // Import des types
@@ -10,6 +10,7 @@ import { Card, Player } from "../../types/game";
 
 // Import du contexte
 import { useGame } from "../../context/GameContext";
+import useScoreBump from "../../hooks/useScoreBump";
 import { normalizeSymbol } from "../../utils/normalizeSymbol";
 
 type PlayerDeckProps = {
@@ -64,46 +65,7 @@ export default function PlayerDeck({
     }
   };
 
-  const seedRef = useRef<HTMLImageElement>(null);
-  const prevScoreRef = useRef<number | null>(null);
-
-  useEffect(() => {
-    if (me) {
-      if (prevScoreRef.current !== null && me.score !== prevScoreRef.current) {
-        const diff = me.score - prevScoreRef.current;
-        const seed = seedRef.current;
-
-        if (seed) {
-          if (diff > 0) {
-            seed.animate(
-              [
-                { transform: "scale(1)" },
-                { transform: "scale(1.2)" },
-                { transform: "scale(1)" },
-              ],
-              {
-                duration: 300,
-                easing: "ease-in-out",
-              }
-            );
-          } else if (diff < 0) {
-            seed.animate(
-              [
-                { transform: "scale(1)" },
-                { transform: "scale(0.8)" },
-                { transform: "scale(1)" },
-              ],
-              {
-                duration: 300,
-                easing: "ease-in-out",
-              }
-            );
-          }
-        }
-      }
-      prevScoreRef.current = me.score;
-    }
-  }, [me, me?.score]);
+  const seedRef = useScoreBump(me?.score);
 
   return (
     <div

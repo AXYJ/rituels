@@ -3,10 +3,10 @@
 // Import des modules
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { useRef, useEffect } from "react";
 
 // Import du contexte
 import { useGame } from "../../context/GameContext";
+import useScoreBump from "../../hooks/useScoreBump";
 
 // Import des types
 import { Player, Card } from "../../types/game";
@@ -24,49 +24,7 @@ function OpponentDeck({
   getOpponentPlacementClass: (index: number, total: number) => string;
   getOpponentNamePlacementClass: (index: number, total: number) => string;
 }) {
-  const seedRef = useRef<HTMLImageElement>(null);
-  const prevScoreRef = useRef<number | null>(null);
-
-  useEffect(() => {
-    if (opponent) {
-      if (
-        prevScoreRef.current !== null &&
-        opponent.score !== prevScoreRef.current
-      ) {
-        const diff = opponent.score - prevScoreRef.current;
-        const seed = seedRef.current;
-
-        if (seed) {
-          if (diff > 0) {
-            seed.animate(
-              [
-                { transform: "scale(1)" },
-                { transform: "scale(1.2)" },
-                { transform: "scale(1)" },
-              ],
-              {
-                duration: 300,
-                easing: "ease-in-out",
-              }
-            );
-          } else if (diff < 0) {
-            seed.animate(
-              [
-                { transform: "scale(1)" },
-                { transform: "scale(0.8)" },
-                { transform: "scale(1)" },
-              ],
-              {
-                duration: 300,
-                easing: "ease-in-out",
-              }
-            );
-          }
-        }
-      }
-      prevScoreRef.current = opponent.score;
-    }
-  }, [opponent, opponent?.score]);
+  const seedRef = useScoreBump(opponent?.score);
 
   return (
     <div
