@@ -25,7 +25,8 @@ export default function RulesModal({
   onClose: () => void;
   onQuit?: () => void;
 }) {
-  const { volume, setVolume, sfxVolume, setSfxVolume, roomCode } = useGame();
+  const { volume, setVolume, sfxVolume, setSfxVolume, roomCode, quitLobby } =
+    useGame();
 
   const [settings, setSettings] = useState(true);
   const [rules, setRules] = useState(false);
@@ -41,7 +42,13 @@ export default function RulesModal({
       setRules(true);
       setSettings(false);
     } else if (id === "quit-btn") {
-      onQuit?.();
+      // En partie, onQuit demande confirmation ; dans le lobby on quitte directement
+      if (onQuit) {
+        onQuit();
+      } else {
+        quitLobby();
+        onClose();
+      }
     }
   };
 

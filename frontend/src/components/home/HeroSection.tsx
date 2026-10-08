@@ -8,7 +8,7 @@ import Image from "next/image";
 import { useGame } from "../../context/GameContext";
 import Logo from "../Logo";
 import ImageButton from "../ImageButton";
-import ErrorToast from "./ErrorToast";
+import ErrorToast from "../ErrorToast";
 
 const MotionImage = motion(Image);
 
@@ -116,7 +116,7 @@ export default function HeroSection({
               variants={itemVariants}
               onClick={onPlay}
               disabled={playDisabled}
-              className="w-full px-12 py-4"
+              className="w-full rounded-3xl px-12 py-4"
             >
               Créer une nouvelle partie
             </ImageButton>
@@ -143,7 +143,7 @@ export default function HeroSection({
               <ImageButton
                 variant="short"
                 onClick={handleJoinGame}
-                className={`w-fit px-6 py-4 ${joinable ? "" : "pointer-events-none cursor-not-allowed opacity-50"}`}
+                className={`w-fit rounded-3xl px-6 py-4 ${joinable ? "" : "pointer-events-none cursor-not-allowed opacity-50"}`}
               >
                 Rejoindre
               </ImageButton>

@@ -45,7 +45,7 @@ export default function Home() {
           <ImageButton
             variant="short"
             href="#launch-btn"
-            className="flex w-80 items-center justify-center px-12 py-4"
+            className="flex w-80 items-center justify-center rounded-3xl px-12 py-4"
           >
             Lancer une partie
           </ImageButton>

@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useGame } from "../../context/GameContext";
+import { useGame } from "../context/GameContext";
 
 const DISMISS_DELAY_MS = 2000;
 
@@ -24,7 +24,7 @@ export default function ErrorToast() {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
-          className="bg-red fixed top-10 z-9999 flex items-center gap-4 rounded-md px-8 py-4 text-2xl font-bold text-white shadow-lg"
+          className="bg-red fixed top-10 left-1/2 z-9999 flex -translate-x-1/2 items-center gap-4 rounded-md px-8 py-4 text-2xl font-bold text-white shadow-lg"
         >
           <span>{error}</span>
           <button

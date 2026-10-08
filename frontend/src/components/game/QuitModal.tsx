@@ -1,11 +1,10 @@
 "use client";
 
-// Import des modules
-import { motion } from "framer-motion";
-import Image from "next/image";
-
 // Import du contexte
 import { useGame } from "../../context/GameContext";
+import ImageButton from "../ImageButton";
+
+const buttonClass = "w-full rounded-full px-6 py-2";
 
 export default function QuitModal({ onClose }: { onClose: () => void }) {
   const { quitLobby } = useGame();
@@ -17,39 +16,27 @@ export default function QuitModal({ onClose }: { onClose: () => void }) {
             Voulez-vous vraiment quitter la partie ?
           </h2>
           <div className="flex w-4/5 gap-18">
-            <motion.button
+            <ImageButton
+              variant="long-white"
               whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.9 }}
-              className="relative w-full cursor-pointer rounded-full px-6 py-2 text-white shadow-black transition-shadow duration-300 hover:shadow-lg"
+              textClassName="text-2xl text-black"
+              className={buttonClass}
               onClick={onClose}
             >
-              <Image
-                src="/assets/button-long-white.png"
-                alt="quit"
-                width={800}
-                height={100}
-                className="absolute inset-0 z-0 h-full w-full object-contain select-none"
-              />
-              <span className="relative z-10 text-2xl text-black">Annuler</span>
-            </motion.button>
-            <motion.button
+              Annuler
+            </ImageButton>
+            <ImageButton
+              variant="long-red"
               whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.9 }}
-              className="relative w-full cursor-pointer rounded-full px-6 py-2 text-white shadow-black transition-shadow duration-300 hover:shadow-lg"
+              textClassName="text-2xl text-white"
+              className={buttonClass}
               onClick={() => {
                 quitLobby();
                 onClose();
               }}
             >
-              <Image
-                src="/assets/button-long-red.png"
-                alt="quit"
-                width={800}
-                height={100}
-                className="absolute inset-0 z-0 h-full w-full object-contain select-none"
-              />
-              <span className="relative z-10 text-2xl">Quitter</span>
-            </motion.button>
+              Quitter
+            </ImageButton>
           </div>
         </div>
       </div>
