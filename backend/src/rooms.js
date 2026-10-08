@@ -13,6 +13,13 @@ export function generateRoomCode(rooms) {
   return code;
 }
 
+const MIN_THRESHOLD = 5;
+const MAX_THRESHOLD = 30;
+
+/** Ramène le quota de victoire dans les bornes autorisées */
+export const clampThreshold = (value) =>
+  Math.min(Math.max(value, MIN_THRESHOLD), MAX_THRESHOLD);
+
 /**
  * Retrouve la salle et le joueur du socket (l'identité vient du socket, jamais du client)
  */

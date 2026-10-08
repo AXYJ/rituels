@@ -44,7 +44,15 @@ const GameContext = createContext<GameContextType | undefined>(undefined);
 
 // Création du provider
 export const GameProvider = ({ children }: { children: ReactNode }) => {
-  const [socket, setSocket] = useState<Socket | null>(null);
+  // Créé une seule fois côté navigateur ; la connexion démarre dans l'effet ci-dessous
+  const [socket] = useState<Socket | null>(() =>
+    typeof window === "undefined"
+      ? null
+      : io(process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:4000", {
+          transports: ["websocket", "polling"],
+          autoConnect: false,
+        })
+  );
   const [isConnected, setIsConnected] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [view, setView] = useState<View>("home");
@@ -89,23 +97,12 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       localStorage.setItem(SESSION_ID_KEY, crypto.randomUUID());
     }
 
-    // Initialisation de la connexion
-    const socketUrl =
-      process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:4000";
-    const newSocket = io(socketUrl, {
-      transports: ["websocket", "polling"],
-    });
-
-    // Différé d'un tick pour ne pas appeler setState de façon synchrone dans l'effet
-    setTimeout(() => {
-      setSocket(newSocket);
-      setIsConnected(newSocket.connected);
-    }, 0);
-
+    // Connexion au serveur (le socket est créé plus haut, une seule fois)
+    socket?.connect();
     return () => {
-      newSocket.disconnect();
+      socket?.disconnect();
     };
-  }, []);
+  }, [socket]);
 
   // Utilisation du hook personnalisé pour gérer les écouteurs Socket
   const socketActions: SocketActions = {

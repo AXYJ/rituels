@@ -1,6 +1,6 @@
 import { generateRules, getNextPlayerOrder } from "../gameLogic.js";
 import { moderatePseudo, MAX_NAME_LENGTH } from "../moderation.js";
-import { generateRoomCode, getRoomAndPlayer } from "../rooms.js";
+import { clampThreshold, generateRoomCode, getRoomAndPlayer } from "../rooms.js";
 import {
   emitRoomUpdated,
   maskRules,
@@ -9,9 +9,6 @@ import {
   rulesFor,
 } from "../serializers.js";
 import { checkAndResetGame } from "./gameHandlers.js";
-
-const MIN_THRESHOLD = 5;
-const MAX_THRESHOLD = 30;
 
 // Départ d'un joueur (partagé par quit_lobby et disconnect)
 export const handlePlayerLeave = (io, socket, rooms) => {
@@ -199,7 +196,7 @@ export const registerRoomHandlers = (io, socket, rooms) => {
   socket.on("update_threshold", (newThreshold) => {
     const found = getRoomAndPlayer(socket, rooms);
     if (!found || !found.player.isHost || !Number.isFinite(newThreshold)) return;
-    found.room.threshold = Math.min(Math.max(newThreshold, MIN_THRESHOLD), MAX_THRESHOLD);
+    found.room.threshold = clampThreshold(newThreshold);
     io.to(found.code).emit("threshold_updated", found.room.threshold);
   });
 

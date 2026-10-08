@@ -6,7 +6,7 @@ import {
     createCard,
     generateRules
 } from "../gameLogic.js";
-import { getRoomAndPlayer } from "../rooms.js";
+import { clampThreshold, getRoomAndPlayer } from "../rooms.js";
 import {
   emitRoomUpdated,
   emitToRoom,
@@ -66,7 +66,7 @@ export const registerGameHandlers = (io, socket, rooms) => {
     });
     // Le seuil est borné par update_threshold ; on garde celui du serveur si la valeur reçue est invalide
     if (Number.isFinite(threshold)) {
-      room.threshold = Math.min(Math.max(threshold, 5), 30);
+      room.threshold = clampThreshold(threshold);
     }
     room.history = [];
     room.lastEffect = null;

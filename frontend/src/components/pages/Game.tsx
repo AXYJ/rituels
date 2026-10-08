@@ -100,31 +100,6 @@ export default function Game() {
     cardPlayed(card);
   };
 
-  useEffect(() => {
-    // Tentative de masquer la barre d'adresse sur mobile au chargement
-    const hideAddressBar = () => {
-      window.scrollTo(0, 1);
-    };
-
-    // Petit délai pour laisser le temps au layout de se stabiliser
-    const timeoutId = setTimeout(hideAddressBar, 100);
-
-    // On peut aussi le refaire si le joueur touche l'écran (souvent nécessaire sur mobile)
-    const handleTouch = () => {
-      if (window.scrollY === 0) {
-        window.scrollTo(0, 1);
-      }
-    };
-
-    window.addEventListener("touchstart", handleTouch);
-
-    return () => {
-      clearTimeout(timeoutId);
-      window.removeEventListener("touchstart", handleTouch);
-    };
-  }, []);
-
-
   // Bloquer le bouton retour (le bloc-notes ouvert le consomme en premier)
   useEffect(() => {
     window.history.pushState(null, "", window.location.href);
