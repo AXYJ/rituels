@@ -45,6 +45,20 @@ test("limites : salle pleine, partie commencée, salle inconnue", async () => {
   assert.equal(late.count("room_not_found"), 1);
 });
 
+test("quota : modifiable par l'hôte au lobby, ignoré en partie", async () => {
+  const { code, players: [host, guest] } = await lobby(server, 2);
+  guest.emit("update_threshold", 7);
+  host.emit("update_threshold", 7);
+  await settle();
+  assert.equal(host.count("threshold_updated"), 1);
+
+  host.emit("start_game", code, 7);
+  await settle();
+  host.emit("update_threshold", 5);
+  await settle();
+  assert.equal(host.count("threshold_updated"), 1);
+});
+
 test("règles d'accès : pas de partie lancée par un invité, pas de carte hors tour ni inventée", async () => {
   const { code, players: [host, guest] } = await lobby(server, 2);
   guest.emit("start_game", code, 15);
@@ -127,7 +141,7 @@ test("reconnexion : même sessionId retrouve sa place, un inconnu est refusé", 
 });
 
 test("fin de partie : retour au lobby, nouvelles règles masquées, nouvelle partie possible", async () => {
-  const game = await startedGame(server, 2);
+  const game = await startedGame(server, 2, 5);
   const [host, guest] = game.players;
   await playUntilWin(game);
 

@@ -205,6 +205,8 @@ export const registerRoomHandlers = (io, socket, rooms) => {
   socket.on("update_threshold", (newThreshold) => {
     const found = getRoomAndPlayer(socket, rooms);
     if (!found || !found.player.isHost || !Number.isFinite(newThreshold)) return;
+    // Le quota ne change plus une fois la partie lancée (playerOrder absent = lobby)
+    if (found.room.playerOrder) return;
     found.room.threshold = clampThreshold(newThreshold);
     io.to(found.code).emit("threshold_updated", found.room.threshold);
   });

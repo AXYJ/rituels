@@ -74,10 +74,10 @@ export async function lobby(server, playerCount = 2) {
 }
 
 /** Partie lancée avec `playerCount` joueurs : mains, ordre et premier joueur sont connus du test */
-export async function startedGame(server, playerCount = 2) {
+export async function startedGame(server, playerCount = 2, threshold = 15) {
   const room = await lobby(server, playerCount);
   const [host] = room.players;
-  host.emit("start_game", room.code, 15);
+  host.emit("start_game", room.code, threshold);
   await settle();
 
   const [first, order] = host.last("game_started").args;
@@ -94,7 +94,6 @@ export async function startedGame(server, playerCount = 2) {
 /** Joue chacun son tour jusqu'à ce qu'un joueur atteigne le quota (minimum 5 points) */
 export async function playUntilWin(game, maxTurns = 300) {
   const [host] = game.players;
-  host.emit("update_threshold", 5);
   for (let i = 0; i < maxTurns && !host.last("game_won"); i++) {
     const turn = game.order[i % game.order.length];
     const socket = game.byId[turn];

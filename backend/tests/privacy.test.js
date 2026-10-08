@@ -45,7 +45,7 @@ test("la carte piochée n'est visible que par son propriétaire", async () => {
 });
 
 test("les règles complètes sont révélées à la fin de la partie", async () => {
-  const game = await startedGame(server, 2);
+  const game = await startedGame(server, 2, 5);
   await playUntilWin(game);
 
   const won = game.players[1].last("game_won");
