@@ -2,7 +2,7 @@
 
 // Importations des modules
 import Image from "next/image";
-import { useEffect, useState, useRef, useCallback, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 // Import du contexte
@@ -12,6 +12,7 @@ import { useGame } from "../../context/GameContext";
 import { Card } from "../../types/game";
 
 // Import des hooks
+import useScoreDiffs from "../../hooks/useScoreDiffs";
 import { normalizeSymbol } from "../../utils/normalizeSymbol";
 import { backGuard } from "../../utils/backGuard";
 
@@ -51,33 +52,12 @@ export default function Game() {
     clickedCard && !history.some((h) => h.card?.id === clickedCard.id)
       ? clickedCard
       : null;
-  const [scoreDiffs, setScoreDiffs] = useState<{ id: number; diff: number }[]>(
-    []
-  );
-  const onBackAttempt = useCallback(() => {
-    setShowQuit(true);
-  }, []);
-  const prevScoreRef = useRef(me?.score ?? 0);
-  const diffIdRef = useRef(0);
-
-  useEffect(() => {
-    if (me && me.score !== prevScoreRef.current) {
-      const diff = me.score - prevScoreRef.current;
-      prevScoreRef.current = me.score;
-
-      if (diff !== 0) {
-        const id = diffIdRef.current++;
-        setScoreDiffs((prev) => [...prev, { id, diff }]);
-
-        setTimeout(() => {
-          setScoreDiffs((prev) => prev.filter((d) => d.id !== id));
-        }, 1500);
-      }
-    }
-  }, [me, me?.score]);
+  const scoreDiffs = useScoreDiffs(me?.score);
 
   const playedCards = useMemo(() => {
-    const cards = history.filter((h) => h.type === "card" && h.card).map((h) => h.card!);
+    const cards = history
+      .filter((h) => h.type === "card" && h.card)
+      .map((h) => h.card!);
     if (pendingCard) cards.push(pendingCard);
     return cards;
   }, [history, pendingCard]);
@@ -117,12 +97,12 @@ export default function Game() {
       }
 
       window.history.pushState(null, "", window.location.href);
-      onBackAttempt();
+      setShowQuit(true);
     };
 
     window.addEventListener("popstate", handlePopState);
     return () => window.removeEventListener("popstate", handlePopState);
-  }, [onBackAttempt]);
+  }, []);
 
   return (
     <section className="min-h-[100.1dvh] overflow-x-hidden bg-[radial-gradient(ellipse_31.48%_48.47%_at_51.72%_50.00%,#464441_0%,#191918_100%)] lg:min-h-dvh">
@@ -186,31 +166,31 @@ export default function Game() {
 
           <AnimatePresence>
             {playedCards.map((played, i) => (
-                <motion.div
-                  layout
-                  layoutId={`card-${played.id || played.symbol + played.color}`}
-                  // Utiliser l'index ou une combinaison avec l'index pour garantir l'unicité de la clé,
-                  // car layoutId gère l'animation, la "key" React sert juste à l'arbre.
-                  key={`played-${played.id}-${i}`}
-                  initial={{ opacity: 0, scale: 0.5, y: -50 }}
-                  animate={{
-                    opacity: 1,
-                    scale: 1,
-                    y: 0,
-                    rotate: (i % 5) * 6 - 12,
-                  }}
-                  exit={{ opacity: 0, scale: 0.5 }}
-                  transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                  className="absolute h-36 w-24 drop-shadow-sm lg:h-60 lg:w-40"
-                >
-                  <Image
-                    src={`/cards/${normalizeSymbol(played.symbol)}-${played.color}.png`}
-                    alt="played card"
-                    width={400}
-                    height={600}
-                    className="pointer-events-none h-full w-full object-contain"
-                  />
-                </motion.div>
+              <motion.div
+                layout
+                layoutId={`card-${played.id || played.symbol + played.color}`}
+                // Utiliser l'index ou une combinaison avec l'index pour garantir l'unicité de la clé,
+                // car layoutId gère l'animation, la "key" React sert juste à l'arbre.
+                key={`played-${played.id}-${i}`}
+                initial={{ opacity: 0, scale: 0.5, y: -50 }}
+                animate={{
+                  opacity: 1,
+                  scale: 1,
+                  y: 0,
+                  rotate: (i % 5) * 6 - 12,
+                }}
+                exit={{ opacity: 0, scale: 0.5 }}
+                transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                className="absolute h-36 w-24 drop-shadow-sm lg:h-60 lg:w-40"
+              >
+                <Image
+                  src={`/cards/${normalizeSymbol(played.symbol)}-${played.color}.png`}
+                  alt="played card"
+                  width={400}
+                  height={600}
+                  className="pointer-events-none h-full w-full object-contain"
+                />
+              </motion.div>
             ))}
           </AnimatePresence>
         </div>
