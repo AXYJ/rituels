@@ -130,43 +130,46 @@ export default function PlayerDeck({
       </div>
 
       <AnimatePresence>
-        {deck?.cards?.map((card: Card, index: number) => (
-          <motion.div
-            layout
-            layoutId={`card-${card.id || card.symbol + card.color}`}
-            key={card.id || index}
-            drag={isMyTurn ? "y" : false}
-            dragConstraints={{ top: 0, bottom: 0 }}
-            dragElastic={0.4}
-            onDragEnd={(e, info) => {
-              if (info.offset.y < -50 || info.velocity.y < -400) {
-                handleCardClick(card);
-                setSelectedCardIndex(null);
-              } else if (info.offset.y > 50 || info.velocity.y > 400) {
-                setSelectedCardIndex(null);
+        {deck?.cards?.map((card: Card, index: number) => {
+          const hasProposition = Boolean(
+            propositions.symbolRules[card.symbol] ||
+            propositions.colorRules[card.color]
+          );
+          return (
+            <motion.div
+              layout
+              layoutId={`card-${card.id || card.symbol + card.color}`}
+              key={card.id || index}
+              drag={isMyTurn ? "y" : false}
+              dragConstraints={{ top: 0, bottom: 0 }}
+              dragElastic={0.4}
+              onDragEnd={(e, info) => {
+                if (info.offset.y < -50 || info.velocity.y < -400) {
+                  handleCardClick(card);
+                  setSelectedCardIndex(null);
+                } else if (info.offset.y > 50 || info.velocity.y > 400) {
+                  setSelectedCardIndex(null);
+                }
+              }}
+              initial={{ opacity: 0, y: 200, scale: 0.8 }}
+              animate={
+                selectedCardIndex === index
+                  ? { opacity: 1, y: -64, scale: 1 }
+                  : { opacity: 1, y: 0, scale: 1 }
               }
-            }}
-            initial={{ opacity: 0, y: 200, scale: 0.8 }}
-            animate={
-              selectedCardIndex === index
-                ? { opacity: 1, y: -64, scale: 1 }
-                : { opacity: 1, y: 0, scale: 1 }
-            }
-            exit={{ opacity: 0, scale: 0.8, transition: { duration: 0.2 } }}
-            whileHover={
-              typeof window !== "undefined" && window.innerWidth >= 1024
-                ? { y: -64 }
-                : {}
-            }
-            transition={{ type: "spring", stiffness: 200, damping: 20 }}
-            className={`group relative flex aspect-[2/3] items-center justify-center overflow-hidden rounded-xl lg:after:pointer-events-none lg:after:absolute lg:after:inset-0 lg:after:opacity-0 lg:after:transition-opacity lg:after:duration-300 ${propositions && (propositions.symbolRules[card.symbol] || propositions.colorRules[card.color]) && isMyTurn ? "lg:group-hover:after:opacity-100" : ""} ${isMyTurn ? "" : "pointer-events-none"}`}
-          >
-            <div
-              className={`pointer-events-none absolute inset-0 z-20 flex-col items-center justify-start transition-opacity duration-300 lg:flex lg:pt-8 lg:opacity-0 lg:group-hover:opacity-100 ${selectedCardIndex === index ? "flex opacity-100" : "hidden opacity-0"}`}
+              exit={{ opacity: 0, scale: 0.8, transition: { duration: 0.2 } }}
+              whileHover={
+                typeof window !== "undefined" && window.innerWidth >= 1024
+                  ? { y: -64 }
+                  : {}
+              }
+              transition={{ type: "spring", stiffness: 200, damping: 20 }}
+              className={`group relative flex aspect-[2/3] items-center justify-center overflow-hidden rounded-xl lg:after:pointer-events-none lg:after:absolute lg:after:inset-0 lg:after:opacity-0 lg:after:transition-opacity lg:after:duration-300 ${hasProposition && isMyTurn ? "lg:group-hover:after:opacity-100" : ""} ${isMyTurn ? "" : "pointer-events-none"}`}
             >
-              {propositions &&
-                (propositions.symbolRules[card.symbol] ||
-                  propositions.colorRules[card.color]) && (
+              <div
+                className={`pointer-events-none absolute inset-0 z-20 flex-col items-center justify-start transition-opacity duration-300 lg:flex lg:pt-8 lg:opacity-0 lg:group-hover:opacity-100 ${selectedCardIndex === index ? "flex opacity-100" : "hidden opacity-0"}`}
+              >
+                {hasProposition && (
                   <div className="flex flex-col items-center p-2 text-center lg:p-4">
                     <span className="text-sm tracking-widest text-white uppercase lg:text-xl">
                       Selon vous :
@@ -183,33 +186,29 @@ export default function PlayerDeck({
                     )}
                   </div>
                 )}
-            </div>
-            <Image
-              src={`/cards/${normalizeSymbol(card.symbol)}-${card.color}.png`}
-              alt="card"
-              width={400}
-              height={600}
-              draggable={false}
-              className={`relative z-10 max-h-full object-contain transition-all duration-300 ${
-                isMyTurn ? "cursor-pointer" : "cursor-default"
-              } ${
-                propositions &&
-                (propositions.symbolRules[card.symbol] ||
-                  propositions.colorRules[card.color]) &&
-                isMyTurn
-                  ? "lg:group-hover:brightness-50 lg:group-hover:grayscale-20"
-                  : ""
-              } ${
-                selectedCardIndex === index &&
-                (propositions.symbolRules[card.symbol] ||
-                  propositions.colorRules[card.color])
-                  ? "brightness-50 grayscale"
-                  : ""
-              }`}
-              onClick={(e) => handleClick(e, card, index)}
-            />
-          </motion.div>
-        ))}
+              </div>
+              <Image
+                src={`/cards/${normalizeSymbol(card.symbol)}-${card.color}.png`}
+                alt="card"
+                width={400}
+                height={600}
+                draggable={false}
+                className={`relative z-10 max-h-full object-contain transition-all duration-300 ${
+                  isMyTurn ? "cursor-pointer" : "cursor-default"
+                } ${
+                  hasProposition && isMyTurn
+                    ? "lg:group-hover:brightness-50 lg:group-hover:grayscale-20"
+                    : ""
+                } ${
+                  hasProposition && selectedCardIndex === index
+                    ? "brightness-50 grayscale"
+                    : ""
+                }`}
+                onClick={(e) => handleClick(e, card, index)}
+              />
+            </motion.div>
+          );
+        })}
       </AnimatePresence>
 
       {!isMyTurn && (
