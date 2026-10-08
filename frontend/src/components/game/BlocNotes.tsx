@@ -6,7 +6,52 @@ import Image from "next/image";
 import { useGame } from "../../context/GameContext";
 import { normalizeSymbol } from "../../utils/normalizeSymbol";
 import { backGuard } from "../../utils/backGuard";
+import { SYMBOL_VALUES, COLOR_EFFECTS } from "../../utils/gameConstants";
 
+// Une ligne du bloc-notes : étiquette (symbole ou couleur) + liste déroulante de la valeur supposée
+function RuleSelect({
+  id,
+  options,
+  value,
+  onChange,
+  labelClassName = "",
+  labelStyle,
+  children,
+}: {
+  id: string;
+  options: (string | number)[];
+  value: string | undefined;
+  onChange: (value: string) => void;
+  labelClassName?: string;
+  labelStyle?: React.CSSProperties;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="flex items-center justify-between gap-2">
+      <label
+        className={`w-24 text-xl lg:text-2xl ${labelClassName}`}
+        style={labelStyle}
+        htmlFor={id}
+      >
+        {children}
+      </label>
+      <select
+        name={id}
+        id={id}
+        value={value || ""}
+        onChange={(e) => onChange(e.target.value)}
+        className="col-span-2 w-full cursor-pointer rounded-md border border-gray-300 bg-white p-2 text-black"
+      >
+        <option value="">--</option>
+        {options.map((option) => (
+          <option key={option} value={option}>
+            {option}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+}
 
 export default function BlocNotes() {
   const [isEditing, setIsEditing] = useState(false);
@@ -19,7 +64,11 @@ export default function BlocNotes() {
   useEffect(() => {
     if (isEditing) {
       backGuard.blocNotesOpen = true;
-      window.history.pushState({ type: "bloc-notes" }, "", window.location.href);
+      window.history.pushState(
+        { type: "bloc-notes" },
+        "",
+        window.location.href
+      );
     } else {
       backGuard.blocNotesOpen = false;
       if (window.history.state?.type === "bloc-notes") {
@@ -90,90 +139,49 @@ export default function BlocNotes() {
               </h3>
               <div className="grid w-full grid-cols-2 gap-8 px-4">
                 <div className="flex flex-col gap-2">
-                  {Object.keys(rules?.symbolRules || {}).map(
-                    (symbol, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center justify-between gap-2"
-                      >
-                        <label
-                          className="flex w-24 items-center text-xl lg:text-2xl"
-                          htmlFor={symbol}
-                        >
-                          <Image
-                            src={`/assets/${normalizeSymbol(symbol)}.png`}
-                            alt={symbol}
-                            width={500}
-                            height={500}
-                            className="pointer-events-auto relative z-50 mr-4 ml-auto h-4 w-4 object-contain lg:h-6 lg:w-6"
-                          />
-                        </label>
-                        <select
-                          name={symbol}
-                          id={symbol}
-                          value={propositions.symbolRules[symbol] || ""}
-                          onChange={(e) =>
-                            setPropositions((prev) => ({
-                              ...prev,
-                              symbolRules: {
-                                ...prev.symbolRules,
-                                [symbol]: e.target.value,
-                              },
-                            }))
-                          }
-                          className="col-span-2 w-full cursor-pointer rounded-md border border-gray-300 bg-white p-2 text-black"
-                        >
-                          <option value="">--</option>
-                          {[3, 2, 1, 0, -1].map((value) => (
-                            <option key={value} value={value}>
-                              {value}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                    )
-                  )}
+                  {Object.keys(rules?.symbolRules || {}).map((symbol) => (
+                    <RuleSelect
+                      key={symbol}
+                      id={symbol}
+                      options={SYMBOL_VALUES}
+                      value={propositions.symbolRules[symbol]}
+                      onChange={(value) =>
+                        setPropositions((prev) => ({
+                          ...prev,
+                          symbolRules: { ...prev.symbolRules, [symbol]: value },
+                        }))
+                      }
+                      labelClassName="flex items-center"
+                    >
+                      <Image
+                        src={`/assets/${normalizeSymbol(symbol)}.png`}
+                        alt={symbol}
+                        width={500}
+                        height={500}
+                        className="pointer-events-auto relative z-50 mr-4 ml-auto h-4 w-4 object-contain lg:h-6 lg:w-6"
+                      />
+                    </RuleSelect>
+                  ))}
                 </div>
                 <div className="flex flex-col gap-2">
-                  {Object.keys(rules?.colorRules || {}).map((color, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center justify-between gap-2"
+                  {Object.keys(rules?.colorRules || {}).map((color) => (
+                    <RuleSelect
+                      key={color}
+                      id={color}
+                      options={COLOR_EFFECTS}
+                      value={propositions.colorRules[color]}
+                      onChange={(value) =>
+                        setPropositions((prev) => ({
+                          ...prev,
+                          colorRules: { ...prev.colorRules, [color]: value },
+                        }))
+                      }
+                      labelStyle={{
+                        color: `var(--color-card-${color.toLowerCase()})`,
+                      }}
                     >
-                      <label
-                        className={`w-24 text-xl lg:text-2xl`}
-                        style={{
-                          color: `var(--color-card-${color.toLowerCase()})`,
-                        }}
-                        htmlFor={color}
-                      >
-                        {color}
-                      </label>
-                      <select
-                        name={color}
-                        id={color}
-                        value={propositions.colorRules[color] || ""}
-                        onChange={(e) =>
-                          setPropositions((prev) => ({
-                            ...prev,
-                            colorRules: {
-                              ...prev.colorRules,
-                              [color]: e.target.value,
-                            },
-                          }))
-                        }
-                        className="col-span-2 w-full rounded-md border border-gray-300 bg-white p-2 text-black"
-                      >
-                        <option value="">--</option>
-                        {["Inversion", "Gel", "Répétition", "Neutre"].map(
-                          (value) => (
-                            <option key={value} value={value}>
-                              {value}
-                            </option>
-                          )
-                        )}
-                      </select>
-                    </div>
+                      {color}
+                    </RuleSelect>
                   ))}
                 </div>
               </div>
