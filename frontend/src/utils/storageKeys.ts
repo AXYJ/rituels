@@ -3,3 +3,4 @@ export const SESSION_ID_KEY = "rituels_session_id";
 export const ROOM_CODE_KEY = "rituels_room_code";
 export const SFX_KEY = "rituels_sfx_volume";
 export const VOLUME_KEY = "rituels_volume";
+export const VISITED_KEY = "rituels_visited";
