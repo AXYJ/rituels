@@ -1,5 +1,6 @@
 import { generateRules, getNextPlayerOrder } from "../gameLogic.js";
-import { moderatePseudo, MAX_NAME_LENGTH } from "../moderation.js";
+import { hasPseudoVerdict, moderatePseudo, MAX_NAME_LENGTH } from "../moderation.js";
+import { slidingWindow } from "../rateLimit.js";
 import { clampThreshold, generateRoomCode, getRoomAndPlayer } from "../rooms.js";
 import {
   emitRoomUpdated,
@@ -60,6 +61,9 @@ export const handlePlayerLeave = (io, socket, rooms) => {
 };
 
 export const registerRoomHandlers = (io, socket, rooms) => {
+  // 5 changements de pseudo jugés par minute et par joueur (les pseudos déjà jugés ne comptent pas)
+  const nameBudget = slidingWindow(5, 60_000);
+
   // Création d'une partie
   socket.on("create_game", (sessionId) => {
     const roomCode = generateRoomCode(rooms);
@@ -174,6 +178,11 @@ export const registerRoomHandlers = (io, socket, rooms) => {
 
     // Même nom que celui déjà validé : pas besoin de rappeler le modérateur
     if (cleaned === found.player.name) return;
+
+    if (!hasPseudoVerdict(cleaned) && !nameBudget()) {
+      socket.emit("name_rate_limited");
+      return;
+    }
 
     const status = await moderatePseudo(cleaned);
     if (status === "NON") {

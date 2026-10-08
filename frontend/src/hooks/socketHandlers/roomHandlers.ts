@@ -56,6 +56,8 @@ export const registerRoomHandlers = (
     room_not_found: () => setError("Partie introuvable !"),
     game_already_started: () => setError("La partie a déjà commencé !"),
     name_rejected: () => setError("Pseudo refusé !"),
+    name_rate_limited: () =>
+      setError("Trop de changements de pseudo, réessaie dans un instant."),
 
     threshold_updated: (newThreshold: number) => setThreshold(newThreshold),
   });

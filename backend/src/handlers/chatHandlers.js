@@ -1,25 +1,23 @@
 import { moderateMessage, MAX_MESSAGE_LENGTH } from "../moderation.js";
+import { slidingWindow } from "../rateLimit.js";
 import { getRoomAndPlayer } from "../rooms.js";
 
-const MIN_DELAY_MS = 1000;
-
 export const registerChatHandlers = (io, socket, rooms) => {
-  let lastMessageAt = 0;
+  // Budget de modération : 5 messages en rafale puis environ 1 par seconde.
+  // Au-delà, le message passe sans modération (jamais refusé) ; seul un flood absurde est ignoré.
+  const moderationBudget = slidingWindow(5, 5000);
+  const floodGuard = slidingWindow(10, 1000);
 
   // Message chat
   socket.on("send_message", async (message) => {
     const found = getRoomAndPlayer(socket, rooms);
     if (!found || typeof message !== "string") return;
-
-    // Un appel LLM par message : on limite la fréquence et la longueur
-    const now = Date.now();
-    if (now - lastMessageAt < MIN_DELAY_MS) return;
-    lastMessageAt = now;
+    if (!floodGuard()) return;
 
     const text = message.trim().slice(0, MAX_MESSAGE_LENGTH);
     if (!text) return;
 
-    const moderated = await moderateMessage(text);
+    const moderated = moderationBudget() ? await moderateMessage(text) : text;
     found.room.history.push({
       type: "message",
       player: socket.id,

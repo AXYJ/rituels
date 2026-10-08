@@ -35,7 +35,7 @@ The backend has a small `node --test` suite (`npm test` in `backend/`, covers `g
 
 ### Required environment variables
 
-- Backend: `GROQ_API_KEY` (required — `moderation.js` throws at import time if unset), optional `GROQ_MODEL`, `PORT` (defaults to 4000), `ALLOWED_ORIGINS` (comma-separated CORS origins).
+- Backend: `GROQ_API_KEY` (without it the server still starts but moderation is disabled, with a warning), optional `GROQ_MODEL` (default `llama-3.1-8b-instant`), `PORT` (defaults to 4000), `ALLOWED_ORIGINS` (comma-separated CORS origins).
 - Frontend: `NEXT_PUBLIC_SOCKET_URL` (defaults to `http://localhost:4000`, same as the backend's default port).
 
 ## Architecture
@@ -50,6 +50,6 @@ The frontend and backend only communicate over Socket.io events — there is no 
 
 **Player identity vs. socket id**: `Player.id` is the live `socket.id`, but a separate client-generated `sessionId` (stored in `localStorage`, sent on every `create_game`/`join_game`) is what actually identifies a person across reconnects/tab refreshes. `join_game` in `roomHandlers.js` looks up by `sessionId` first and, if found, remaps the player's `id` and `room.playerOrder` to the new socket id. Code that needs to persist identity across a reconnect must key off `sessionId`, not `socket.id`.
 
-**Chat/name moderation**: `send_message` and `change_name` both go through Groq-backed LLM moderation (`moderatePseudo` / `moderateMessage` in `moderation.js`) before being broadcast — messages aren't filtered by a static wordlist.
+**Chat/name moderation**: `send_message` and `change_name` both go through Groq-backed LLM moderation (`moderatePseudo` / `moderateMessage` in `moderation.js`) before being broadcast — messages aren't filtered by a static wordlist. Moderation is fail-open by design: Groq errors, the 3 s timeout, or an exceeded budget let the text through. Budgets (`rateLimit.js`): 20 Groq calls/min globally, 5 judged pseudo changes/min per socket (verdicts are cached), chat 5 messages per 5 s moderated (extra messages pass unmoderated, >10/s is dropped).
 
 **Deployment**: frontend and backend are both hosted on Hostinger (the legal notice in `MentionsLegales` names Hostinger as host). It runs as Docker containers on Coolify, so nothing idles the backend. Rooms live in memory: any redeploy or restart wipes all running games.
