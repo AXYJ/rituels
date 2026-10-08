@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { calculateCardPoints, getNextPlayerOrder } from "./gameLogic.js";
+import { calculateCardPoints, getNextPlayerOrder } from "../src/gameLogic.js";
 
 const rules = {
   symbolRules: { cercle: 3, croix: 2 },

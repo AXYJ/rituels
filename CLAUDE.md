@@ -31,7 +31,7 @@ npm run lint
 npm run format    # prettier --write, includes prettier-plugin-tailwindcss
 ```
 
-The backend has a small `node --test` suite (`npm test` in `backend/`, covers `gameLogic.js`); the frontend has none.
+Tests: `npm test` from the repo root (or from `backend/`) runs the backend `node --test` suite in `backend/tests/`: pure game logic, rate limits, privacy of what each client receives, and room flows (leaving, reconnection, access rules, end of game). Integration tests start the real server on a free port (`tests/helpers.js`) and use `socket.io-client`. The frontend has no tests.
 
 ### Required environment variables
 
