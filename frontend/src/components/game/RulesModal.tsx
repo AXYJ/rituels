@@ -3,10 +3,11 @@
 // Import des modules
 import { useState } from "react";
 import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 
 // Import des hooks
 import copyToClipboard from "../../utils/copyToClipboard";
+import CodeCopiedToast from "../CodeCopiedToast";
 
 // Import du contexte
 import { useGame } from "../../context/GameContext";
@@ -28,27 +29,19 @@ export default function RulesModal({
   const { volume, setVolume, sfxVolume, setSfxVolume, roomCode, quitLobby } =
     useGame();
 
-  const [settings, setSettings] = useState(true);
-  const [rules, setRules] = useState(false);
+  const [tab, setTab] = useState<"settings" | "rules">("settings");
+  const settings = tab === "settings";
+  const rules = tab === "rules";
 
   const [copySuccess, setCopySuccess] = useState(false);
 
-  const handleClick = (e: React.MouseEvent) => {
-    const id = e.currentTarget.id;
-    if (id === "settings-btn") {
-      setSettings(true);
-      setRules(false);
-    } else if (id === "rules-btn") {
-      setRules(true);
-      setSettings(false);
-    } else if (id === "quit-btn") {
-      // En partie, onQuit demande confirmation ; dans le lobby on quitte directement
-      if (onQuit) {
-        onQuit();
-      } else {
-        quitLobby();
-        onClose();
-      }
+  // En partie, onQuit demande confirmation ; dans le lobby on quitte directement
+  const handleQuit = () => {
+    if (onQuit) {
+      onQuit();
+    } else {
+      quitLobby();
+      onClose();
     }
   };
 
@@ -168,22 +161,19 @@ export default function RulesModal({
           <div className="flex items-center justify-center">
             <button
               className={`aside-btn-1 absolute cursor-pointer rounded-lg rounded-r-none bg-white px-4 py-2 text-center text-2xl text-black transition-all duration-300 hover:w-48 lg:text-4xl ${settings ? "w-32 lg:w-48" : "w-24 lg:w-40"}`}
-              id="settings-btn"
-              onClick={handleClick}
+              onClick={() => setTab("settings")}
             >
               Réglages
             </button>
             <button
               className={`aside-btn-2 absolute cursor-pointer rounded-lg rounded-r-none bg-white px-4 py-2 text-center text-2xl text-black transition-all duration-300 hover:w-48 lg:text-4xl ${rules ? "w-32 lg:w-48" : "w-24 lg:w-40"}`}
-              id="rules-btn"
-              onClick={handleClick}
+              onClick={() => setTab("rules")}
             >
               Règles
             </button>
             <button
               className={`aside-btn-3 bg-red absolute w-24 cursor-pointer rounded-lg rounded-r-none px-4 py-2 text-center text-2xl text-white transition-all duration-300 hover:w-48 lg:w-40 lg:text-4xl`}
-              id="quit-btn"
-              onClick={handleClick}
+              onClick={handleQuit}
             >
               Quitter
             </button>
@@ -191,19 +181,7 @@ export default function RulesModal({
         </div>
       </div>
 
-      <AnimatePresence>
-        {copySuccess && (
-          <motion.div
-            key="copy-success"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="fixed left-1/2 -translate-x-1/2 bg-green-500 text-white top-10 z-9999 flex items-center gap-4 rounded-md px-8 py-4 text-2xl shadow-lg"
-          >
-            Code copié !
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <CodeCopiedToast show={copySuccess} />
     </motion.div>
   );
 }

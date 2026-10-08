@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import Image from "next/image";
 
+import CodeCopiedToast from "../CodeCopiedToast";
 import { useGame } from "../../context/GameContext";
 import copyToClipboard from "../../utils/copyToClipboard";
 import { itemVariants } from "./variants";
@@ -33,19 +34,7 @@ export default function RoomCode() {
         </button>
       </motion.h1>
 
-      <AnimatePresence>
-        {copySuccess && (
-          <motion.div
-            key="copy-success"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="fixed top-10 left-1/2 z-50 flex -translate-x-1/2 items-center gap-4 rounded-md bg-green-500 px-8 py-4 text-2xl text-white shadow-lg"
-          >
-            Code copié !
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <CodeCopiedToast show={copySuccess} />
     </>
   );
 }
