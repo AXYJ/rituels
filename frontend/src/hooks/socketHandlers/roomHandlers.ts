@@ -55,6 +55,7 @@ export const registerRoomHandlers = (
     room_full: () => setError("La partie est pleine !"),
     room_not_found: () => setError("Partie introuvable !"),
     game_already_started: () => setError("La partie a déjà commencé !"),
+    already_in_room: () => setError("Tu es déjà dans une partie !"),
     name_rejected: () => setError("Pseudo refusé !"),
     name_rate_limited: () =>
       setError("Trop de changements de pseudo, réessaie dans un instant."),

@@ -1,7 +1,7 @@
 import { generateRules, getNextPlayerOrder } from "../gameLogic.js";
 import { hasPseudoVerdict, moderatePseudo, MAX_NAME_LENGTH } from "../moderation.js";
 import { slidingWindow } from "../rateLimit.js";
-import { clampThreshold, generateRoomCode, getRoomAndPlayer } from "../rooms.js";
+import { clampThreshold, generateRoomCode, getRoomAndPlayer, isInARoom } from "../rooms.js";
 import {
   emitRoomUpdated,
   maskRules,
@@ -66,6 +66,10 @@ export const registerRoomHandlers = (io, socket, rooms) => {
 
   // Création d'une partie
   socket.on("create_game", (sessionId) => {
+    if (isInARoom(socket, rooms, sessionId)) {
+      socket.emit("already_in_room");
+      return;
+    }
     const roomCode = generateRoomCode(rooms);
     const rules = generateRules();
 
@@ -108,6 +112,11 @@ export const registerRoomHandlers = (io, socket, rooms) => {
 
     const room = rooms[roomCode];
     const existingPlayer = room.players.find((p) => p.sessionId === sessionId);
+
+    if (!existingPlayer && isInARoom(socket, rooms, sessionId)) {
+      socket.emit("already_in_room");
+      return;
+    }
 
     if (existingPlayer) {
       const oldId = existingPlayer.id;

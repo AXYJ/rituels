@@ -29,3 +29,16 @@ export function getRoomAndPlayer(socket, rooms) {
   const player = room?.players.find((p) => p.id === socket.id);
   return player ? { code, room, player } : null;
 }
+
+/**
+ * Un joueur (socket ou même sessionId, ex. deuxième onglet) est-il déjà dans une salle ?
+ * Une seule partie à la fois par joueur.
+ */
+export function isInARoom(socket, rooms, sessionId) {
+  return (
+    Boolean(getRoomAndPlayer(socket, rooms)) ||
+    Object.values(rooms).some((room) =>
+      room.players.some((p) => p.sessionId === (sessionId || socket.id) && !p.leavedPlayer)
+    )
+  );
+}

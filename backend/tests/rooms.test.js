@@ -45,6 +45,26 @@ test("limites : salle pleine, partie commencée, salle inconnue", async () => {
   assert.equal(late.count("room_not_found"), 1);
 });
 
+test("une seule partie à la fois : create_game et join_game refusés, possible après avoir quitté", async () => {
+  const { players: [host], sessions: [session] } = await lobby(server, 2);
+  const other = await lobby(server, 1);
+
+  host.emit("create_game", session);
+  host.emit("join_game", other.code, session);
+  const second = await server.connect(); // deuxième onglet, même sessionId
+  second.emit("create_game", session);
+  await settle();
+  assert.equal(host.count("already_in_room"), 2);
+  assert.equal(second.count("already_in_room"), 1);
+  assert.equal(host.count("room_created"), 1);
+
+  host.emit("quit_lobby");
+  await settle();
+  host.emit("create_game", session);
+  await settle();
+  assert.equal(host.count("room_created"), 2);
+});
+
 test("quota : modifiable par l'hôte au lobby, ignoré en partie", async () => {
   const { code, players: [host, guest] } = await lobby(server, 2);
   guest.emit("update_threshold", 7);
