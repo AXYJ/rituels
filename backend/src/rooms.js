@@ -30,6 +30,12 @@ export function getRoomAndPlayer(socket, rooms) {
   return player ? { code, room, player } : null;
 }
 
+/** Identifiant de session valide (chaîne de 1 à 64 caractères), sinon le socket.id (jamais partagé entre deux joueurs) */
+export const normalizeSessionId = (socket, sessionId) =>
+  typeof sessionId === "string" && sessionId.length > 0 && sessionId.length <= 64
+    ? sessionId
+    : socket.id;
+
 /**
  * Un joueur (socket ou même sessionId, ex. deuxième onglet) est-il déjà dans une salle ?
  * Une seule partie à la fois par joueur.
@@ -38,7 +44,7 @@ export function isInARoom(socket, rooms, sessionId) {
   return (
     Boolean(getRoomAndPlayer(socket, rooms)) ||
     Object.values(rooms).some((room) =>
-      room.players.some((p) => p.sessionId === (sessionId || socket.id) && !p.leavedPlayer)
+      room.players.some((p) => p.sessionId === sessionId && !p.leavedPlayer)
     )
   );
 }

@@ -1,7 +1,7 @@
 import { generateRules, getNextPlayerOrder } from "../gameLogic.js";
 import { hasPseudoVerdict, moderatePseudo, MAX_NAME_LENGTH } from "../moderation.js";
 import { slidingWindow } from "../rateLimit.js";
-import { clampThreshold, generateRoomCode, getRoomAndPlayer, isInARoom } from "../rooms.js";
+import { clampThreshold, generateRoomCode, getRoomAndPlayer, isInARoom, normalizeSessionId } from "../rooms.js";
 import {
   emitRoomUpdated,
   maskRules,
@@ -38,14 +38,20 @@ export const handlePlayerLeave = (io, socket, rooms) => {
     return;
   }
 
-  if (isGameStarted && activePlayers.length <= 1) {
-    io.to(code).emit("no_more_players");
-    return;
-  }
-
+  // Le rôle d'hôte passe à un joueur actif dans tous les cas, même s'il n'en reste qu'un
   if (player.isHost) {
     player.isHost = false;
     activePlayers[0].isHost = true;
+  }
+
+  if (isGameStarted && activePlayers.length <= 1) {
+    if (room.isGameOver) {
+      checkAndResetGame(code, rooms, io);
+    } else {
+      emitRoomUpdated(io, room, { withOrder: true });
+      io.to(code).emit("no_more_players");
+    }
+    return;
   }
 
   emitRoomUpdated(io, room, { withOrder: true });
@@ -65,7 +71,8 @@ export const registerRoomHandlers = (io, socket, rooms) => {
   const nameBudget = slidingWindow(5, 60_000);
 
   // Création d'une partie
-  socket.on("create_game", (sessionId) => {
+  socket.on("create_game", (rawSessionId) => {
+    const sessionId = normalizeSessionId(socket, rawSessionId);
     if (isInARoom(socket, rooms, sessionId)) {
       socket.emit("already_in_room");
       return;
@@ -78,7 +85,7 @@ export const registerRoomHandlers = (io, socket, rooms) => {
         {
           id: socket.id,
           name: "Hôte",
-          sessionId: sessionId || socket.id,
+          sessionId,
           isHost: true,
           isReady: false,
           score: 0,
@@ -104,7 +111,8 @@ export const registerRoomHandlers = (io, socket, rooms) => {
   });
 
   // Rejoindre une partie
-  socket.on("join_game", (roomCode, sessionId) => {
+  socket.on("join_game", (roomCode, rawSessionId) => {
+    const sessionId = normalizeSessionId(socket, rawSessionId);
     if (typeof roomCode !== "string" || !rooms[roomCode]) {
       socket.emit("room_not_found");
       return;
@@ -126,6 +134,7 @@ export const registerRoomHandlers = (io, socket, rooms) => {
       socket.join(roomCode);
       socket.data.roomCode = roomCode;
 
+      if (room.winnerId === oldId) room.winnerId = socket.id;
       if (room.playerOrder) {
         room.playerOrder = room.playerOrder.map((id) =>
           id === oldId ? socket.id : id
@@ -141,6 +150,7 @@ export const registerRoomHandlers = (io, socket, rooms) => {
         playerOrder: room.playerOrder,
         playerTurn: room.playerOrder ? room.playerOrder[0] : null,
         history: publicHistory(room.history || []),
+        winner: room.isGameOver ? room.winnerId : null,
       });
 
       emitRoomUpdated(io, room, { withOrder: true });

@@ -111,6 +111,7 @@ export const registerGameHandlers = (io, socket, rooms) => {
 
     if (isWin) {
       room.isGameOver = true;
+      room.winnerId = player.id;
       // Fin de partie : les règles sont enfin révélées
       room.players.forEach((p) => (p.isReady = false));
       io.to(code).emit("game_won", player.id, player.score, room.rules);

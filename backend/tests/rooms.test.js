@@ -178,3 +178,84 @@ test("fin de partie : retour au lobby, nouvelles règles masquées, nouvelle par
   await settle();
   assert.equal(host.count("game_started"), 1);
 });
+
+test("un code de salle comme \"constructor\" est refusé sans faire tomber le serveur", async () => {
+  const client = await server.connect();
+  for (const code of ["constructor", "__proto__", "toString"]) client.emit("join_game", code, "x");
+  await settle();
+  assert.equal(client.count("room_not_found"), 3);
+});
+
+test("sessionId absent ou invalide : jamais partagé entre deux joueurs", async () => {
+  const { code, players: [host] } = await lobby(server, 1);
+  const a = await server.connect();
+  const b = await server.connect();
+  a.emit("join_game", code, undefined);
+  b.emit("join_game", code, { evil: true });
+  await settle();
+  assert.equal(a.count("join_game_success"), 1);
+  assert.equal(b.count("join_game_success"), 1);
+  assert.equal(host.last("room_updated").args[0].players.length, 3);
+});
+
+test("en partie : l'hôte qui part transmet son rôle même s'il ne reste qu'un joueur", async () => {
+  const game = await startedGame(server, 2);
+  const [host, guest] = game.players;
+  host.emit("quit_lobby");
+  await settle();
+  assert.equal(guest.count("no_more_players"), 1);
+  assert.equal(hostsOf(guest.last("room_updated"))[0].id, guest.id);
+});
+
+test("reconnexion après la victoire : le gagnant est renvoyé", async () => {
+  const game = await startedGame(server, 2, 5);
+  await playUntilWin(game);
+  const winner = game.players[0].last("game_won").args[0];
+  const [, guest] = game.players;
+  const back = await server.connect();
+  back.emit("join_game", game.code, game.sessions[1]);
+  await settle();
+  assert.equal(back.last("reconnected").args[0].winner, winner === guest.id ? back.id : winner);
+});
+
+test("lancement refusé tant que les autres ne sont pas revenus au lobby ; tous « pas prêt » à la victoire", async () => {
+  const game = await startedGame(server, 2, 5);
+  const [host, guest] = game.players;
+  await playUntilWin(game);
+  assert.ok(host.last("room_updated").args[0].players.every((p) => !p.isReady));
+
+  host.emit("return_to_lobby");
+  await settle();
+  host.clear();
+  host.emit("start_game", game.code);
+  await settle();
+  assert.equal(host.count("game_started"), 0);
+
+  guest.emit("return_to_lobby");
+  await settle();
+  guest.emit("ready", true);
+  host.emit("start_game", game.code);
+  await settle();
+  assert.equal(host.count("game_started"), 1);
+});
+
+test("coup refusé (pas son tour) : le serveur renvoie l'état réel", async () => {
+  const game = await startedGame(server, 2);
+  const notTurn = game.byId[game.order[1]];
+  notTurn.clear();
+  notTurn.emit("card_played", game.hands[notTurn.id][0]);
+  await settle();
+  assert.equal(notTurn.count("card_played"), 0);
+  const update = notTurn.last("room_updated").args[0];
+  assert.equal(update.playerOrder[0], game.order[0]);
+  assert.equal(update.players.find((p) => p.id === notTurn.id).deck.cards.length, 3);
+});
+
+test("quota : celui de update_threshold s'applique, start_game n'en envoie pas", async () => {
+  const { code, players: [host, guest] } = await lobby(server, 2);
+  guest.emit("ready", true);
+  host.emit("update_threshold", 7);
+  host.emit("start_game", code);
+  await settle();
+  assert.equal(host.last("threshold_updated").args[0], 7);
+});

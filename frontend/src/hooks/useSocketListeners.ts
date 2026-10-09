@@ -28,6 +28,7 @@ export const useSocketListeners = (
       setDisplayOrder,
       setIsConnected,
       setNoMorePlayers,
+      setWinner,
     } = actions;
 
     // Chaque register* renvoie sa propre fonction de désabonnement
@@ -113,6 +114,7 @@ export const useSocketListeners = (
           playerOrder: string[];
           playerTurn: string;
           history: HistoryItem[];
+          winner: string | null;
         }) => {
           const {
             roomCode,
@@ -122,12 +124,14 @@ export const useSocketListeners = (
             playerOrder,
             playerTurn,
             history,
+            winner,
           } = data;
 
           setRoomCode(roomCode);
           setRules(rules);
           if (threshold !== undefined) setThreshold(threshold);
           setPlayers(players || []);
+          setWinner(winner ?? null);
 
           if (playerOrder && playerOrder.length > 0) {
             setPlayerOrder(playerOrder);

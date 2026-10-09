@@ -41,7 +41,8 @@ const io = new Server(server, {
 
 // Stockage des parties
 // Clé: roomCode, Valeur: { players, rules, threshold, history, playerOrder, lastEffect }
-const rooms = {};
+// Sans prototype : un code comme "constructor" ne doit pas être pris pour une salle
+const rooms = Object.create(null);
 
 // ----------------
 // Gestion des connexions
