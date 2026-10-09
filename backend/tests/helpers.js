@@ -21,11 +21,11 @@ function getFreePort() {
 }
 
 /** Lance le serveur sur un port libre (sans clé Groq : modération désactivée) */
-export async function startTestServer() {
+export async function startTestServer(env = {}) {
   const port = await getFreePort();
   const child = spawn(process.execPath, ["src/server.js"], {
     cwd: BACKEND_DIR,
-    env: { ...process.env, PORT: String(port), GROQ_API_KEY: "" },
+    env: { ...process.env, PORT: String(port), GROQ_API_KEY: "", ...env },
     stdio: "pipe",
   });
   await new Promise((resolve) =>

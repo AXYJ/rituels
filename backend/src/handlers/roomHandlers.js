@@ -1,7 +1,7 @@
 import { generateRules, getNextPlayerOrder } from "../gameLogic.js";
 import { hasPseudoVerdict, moderatePseudo, MAX_NAME_LENGTH } from "../moderation.js";
 import { slidingWindow } from "../rateLimit.js";
-import { clampThreshold, generateRoomCode, getRoomAndPlayer, isInARoom, normalizeSessionId } from "../rooms.js";
+import { clampThreshold, generateRoomCode, getRoomAndPlayer, isInARoom, MAX_ROOMS, normalizeSessionId } from "../rooms.js";
 import {
   emitRoomUpdated,
   maskRules,
@@ -69,12 +69,18 @@ export const handlePlayerLeave = (io, socket, rooms) => {
 export const registerRoomHandlers = (io, socket, rooms) => {
   // 5 changements de pseudo jugés par minute et par joueur (les pseudos déjà jugés ne comptent pas)
   const nameBudget = slidingWindow(5, 60_000);
+  // 3 créations de salle par minute et par connexion, et un plafond de salles pour tout le serveur
+  const createBudget = slidingWindow(3, 60_000);
 
   // Création d'une partie
   socket.on("create_game", (rawSessionId) => {
     const sessionId = normalizeSessionId(socket, rawSessionId);
     if (isInARoom(socket, rooms, sessionId)) {
       socket.emit("already_in_room");
+      return;
+    }
+    if (Object.keys(rooms).length >= MAX_ROOMS || !createBudget()) {
+      socket.emit("server_busy");
       return;
     }
     const roomCode = generateRoomCode(rooms);

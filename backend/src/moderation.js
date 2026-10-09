@@ -78,7 +78,7 @@ export async function moderatePseudo(pseudo) {
     rememberPseudo(cleaned, verdict);
     return verdict;
   } catch (error) {
-    console.error('Erreur Groq:', error);
+    console.error('Erreur Groq:', error.status, error.message);
     return 'OK'; // ponytail: fail-open pour que le jeu reste jouable si Groq tombe
   }
 }
@@ -124,9 +124,10 @@ export async function moderateMessage(message) {
       return '*** (Message inapproprié)';
     }
 
-    return result;
+    // La réponse du modèle ne doit pas dépasser la taille d'un message
+    return result.slice(0, MAX_MESSAGE_LENGTH);
   } catch (error) {
-    console.error('Erreur Groq:', error);
+    console.error('Erreur Groq:', error.status, error.message);
     return cleaned;
   }
 }

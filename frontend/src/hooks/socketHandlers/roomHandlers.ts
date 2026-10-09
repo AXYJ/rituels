@@ -53,6 +53,8 @@ export const registerRoomHandlers = (
 
     // Erreurs salon
     room_full: () => setError("La partie est pleine !"),
+    server_busy: () =>
+      setError("Trop de parties créées, réessaie dans un instant."),
     room_not_found: () => setError("Partie introuvable !"),
     game_already_started: () => setError("La partie a déjà commencé !"),
     already_in_room: () => setError("Tu es déjà dans une partie !"),

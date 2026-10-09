@@ -13,6 +13,9 @@ export function generateRoomCode(rooms) {
   return code;
 }
 
+// Plafond de salles en mémoire (surchargeable pour les tests)
+export const MAX_ROOMS = Number(process.env.MAX_ROOMS) || 500;
+
 const MIN_THRESHOLD = 5;
 const MAX_THRESHOLD = 30;
 
