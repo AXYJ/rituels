@@ -26,7 +26,7 @@ app.get("/", (req, res) => {
 const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
-        origin: process.env.ALLOWED_ORIGINS?.split(",") ?? [
+        origin: process.env.ALLOWED_ORIGINS?.split(",").map((o) => o.trim()) ?? [
             "http://localhost:3000",
             "http://127.0.0.1:3000",
             "https://rituels.xiao-web.com"
