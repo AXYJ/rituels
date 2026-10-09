@@ -86,11 +86,6 @@ export const registerGameHandlers = (
       setWinner(idPlayer);
     },
 
-    turn_updated: (newOrder: string[]) => {
-      setPlayerTurn(newOrder[0]);
-      setPlayerOrder(newOrder);
-    },
-
     game_reset: (rules: GameRules, players: Player[]) => {
       setPlayers(players);
       setView("lobby");

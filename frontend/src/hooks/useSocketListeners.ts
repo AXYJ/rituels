@@ -40,7 +40,6 @@ export const useSocketListeners = (
       // Connexion & cycle de vie, mise à jour du lobby, reconnexion
       listen(socket, {
         connect: () => {
-          console.log("Connecté au serveur ! ID:", socket.id);
           setIsConnected(true);
         },
 
@@ -51,7 +50,6 @@ export const useSocketListeners = (
         },
 
         disconnect: (reason: string) => {
-          console.log("Socket déconnecté:", reason);
           setIsConnected(false);
           if (
             reason === "io server disconnect" ||

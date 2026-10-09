@@ -107,9 +107,8 @@ test("en partie : le joueur dont c'est le tour part, le tour passe au suivant", 
   leaver.disconnect();
   await settle();
 
-  const turn = stay.last("turn_updated").args[0];
-  assert.notEqual(turn[0], game.first);
   const update = stay.last("room_updated").args[0];
+  assert.notEqual(update.playerOrder[0], game.first);
   assert.equal(update.players.find((p) => p.id === game.first).leavedPlayer, true);
 });
 

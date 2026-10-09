@@ -54,12 +54,12 @@ export const handlePlayerLeave = (io, socket, rooms) => {
     return;
   }
 
-  emitRoomUpdated(io, room, { withOrder: true });
-
+  // Le tour passe au suivant avant l'envoi : un seul message, avec l'ordre à jour
   if (isGameStarted && room.playerOrder[0] === socket.id) {
     room.playerOrder = getNextPlayerOrder(room.playerOrder, room.players);
-    io.to(code).emit("turn_updated", room.playerOrder);
   }
+
+  emitRoomUpdated(io, room, { withOrder: true });
 
   if (room.isGameOver) {
     checkAndResetGame(code, rooms, io);
