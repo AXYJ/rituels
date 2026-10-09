@@ -132,3 +132,16 @@ test("game_won : le gagnant et les règles révélées sont enregistrés", () =>
   expect(actions.setWinner).toHaveBeenCalledWith("other");
   expect(applied<Player[]>("setPlayers", [player("other", { score: 14 })])[0].score).toBe(16);
 });
+
+test("card_played : la main cachée d'un adversaire perd la carte jouée et gagne la carte piochée", () => {
+  const { handlers, applied } = setup();
+  const hidden = (id: string): Card => ({ id, symbol: "", color: "" });
+
+  handlers.card_played(card("a"), "other", "Autre", ["me", "other"], 2, 2, hidden("d"));
+
+  const players = applied<Player[]>("setPlayers", [
+    player("me"),
+    player("other", { deck: { cards: [hidden("a"), hidden("b"), hidden("c")] } }),
+  ]);
+  expect(players.find((p) => p.id === "other")!.deck.cards!.map((c) => c.id)).toEqual(["b", "c", "d"]);
+});

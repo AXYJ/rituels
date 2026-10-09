@@ -67,7 +67,8 @@ export const registerGameHandlers = (
         prev.map((p) => {
           if (p.id !== idPlayer) return p;
           const updatedPlayer = { ...p, score: newScore };
-          if (p.id === socket.id && p.deck.cards) {
+          // Même échange pour tous : la main des adversaires est cachée mais garde les ids
+          if (p.deck.cards) {
             const newCards = p.deck.cards.filter((c) => c.id !== card.id);
             newCards.push(newCard);
             updatedPlayer.deck = { cards: newCards };
