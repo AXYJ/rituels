@@ -37,7 +37,7 @@ Variables d'environnement du backend :
 
 Le frontend contacte le backend via `NEXT_PUBLIC_SOCKET_URL` (défaut `http://localhost:4000`).
 
-Tests du backend : `npm test` (à la racine du projet ou dans `backend/`).
+Tests du backend : `npm test` (à la racine du projet ou dans `backend/`). Tests du frontend : `npm test` dans `frontend/` (hooks et gestion des events serveur ; les écrans sont vérifiés à la main).
 
 ### 2. Démarrer le Frontend (Client)
 Ouvrez un nouveau terminal :
