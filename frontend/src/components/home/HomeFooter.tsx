@@ -3,7 +3,7 @@
 import { View } from "../../types/game";
 
 const LEGAL_LINKS: { label: string; view: View }[] = [
-  { label: "Mentions Légales", view: "mentions-legales" },
+  { label: "Mentions légales et confidentialité", view: "mentions-legales" },
   { label: "Crédits", view: "mentions-legales#credits" },
 ];
 
@@ -27,10 +27,7 @@ export default function HomeFooter({
           ))}
         </div>
 
-        <div>
-          <p>Créé par : Alex Xiao</p>
-          <p>© Rituels 2026 | Tous droits réservés </p>
-        </div>
+        <p>© Rituels 2026</p>
       </div>
     </footer>
   );

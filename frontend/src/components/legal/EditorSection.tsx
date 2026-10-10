@@ -13,8 +13,11 @@ export default function EditorSection() {
     <LegalSection title="Mentions Légales" className="gap-8 py-16">
       <div className="grid gap-16 md:grid-cols-2">
         <LegalArticle title="Éditeur" className="items-center">
-          <LegalParagraph>
-            <Label>Nom :</Label> Alex Xiao
+          <LegalParagraph className="text-center">
+            Site édité à titre non professionnel par un particulier, qui a
+            choisi de rester anonyme conformément à l&apos;article 6-III-2 de
+            la loi n° 2004-575 du 21 juin 2004 (LCEN). Son identité a été
+            communiquée à l&apos;hébergeur ci-contre.
           </LegalParagraph>
           <LegalParagraph>
             <Label>Contact :</Label> <EmailLink className={linkClass} />
@@ -23,16 +26,19 @@ export default function EditorSection() {
 
         <LegalArticle title="Hébergeur" className="items-center">
           <LegalParagraph className="text-center">
-            <Label>Nom :</Label> Hostinger
+            <Label>Nom :</Label> Hostinger, UAB
           </LegalParagraph>
           <LegalParagraph className="text-center">
             <Label>Adresse postale :</Label>
             <br />
-            UAB &quot;HOSTINGER LT&quot;,
+            Švitrigailos g. 34,
             <br />
-            Švitrigailos g. 34C, LT-03110 Vilnius,
+            LT-03230 Vilnius,
             <br />
             Lituanie
+          </LegalParagraph>
+          <LegalParagraph className="text-center">
+            <Label>Téléphone :</Label> +370 6003 1712
           </LegalParagraph>
           <LegalParagraph>
             <Label>Site Web :</Label>{" "}

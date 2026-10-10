@@ -48,6 +48,12 @@ npm run dev
 ```
 L'application frontend sera accessible sur [http://localhost:3000](http://localhost:3000).
 
+## 📄 Licence
+
+Le **code source** est publié sous licence [ISC](LICENSE).
+
+Cette licence ne couvre **pas** les ressources du dossier `frontend/public/` et la police : illustrations, cartes, animations, musique, effets sonores et typographie restent soumis à leurs propres droits (voir la section Crédits du site). Ne les réutilisez pas sans autorisation.
+
 ## 🌍 Déploiement
 
 - **Hébergement** : Le frontend et le backend sont hébergés chez [Hostinger](https://www.hostinger.com/). *(Note : Le backend utilise directement les variables `process.env` en production).*

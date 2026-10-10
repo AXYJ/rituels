@@ -7,54 +7,77 @@ const DATA_ROWS = [
     purpose:
       "Identifier le joueur auprès des autres participants du salon et pré-remplir le champ de saisie lors des prochaines visites.",
     retention:
-      "Conservé localement sur votre navigateur (localStorage) jusqu'à ce que vous le supprimiez.",
+      "Dans votre navigateur (localStorage) jusqu'à ce que vous le supprimiez. Côté serveur : en mémoire vive, tant que le salon existe.",
   },
   {
-    data: "Code / Numéro de salon",
+    data: "Code de salon",
     purpose:
-      "Permettre de rejoindre ou rester connecté à son salon de jeu actif (notamment en cas de rechargement de page).",
+      "Permettre de rester connecté à son salon de jeu actif, notamment en cas de rechargement de page.",
     retention:
-      "Conservé pour la durée de la session de navigation (sessionStorage) et supprimé à la fermeture de l'onglet ou du navigateur.",
+      "Dans votre navigateur (sessionStorage), supprimé à la fermeture de l'onglet.",
   },
   {
-    data: "Données de partie",
+    data: "Données de partie (scores, cartes jouées, état du jeu)",
     purpose:
-      "Assurer le bon fonctionnement des mécaniques de jeu en temps réel via WebSockets (scores, réponses, état du jeu).",
+      "Faire fonctionner le jeu en temps réel via WebSockets.",
     retention:
-      "Traitées uniquement en mémoire vive (RAM) du serveur et supprimées automatiquement dès que tous les joueurs quittent le salon.",
+      "En mémoire vive du serveur uniquement, supprimées dès que tous les joueurs ont quitté le salon, et au plus tard au redémarrage du serveur.",
+  },
+  {
+    data: "Messages du chat",
+    purpose: "Échanger avec les autres joueurs du salon.",
+    retention:
+      "En mémoire vive du serveur (200 derniers messages par salon), supprimés avec le salon. Aucun message n'est écrit sur disque.",
   },
   {
     data: "Réglages du volume sonore",
     purpose:
-      "Mémoriser les réglages de volume sonore générale et des effets sonores choisis par le joueur pour les sessions futures.",
+      "Mémoriser les volumes de la musique et des effets sonores choisis par le joueur.",
     retention:
-      "Conservés localement sur votre navigateur (localStorage) jusqu'à ce que vous les supprimiez.",
+      "Dans votre navigateur (localStorage) jusqu'à ce que vous les supprimiez. Jamais envoyés au serveur.",
   },
   {
     data: "Statut de première visite",
     purpose:
-      "Déterminer s'il convient de lancer ou d'ignorer l'animation d'introduction au chargement de l'accueil.",
+      "Savoir s'il faut jouer l'animation d'introduction de l'accueil.",
     retention:
-      "Conservé localement sur votre navigateur (localStorage) jusqu'à ce que vous le supprimiez.",
+      "Dans votre navigateur (localStorage) jusqu'à ce que vous le supprimiez. Jamais envoyé au serveur.",
   },
   {
-    data: "Identifiant de session (Session ID)",
+    data: "Identifiant de session (identifiant aléatoire)",
     purpose:
-      "Associer de manière unique le joueur à sa connexion en cours et permettre la reconnexion automatique en cas de coupure réseau.",
+      "Vous reconnaître d'une connexion à l'autre et vous replacer dans votre salon après un rechargement ou une coupure réseau.",
     retention:
-      "Conservé localement sur votre navigateur (localStorage) pour permettre les reconnexions.",
+      "Dans votre navigateur (localStorage) jusqu'à ce que vous le supprimiez. Côté serveur : en mémoire vive, tant que le salon existe.",
   },
   {
-    data: "Pseudonyme et messages du chat",
+    data: "Pseudonyme et messages envoyés à la modération automatique",
     purpose:
-      "Transmis à un service tiers de modération automatique par intelligence artificielle (Groq) afin de détecter et filtrer les contenus vulgaires, haineux ou sexuels avant diffusion aux autres joueurs.",
+      "Détecter et filtrer les contenus vulgaires, haineux ou sexuels avant diffusion aux autres joueurs, grâce à un service d'intelligence artificielle (Groq).",
     retention:
-      "Traités ponctuellement lors de l'envoi, non conservés par ce prestataire ni par Rituels au-delà de l'historique de la partie en cours (supprimé à la fermeture du salon).",
+      "Envoyés à Groq au moment de la saisie. Selon la documentation de Groq, le contenu des requêtes n'est pas conservé par défaut. Côté serveur, seul le verdict (OK / refusé) des 500 derniers pseudonymes jugés est gardé en mémoire vive jusqu'au redémarrage, sans lien avec un salon ni un joueur.",
+  },
+  {
+    data: "Adresse IP et journaux techniques",
+    purpose:
+      "Établir la connexion et protéger le service contre les abus. Le serveur du jeu journalise la date de connexion ou de déconnexion et un identifiant technique de connexion, sans le pseudonyme ni l'adresse IP.",
+    retention:
+      "L'adresse IP est vue par l'hébergeur et son infrastructure réseau, qui conservent leurs journaux selon leur propre politique de rétention.",
+  },
+  {
+    data: "Lecture de la vidéo des règles (YouTube)",
+    purpose:
+      "Afficher la vidéo d'explication des règles, hébergée sur YouTube.",
+    retention:
+      "Rien n'est chargé depuis YouTube tant que vous n'avez pas cliqué sur la vidéo. Après ce clic, Google reçoit votre adresse IP et peut déposer des traceurs, sous sa propre politique de confidentialité.",
   },
 ];
 
 const emailLinkClass =
   "font-semibold text-white underline transition-colors hover:text-gray-300";
+
+const externalLinkClass =
+  "text-white underline transition-colors hover:text-gray-300";
 
 export default function PrivacySection() {
   return (
@@ -62,34 +85,37 @@ export default function PrivacySection() {
       <div className="grid gap-12">
         <LegalArticle>
           <LegalParagraph>
-            La protection de votre vie privée et de vos données personnelles
-            est une priorité. Cette politique de confidentialité explique en
-            toute transparence quelles données sont traitées lors de votre
-            utilisation du jeu, pour quelles finalités et comment elles sont
-            gérées.
+            Cette politique explique quelles données sont traitées lors de
+            votre utilisation du jeu, pour quelles finalités, à qui elles sont
+            transmises et comment les contrôler.
           </LegalParagraph>
         </LegalArticle>
 
-        <LegalArticle title="1. Principe général : Le respect de la vie privée par défaut">
+        <LegalArticle title="1. Responsable du traitement et principe général">
           <LegalParagraph>
-            Le jeu est conçu selon le principe de minimisation des données :{" "}
-            <strong>aucune donnée n&apos;est conservée à long terme</strong>. Le
-            traitement des données est temporaire, strictement limité au temps
-            d&apos;une session de jeu, et hébergé en mémoire volatile (RAM).
+            Le responsable du traitement est l&apos;éditeur du site, un
+            particulier non professionnel joignable à l&apos;adresse{" "}
+            <EmailLink className={emailLinkClass} />.
+          </LegalParagraph>
+          <LegalParagraph>
+            Le jeu n&apos;a ni compte utilisateur ni base de données : les
+            salons et les parties vivent uniquement en mémoire vive du serveur.
+            Seules quelques préférences sont enregistrées dans votre
+            navigateur.
           </LegalParagraph>
         </LegalArticle>
 
         <LegalArticle title="2. Données traitées et finalités">
           <LegalParagraph>
-            Pendant votre navigation et vos parties, nous traitons uniquement
-            les éléments suivants :
+            Pendant votre navigation et vos parties, les données suivantes sont
+            traitées :
           </LegalParagraph>
 
           <div className="w-full overflow-x-auto rounded-lg border border-white/10 bg-white/5">
             <table className="w-full border-collapse text-left text-lg text-white">
               <thead>
                 <tr className="border-b border-white/10 bg-white/10 font-semibold">
-                  <th className="p-4">Donnée collectée</th>
+                  <th className="p-4">Donnée</th>
                   <th className="p-4">Finalité</th>
                   <th className="p-4">Durée de conservation</th>
                 </tr>
@@ -106,86 +132,154 @@ export default function PrivacySection() {
             </table>
           </div>
           <p className="mt-2 text-center text-lg font-semibold text-white">
-            Aucune donnée n&apos;est vendue, cédée, ni partagée avec des régies
-            publicitaires ou des tiers à des fins marketing.
+            Aucune donnée n&apos;est vendue ni utilisée à des fins publicitaires
+            ou de profilage.
           </p>
         </LegalArticle>
 
-        <LegalArticle title="3. Durée de conservation et suppression automatique">
-          <LegalParagraph>
-            <strong>Suppression immédiate :</strong> Dès que tous les joueurs
-            quittent un salon de jeu, l&apos;intégralité des données rattachées
-            à ce salon (salon, pseudos, scores, états de partie) est{" "}
-            <strong>définitivement effacée de la mémoire du serveur</strong>.
-          </LegalParagraph>
-          <LegalParagraph>
-            <strong>Absence de base de données persistante :</strong> Aucune
-            information relative à vos parties, historiques ou habitudes de jeu
-            n&apos;est enregistrée dans une base de données permanente.
-          </LegalParagraph>
-        </LegalArticle>
-
-        <LegalArticle title="4. Cookies et stockage local (LocalStorage / SessionStorage)">
-          <LegalParagraph>
-            Ce site &quot;n&apos;utilise aucun cookie publicitaire, aucun
-            traceur tiers et aucun outil d&apos;analyse d&apos;audience
-            invasif&quot; (type Google Analytics).
-          </LegalParagraph>
-          <LegalParagraph>
-            Seuls des éléments strictement techniques et nécessaires au
-            fonctionnement du service peuvent être déposés sur votre terminal :
-          </LegalParagraph>
-          <LegalParagraph className="border-l-2 border-white/50 pl-4 italic">
-            <strong>Stockage local de confort :</strong> Votre navigateur peut
-            garder en mémoire locale votre dernier pseudonyme utilisé ou le
-            dernier code de salon pour vous éviter de les retaper lors
-            d&apos;un rechargement de page.
-          </LegalParagraph>
-          <p className="mt-2 text-lg font-semibold text-white">
-            Gestion et suppression :
-          </p>
-          <LegalParagraph>
-            Conformément aux recommandations de la CNIL et du RGPD, ces
-            traceurs purement techniques ne requièrent pas de consentement
-            préalable par bandeau. Si vous souhaitez supprimer ces éléments
-            locaux, vous pouvez le faire à tout moment :
-          </LegalParagraph>
+        <LegalArticle title="3. Bases légales">
           <ul className="flex list-disc flex-col gap-2 pl-6 text-lg leading-relaxed text-white/80">
             <li>
-              Directement depuis les paramètres de votre navigateur (section
-              &quot;Historique&quot; {"->"} &quot;Effacer les données de
-              navigation / Cookies et données de sites&quot;).
+              <strong>Exécution du service demandé</strong> : pseudonyme, code
+              de salon, données de partie, messages du chat et identifiant de
+              session, sans lesquels le jeu ne peut pas fonctionner.
             </li>
             <li>
-              Via l&apos;outil d&apos;inspection de votre navigateur (F12{" "}
-              {"->"} Onglet Application ou Stockage {"->"} Local Storage /
-              Cookies {"->"} Effacer).
+              <strong>Intérêt légitime</strong> : modération automatique des
+              contenus et sécurité du service (adresse IP, journaux techniques).
+            </li>
+            <li>
+              <strong>Consentement</strong> : lecture de la vidéo YouTube, qui
+              n&apos;est chargée qu&apos;après votre clic.
             </li>
           </ul>
         </LegalArticle>
 
-        <LegalArticle title="5. Vos droits (RGPD)">
+        <LegalArticle title="4. Destinataires et transferts hors Union européenne">
           <LegalParagraph>
-            Conformément au Règlement Général sur la Protection des Données
-            (RGPD), vous disposez d&apos;un droit d&apos;accès, de
-            rectification et de suppression de vos données personnelles.
+            Vos données ne sont communiquées qu&apos;aux prestataires techniques
+            suivants :
+          </LegalParagraph>
+          <ul className="flex list-disc flex-col gap-2 pl-6 text-lg leading-relaxed text-white/80">
+            <li>
+              <strong>Hostinger, UAB</strong> (Lituanie, Union européenne) :
+              hébergement du site et du serveur de jeu.
+            </li>
+            <li>
+              <strong>Groq, Inc.</strong> (États-Unis) : modération
+              automatique des pseudonymes et des messages. Ce transfert vers un
+              pays hors Union européenne est encadré par l&apos;addendum de
+              traitement des données de Groq, qui le désigne comme sous-traitant
+              (
+              <a
+                className={externalLinkClass}
+                href="https://console.groq.com/docs/legal/customer-data-processing-addendum"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                consulter l&apos;addendum
+              </a>
+              ). Si la modération est indisponible, le texte est diffusé sans
+              avoir été analysé.
+            </li>
+            <li>
+              <strong>Google (YouTube)</strong> (États-Unis) : uniquement si vous
+              lancez la vidéo des règles, via le domaine youtube-nocookie.com.
+            </li>
+          </ul>
+          <LegalParagraph>
+            Les messages et pseudonymes sont aussi visibles des autres joueurs
+            de votre salon, par nature du jeu.
+          </LegalParagraph>
+        </LegalArticle>
+
+        <LegalArticle title="5. Durée de conservation et suppression">
+          <LegalParagraph>
+            <strong>Côté serveur :</strong> dès que tous les joueurs ont quitté
+            un salon, l&apos;ensemble de ses données (pseudonymes, scores,
+            états de partie, messages) est effacé de la mémoire. Un
+            redémarrage du serveur efface aussi tous les salons en cours.
           </LegalParagraph>
           <LegalParagraph>
-            Compte tenu de l&apos;absence de stockage persistant et de comptes
-            utilisateurs,{" "}
-            <strong>
-              quitter la partie et fermer votre navigateur supprime de facto
-              l&apos;ensemble de vos données de session
-            </strong>
-            .
+            <strong>Côté navigateur :</strong> les préférences listées ci-dessus
+            restent sur votre appareil tant que vous ne les supprimez pas
+            (voir l&apos;article 6).
+          </LegalParagraph>
+        </LegalArticle>
+
+        <LegalArticle title="6. Cookies et stockage local (LocalStorage / SessionStorage)">
+          <LegalParagraph>
+            Ce site n&apos;utilise aucun cookie publicitaire, aucun outil
+            d&apos;analyse d&apos;audience et aucun traceur tiers, hormis ce
+            qui peut être déposé par YouTube si vous lancez la vidéo.
           </LegalParagraph>
           <LegalParagraph>
-            Pour toute question ou demande relative à vos données, vous pouvez
-            contacter l&apos;éditeur du site à l&apos;adresse suivante :
+            Le site écrit uniquement dans le stockage de votre navigateur :
+            votre pseudonyme, votre identifiant de session, vos réglages de
+            volume, le statut de première visite (localStorage) et le code de
+            votre salon actif (sessionStorage). Ces éléments sont nécessaires
+            au fonctionnement du service ou correspondent à des préférences que
+            vous choisissez : ils ne requièrent pas de consentement par
+            bandeau, conformément aux recommandations de la CNIL.
+          </LegalParagraph>
+          <p className="mt-2 text-lg font-semibold text-white">
+            Gestion et suppression :
+          </p>
+          <ul className="flex list-disc flex-col gap-2 pl-6 text-lg leading-relaxed text-white/80">
+            <li>
+              Depuis les paramètres de votre navigateur (« Effacer les données
+              de navigation / Cookies et données de sites »).
+            </li>
+            <li>
+              Via les outils de développement (F12 {"->"} Application ou
+              Stockage {"->"} Local Storage / Session Storage {"->"} Effacer).
+            </li>
+          </ul>
+        </LegalArticle>
+
+        <LegalArticle title="7. Mineurs">
+          <LegalParagraph>
+            Le jeu est accessible à tous les âges. Les messages sont filtrés
+            automatiquement, sans relecture humaine : les plus jeunes sont
+            invités à jouer avec l&apos;accord d&apos;un parent ou d&apos;un
+            responsable légal, qui peut aussi exercer les droits décrits
+            ci-dessous. Nous recommandons de ne jamais utiliser de vrai nom ni
+            de coordonnées personnelles comme pseudonyme ou dans le chat.
+          </LegalParagraph>
+        </LegalArticle>
+
+        <LegalArticle title="8. Vos droits (RGPD)">
+          <LegalParagraph>
+            Conformément au RGPD, vous disposez d&apos;un droit d&apos;accès, de
+            rectification, d&apos;effacement, d&apos;opposition, de limitation
+            et de portabilité de vos données. Le site ne conservant aucune
+            donnée liée à un compte, la plupart de ces données disparaissent
+            quand vous quittez le salon ; celles de votre navigateur se
+            suppriment comme indiqué à l&apos;article 6.
+          </LegalParagraph>
+          <LegalParagraph>
+            Pour toute demande, contactez l&apos;éditeur :
           </LegalParagraph>
           <div className="mt-2 text-center text-lg">
             <EmailLink className={emailLinkClass} />
           </div>
+          <LegalParagraph>
+            Vous pouvez également introduire une réclamation auprès de la
+            CNIL (Commission Nationale de l&apos;Informatique et des Libertés,{" "}
+            <a
+              className={externalLinkClass}
+              href="https://www.cnil.fr/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              www.cnil.fr
+            </a>
+            ).
+          </LegalParagraph>
+          <LegalParagraph>
+            Pour signaler un contenu illicite publié dans le chat, écrivez à la
+            même adresse.
+          </LegalParagraph>
         </LegalArticle>
       </div>
     </LegalSection>

@@ -34,6 +34,7 @@ export default function RulesModal({
   const rules = tab === "rules";
 
   const [copySuccess, setCopySuccess] = useState(false);
+  const [playVideo, setPlayVideo] = useState(false);
 
   // En partie, onQuit demande confirmation ; dans le lobby on quitte directement
   const handleQuit = () => {
@@ -136,13 +137,26 @@ export default function RulesModal({
           >
             <div className="flex flex-col items-center justify-center gap-8 pt-8">
               <h2>Protocole de jeu</h2>
-              <iframe
-                src="https://www.youtube-nocookie.com/embed/Cb2AY2S5HGs"
-                className="aspect-video w-full"
-                loading="lazy"
-                title="Rituels - Explication des règles"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              />
+              {playVideo ? (
+                <iframe
+                  src="https://www.youtube-nocookie.com/embed/Cb2AY2S5HGs?autoplay=1"
+                  className="aspect-video w-full"
+                  title="Rituels - Explication des règles"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                />
+              ) : (
+                <button
+                  onClick={() => setPlayVideo(true)}
+                  className="relative aspect-video w-full cursor-pointer overflow-hidden border border-white/40"
+                >
+                  <Image
+                    src="/assets/video_preview.png"
+                    alt="Lire la vidéo d'explication des règles"
+                    fill
+                    className="object-cover"
+                  />
+                </button>
+              )}
               <div className="flex max-w-5xl flex-col gap-4 text-white">
                 {RULES_PARAGRAPHS.map((text, i) => (
                   <p key={`rule-p-${i}`}>{text}</p>
