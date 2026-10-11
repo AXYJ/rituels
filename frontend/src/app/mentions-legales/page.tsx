@@ -44,7 +44,11 @@ export default function MentionsLegalesPage() {
         <CreditsSection />
 
         <div className="mt-16 flex justify-center">
-          <ImageButton variant="long" href="/" className="rounded-3xl px-12 py-4">
+          <ImageButton
+            variant="long"
+            href="/"
+            className="rounded-3xl px-12 py-4"
+          >
             Retour à l&apos;accueil
           </ImageButton>
         </div>
