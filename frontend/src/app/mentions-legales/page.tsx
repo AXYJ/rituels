@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 
+import ImageButton from "../../components/ImageButton";
 import CharteSection from "../../components/legal/CharteSection";
 import EditorSection from "../../components/legal/EditorSection";
 import PrivacySection from "../../components/legal/PrivacySection";
@@ -42,12 +43,11 @@ export default function MentionsLegalesPage() {
         <Separator />
         <CreditsSection />
 
-        <Link
-          href="/"
-          className="mx-auto mt-16 block w-fit rounded border border-white/30 px-6 py-3 text-white transition-colors hover:bg-white/10"
-        >
-          Retour à l&apos;accueil
-        </Link>
+        <div className="mt-16 flex justify-center">
+          <ImageButton variant="long" href="/" className="rounded-3xl px-12 py-4">
+            Retour à l&apos;accueil
+          </ImageButton>
+        </div>
       </div>
     </main>
   );
