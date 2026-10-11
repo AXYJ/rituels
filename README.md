@@ -1,6 +1,7 @@
 # Rituels 
 
-Un jeu de cartes multijoueur en temps réel. Affrontez vos amis, jouez des cartes pour gagner des points, et interagissez via le chat intégré !
+**Rituels** est un jeu de cartes en ligne gratuit de déduction pour 2 à 4 joueurs, inspiré de l'expérience de superstition du pigeon de B.F. Skinner.
+Les règles changent à chaque partie : déduisez la logique cachée du système en jouant vos cartes et récoltez vos graines avant les autres.
 
 🌐 **Jouer en ligne :** [https://rituels.xiao-web.com/](https://rituels.xiao-web.com/)
 
