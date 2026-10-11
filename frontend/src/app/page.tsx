@@ -10,7 +10,6 @@ import { GameProvider, useGame } from "../context/GameContext";
 import Home from "../components/pages/home";
 import Lobby from "../components/pages/Lobby";
 import Game from "../components/pages/Game";
-import MentionsLegales from "../components/pages/MentionsLegales";
 
 function GameContent() {
   const { view } = useGame();
@@ -30,8 +29,6 @@ function GameContent() {
           <Game />
         </>
       );
-    case "mentions-legales":
-      return <MentionsLegales />;
     default:
       return <Home />;
   }

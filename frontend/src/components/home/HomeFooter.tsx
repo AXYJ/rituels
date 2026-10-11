@@ -1,29 +1,19 @@
-"use client";
+import Link from "next/link";
 
-import { View } from "../../types/game";
-
-const LEGAL_LINKS: { label: string; view: View }[] = [
-  { label: "Mentions légales et confidentialité", view: "mentions-legales" },
-  { label: "Crédits", view: "mentions-legales#credits" },
+const LEGAL_LINKS = [
+  { label: "Mentions légales et confidentialité", href: "/mentions-legales" },
+  { label: "Crédits", href: "/mentions-legales#credits" },
 ];
 
-export default function HomeFooter({
-  setView,
-}: {
-  setView: (view: View) => void;
-}) {
+export default function HomeFooter() {
   return (
     <footer className="bg-[#191918] py-8 text-center text-white">
       <div className="flex flex-col items-center justify-center gap-4">
         <div className="flex gap-16">
-          {LEGAL_LINKS.map(({ label, view }) => (
-            <button
-              key={view}
-              onClick={() => setView(view)}
-              className="cursor-pointer hover:underline"
-            >
-              <p>{label}</p>
-            </button>
+          {LEGAL_LINKS.map(({ label, href }) => (
+            <Link key={href} href={href} className="hover:underline">
+              {label}
+            </Link>
           ))}
         </div>
 

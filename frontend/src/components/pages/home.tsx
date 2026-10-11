@@ -12,7 +12,7 @@ import RulesSection from "../home/RulesSection";
 import HomeFooter from "../home/HomeFooter";
 
 export default function Home() {
-  const { createGame, setError, isConnected, setView } = useGame();
+  const { createGame, setError, isConnected } = useGame();
   const { savedCode, isFirstVisit, hasCheckedVisit } = useFirstVisit();
   const [btnDisabled, setBtnDisabled] = useState(false);
 
@@ -52,7 +52,7 @@ export default function Home() {
         </div>
       </section>
 
-      <HomeFooter setView={setView} />
+      <HomeFooter />
     </>
   );
 }

@@ -12,6 +12,7 @@ Un jeu de cartes multijoueur en temps réel. Affrontez vos amis, jouez des carte
 - **Chat intégré** : Discutez avec les autres joueurs dans le lobby et pendant la partie (avec défilement automatique). Les pseudos (10 caractères max) et messages (300 max, 1 par seconde) sont modérés par un LLM (Groq).
 - **Interface dynamique et réactive** : Animations fluides avec Framer Motion et design moderne.
 - **Système de sessions** : Sauvegarde locale de votre pseudonyme et détection automatique des nouveaux joueurs pour l'animation d'introduction.
+- **Page légale indexable** : mentions légales, politique de confidentialité, charte et crédits sont servis sur une vraie URL, [`/mentions-legales`](https://rituels.xiao-web.com/mentions-legales), présente dans le sitemap (le jeu lui-même reste une page unique à `/`).
 
 ## 🛠️ Stack Technique
 
