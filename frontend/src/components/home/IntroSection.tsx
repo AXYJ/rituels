@@ -14,7 +14,9 @@ export default function IntroSection() {
         className="relative z-5 flex flex-col items-center justify-center gap-8"
         id="explication"
       >
-        <h2>Rapport Déclassifié : Laboratoire Skinner</h2>
+        <h1 className="text-3xl text-white lg:text-6xl">
+          Rapport Déclassifié : Laboratoire Skinner
+        </h1>
         <div className="relative flex w-8/10 max-w-5xl flex-col gap-4 text-white lg:w-1/2">
           <Reveal className="overflow-hidden">
             En 1948, le psychologue B.F. Skinner a réussi à rendre des pigeons
