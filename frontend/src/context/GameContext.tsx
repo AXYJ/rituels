@@ -25,6 +25,7 @@ import {
 } from "../types/game";
 import { useSocketListeners } from "../hooks/useSocketListeners";
 import {
+  PROPOSITIONS_KEY,
   ROOM_CODE_KEY,
   SESSION_ID_KEY,
   SFX_KEY,
@@ -77,10 +78,18 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   const [propositions, setPropositions] = useState<{
     symbolRules: Record<string, string>;
     colorRules: Record<string, string>;
-  }>({
-    symbolRules: {},
-    colorRules: {},
+  }>(() => {
+    // Le bloc-notes survit à un rechargement de page (vidé à chaque nouvelle partie)
+    try {
+      const saved = sessionStorage.getItem(PROPOSITIONS_KEY);
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return { symbolRules: {}, colorRules: {} };
   });
+
+  useEffect(() => {
+    sessionStorage.setItem(PROPOSITIONS_KEY, JSON.stringify(propositions));
+  }, [propositions]);
 
   // Sauvegarde des volumes dans le localStorage quand ils changent
   useEffect(() => {
