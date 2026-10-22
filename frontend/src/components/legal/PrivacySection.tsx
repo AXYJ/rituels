@@ -10,6 +10,12 @@ const DATA_ROWS = [
       "Dans votre navigateur (localStorage) jusqu'à ce que vous le supprimiez. Côté serveur : en mémoire vive, tant que le salon existe.",
   },
   {
+    data: "Hypothèses du bloc-notes",
+    purpose: "Conserver vos notes de jeu en cas de rechargement de page.",
+    retention:
+      "Dans votre navigateur (sessionStorage), supprimées à la fermeture de l'onglet. Jamais envoyées au serveur.",
+  },
+  {
     data: "Code de salon",
     purpose:
       "Permettre de rester connecté à son salon de jeu actif, notamment en cas de rechargement de page.",
@@ -217,7 +223,8 @@ export default function PrivacySection() {
             Le site écrit uniquement dans le stockage de votre navigateur :
             votre pseudonyme, votre identifiant de session, vos réglages de
             volume, le statut de première visite (localStorage) et le code de
-            votre salon actif (sessionStorage). Ces éléments sont nécessaires
+            votre salon actif et les hypothèses de votre bloc-notes
+            (sessionStorage). Ces éléments sont nécessaires
             au fonctionnement du service ou correspondent à des préférences que
             vous choisissez : ils ne requièrent pas de consentement par
             bandeau, conformément aux recommandations de la CNIL.
