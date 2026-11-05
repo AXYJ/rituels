@@ -15,7 +15,7 @@ export function LegalSection({
   return (
     <section id={id} className={`flex flex-col ${className}`}>
       <div className="mb-16 flex flex-col items-center justify-center gap-8 text-center">
-        <h1 className="text-6xl text-white">{title}</h1>
+        <h2>{title}</h2>
       </div>
       {children}
     </section>
@@ -34,7 +34,7 @@ export function LegalArticle({
 }) {
   return (
     <article className={`flex flex-col gap-4 ${className}`}>
-      {title && <h2>{title}</h2>}
+      {title && <h3>{title}</h3>}
       {children}
     </article>
   );

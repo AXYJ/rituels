@@ -35,6 +35,7 @@ export default function MentionsLegalesPage() {
           <span>Retour à l&apos;accueil</span>
         </Link>
 
+        <h1 className="mb-16 text-center text-4xl text-white lg:text-7xl">Mentions légales et confidentialité</h1>
         <CharteSection />
         <Separator />
         <EditorSection />
