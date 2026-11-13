@@ -41,14 +41,14 @@ export default function Lobby() {
       >
         <Image
           src="/assets/button-short.png"
-          alt="Règles"
+          alt=""
           width={320}
           height={320}
           className="pointer-events-none absolute inset-0 z-0 h-full w-full object-fill select-none"
         />
         <Image
           src="/assets/setting-wheel.png"
-          alt="settings"
+          alt=""
           width={24}
           height={24}
           className="relative"

@@ -132,7 +132,7 @@ export default function Game() {
           >
             <Image
               src="/assets/settings.png"
-              alt="rules"
+              alt="Réglages et règles"
               width={50}
               height={50}
               className="h-8 w-8 lg:h-16 lg:w-16"
@@ -211,7 +211,7 @@ export default function Game() {
               >
                 <Image
                   src={`/cards/${normalizeSymbol(played.symbol)}-${played.color}.png`}
-                  alt="played card"
+                  alt={`Carte ${played.symbol} ${played.color}`}
                   width={400}
                   height={600}
                   className="pointer-events-none h-full w-full object-contain"

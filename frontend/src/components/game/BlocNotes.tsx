@@ -123,14 +123,23 @@ export default function BlocNotes() {
               className={`absolute top-0 right-4 z-50 mr-4 ml-auto flex items-center gap-4 ${isEditing ? "-translate-y-[120%]" : "-translate-y-[20vh]"}`}
             >
               <h3>Bloc-notes</h3>
-              <Image
-                src={`/assets/edit.png`}
-                alt="card"
-                width={1000}
-                height={1000}
-                className={`pointer-events-auto h-12 w-12 cursor-pointer object-contain drop-shadow-lg transition-all duration-300 ease-in-out lg:hidden`}
+              <button
+                type="button"
+                aria-label={
+                  isEditing ? "Fermer le bloc-notes" : "Ouvrir le bloc-notes"
+                }
+                aria-expanded={isEditing}
                 onClick={() => setIsEditing(!isEditing)}
-              />
+                className="pointer-events-auto cursor-pointer lg:hidden"
+              >
+                <Image
+                  src="/assets/edit.png"
+                  alt=""
+                  width={1000}
+                  height={1000}
+                  className="h-12 w-12 object-contain drop-shadow-lg transition-all duration-300 ease-in-out"
+                />
+              </button>
             </div>
 
             <div className="overflow-hidden">

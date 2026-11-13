@@ -38,7 +38,7 @@ function OpponentDeck({
           <Image
             ref={seedRef}
             src={`/cards/Seed.png`}
-            alt="card"
+            alt=""
             width={1000}
             height={1000}
             className="seed z-10 h-8 w-8 object-contain lg:h-12 lg:w-12"
@@ -59,7 +59,7 @@ function OpponentDeck({
         >
           <Image
             src={`/cards/card-back.png`}
-            alt="card back"
+            alt="Carte face cachée"
             width={400}
             height={600}
             className="h-16 w-12 object-contain lg:h-32 lg:w-24"

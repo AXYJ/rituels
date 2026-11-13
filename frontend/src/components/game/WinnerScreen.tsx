@@ -151,7 +151,7 @@ export default function WinnerScreen() {
 
         <Image
           src="/assets/bird-victory-1.png"
-          alt="bird-victory-1"
+          alt=""
           width={1920}
           height={1080}
           className="absolute top-1/3 left-0 z-0 h-1/3 w-auto -translate-y-1/2 object-contain opacity-70"
@@ -159,7 +159,7 @@ export default function WinnerScreen() {
 
         <Image
           src="/assets/bird-victory-2.png"
-          alt="bird-victory-2"
+          alt=""
           width={1920}
           height={1080}
           className="absolute bottom-0 left-0 z-0 h-1/3 w-auto object-contain opacity-70"
@@ -167,7 +167,7 @@ export default function WinnerScreen() {
 
         <Image
           src="/assets/bird-victory-3.png"
-          alt="bird-victory-3"
+          alt=""
           width={1920}
           height={1080}
           className="absolute right-1/10 bottom-0 z-0 h-1/4 w-auto object-contain opacity-70"
@@ -175,7 +175,7 @@ export default function WinnerScreen() {
 
         <Image
           src="/assets/bird-victory-4.png"
-          alt="bird-victory-4"
+          alt=""
           width={1920}
           height={1080}
           className="absolute top-1/2 right-0 z-0 h-1/2 w-auto -translate-y-1/2 object-contain opacity-70"

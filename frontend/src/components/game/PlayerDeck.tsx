@@ -79,7 +79,7 @@ export default function PlayerDeck({
           <Image
             ref={seedRef}
             src={`/cards/Seed.png`}
-            alt="card"
+            alt=""
             width={1000}
             height={1000}
             className="seed z-10 h-12 w-12 object-contain"
@@ -151,7 +151,7 @@ export default function PlayerDeck({
               </div>
               <Image
                 src={`/cards/${normalizeSymbol(card.symbol)}-${card.color}.png`}
-                alt="card"
+                alt={`Carte ${card.symbol} ${card.color}`}
                 width={400}
                 height={600}
                 draggable={false}
